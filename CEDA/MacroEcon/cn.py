@@ -11,7 +11,7 @@ url = {
     "eastmoney": "http://datainterface.eastmoney.com/EM_DataCenter/JS.aspx"
 }
 
-def cn_gdp_quarter():
+def gdp_quarterly():
     """
     ABS: absolute value (per 100 million CNY)
     YoY: year on year growth
@@ -47,7 +47,7 @@ def cn_gdp_quarter():
     #df[(df['Date'] >= startdate) & (df['Date'] <= enddate)]
     return df
 
-def cn_ppi_monthly():
+def ppi_monthly():
     """
     ABS: absolute value (per 100 million CNY)
     YoY: year on year growth
@@ -78,7 +78,7 @@ def cn_ppi_monthly():
     #df[(df['Date'] >= startdate) & (df['Date'] <= enddate)]
     return df
 
-def cn_cpi_monthly():
+def cpi_monthly():
     """
     Accum: Accumulation
     YoY: year on year growth
@@ -119,7 +119,7 @@ def cn_cpi_monthly():
     ]
     return df
 
-def cn_pmi_monthly():
+def pmi_monthly():
     """
     Man: manufacturing
     Non-Man: Non-manufacturing
@@ -151,7 +151,7 @@ def cn_pmi_monthly():
     ]
     return temp_df
 
-def cn_fai_monthly(): # fix asset investment
+def fai_monthly(): # fix asset investment
     """
     Man: manufacturing
     Non-Man: Non-manufacturing
@@ -183,7 +183,7 @@ def cn_fai_monthly(): # fix asset investment
     ]
     return df
 
-def cn_hi_old_monthly(): # house index old version (2008-2010)
+def hi_old_monthly(): # house index old version (2008-2010)
     """
     Man: manufacturing
     Non-Man: Non-manufacturing
@@ -219,7 +219,7 @@ def cn_hi_old_monthly(): # house index old version (2008-2010)
 
 # mkt=1&stat=2&city1=%E5%B9%BF%E5%B7%9E&city2=%E4%B8%8A%E6%B5%B7
 
-def cn_hi_new_monthly(city1:str, city2:str): # newly built commercial housing &  second-hand commercial housing
+def hi_new_monthly(city1:str, city2:str): # newly built commercial housing &  second-hand commercial housing
     """
     Man: manufacturing
     Non-Man: Non-manufacturing
@@ -257,7 +257,7 @@ def cn_hi_new_monthly(city1:str, city2:str): # newly built commercial housing & 
                        "City2":data2_shch})
     return df
 
-def cn_ci_eei_monthly(): # Climate Index & Entrepreneur Expectation Index
+def ci_eei_monthly(): # Climate Index & Entrepreneur Expectation Index
     """
     Man: manufacturing
     Non-Man: Non-manufacturing
@@ -291,7 +291,7 @@ def cn_ci_eei_monthly(): # Climate Index & Entrepreneur Expectation Index
     ]
     return df
 
-def cn_ig_monthly(): # Industry Growth
+def ig_monthly(): # Industry Growth
     """
     Man: manufacturing
     Non-Man: Non-manufacturing
@@ -321,7 +321,7 @@ def cn_ig_monthly(): # Industry Growth
     ]
     return df
 
-def cn_cgpi_monthly(): # Corporate Goods Price Index
+def cgpi_monthly(): # Corporate Goods Price Index
     """
     Man: manufacturing
     Non-Man: Non-manufacturing
@@ -361,7 +361,7 @@ def cn_cgpi_monthly(): # Corporate Goods Price Index
     ]
     return df
 
-def cn_cci_csi_cei_monthly(): # Consumer Confidence Index & Consumer Satisfaction Index & Consumer Expectation Index
+def cci_csi_cei_monthly(): # Consumer Confidence Index & Consumer Satisfaction Index & Consumer Expectation Index
     """
     Man: manufacturing
     Non-Man: Non-manufacturing
@@ -398,7 +398,7 @@ def cn_cci_csi_cei_monthly(): # Consumer Confidence Index & Consumer Satisfactio
     ]
     return df
 
-def cn_trscg_monthly(): # Total Retail Sales of Consumer Goods
+def trscg_monthly(): # Total Retail Sales of Consumer Goods
     """
     Man: manufacturing
     Non-Man: Non-manufacturing
@@ -431,7 +431,7 @@ def cn_trscg_monthly(): # Total Retail Sales of Consumer Goods
     ]
     return df
 
-def cn_ms_monthly(): # monetary Supply
+def ms_monthly(): # monetary Supply
     """
     Man: manufacturing
     Non-Man: Non-manufacturing
@@ -468,7 +468,7 @@ def cn_ms_monthly(): # monetary Supply
     ]
     return df
 
-def cn_ie_monthly(): # Import & Export
+def ie_monthly(): # Import & Export
     """
 
     """
@@ -506,7 +506,7 @@ def cn_ie_monthly(): # Import & Export
     return df
 
 
-def cn_stock_monthly(): # Import & Export
+def stock_monthly(): # Import & Export
     """
 &type=GJZB&sty=ZGZB&js=(%5B(x)%5D)&p=1&ps=200&mkt=2&_=1622084599456
     """
@@ -545,7 +545,7 @@ def cn_stock_monthly(): # Import & Export
     ]
     return df
 
-def cn_fgr_monthly(): # Forex and Gold Reserve
+def fgr_monthly(): # Forex and Gold Reserve
     """
 
     """
@@ -578,7 +578,7 @@ def cn_fgr_monthly(): # Forex and Gold Reserve
     ]
     return df
 #TODO: SPECIAL CASE
-def cn_ctsf_monthly(): # Client Transaction Settlement Funds
+def ctsf_monthly(): # Client Transaction Settlement Funds
     """
 
     """
@@ -596,7 +596,7 @@ def cn_ctsf_monthly(): # Client Transaction Settlement Funds
     return df
 
 # TODO: SPECIAL CASE
-def cn_sao_monthly(): # Stock Account Overview 
+def sao_monthly(): # Stock Account Overview 
     """
 
     """
@@ -634,7 +634,7 @@ def cn_sao_monthly(): # Stock Account Overview
     df.Date = pd.to_datetime(df.Date, format = "%Y年%m月")
     return df
 
-def cn_fdi_monthly(): # Foreign Direct Investment
+def fdi_monthly(): # Foreign Direct Investment
     """
 
     """
@@ -666,7 +666,7 @@ def cn_fdi_monthly(): # Foreign Direct Investment
     ]
     return df
 
-def cn_gr_monthly(): # Government Revenue
+def gr_monthly(): # Government Revenue
     """
 
     """
@@ -698,7 +698,7 @@ def cn_gr_monthly(): # Government Revenue
     ]
     return df
 
-def cn_ti_monthly(): # Tax Income
+def ti_monthly(): # Tax Income
     """
 
     """
@@ -729,7 +729,7 @@ def cn_ti_monthly(): # Tax Income
     return df
 
 
-def cn_nl_monthly(): # New Loan
+def nl_monthly(): # New Loan
     """
 
     """
@@ -761,7 +761,7 @@ def cn_nl_monthly(): # New Loan
     ]
     return df
 
-def cn_dfclc_monthly(): # Deposit of Foreign Currency and Local Currency
+def dfclc_monthly(): # Deposit of Foreign Currency and Local Currency
     """
 
     """
@@ -792,7 +792,7 @@ def cn_dfclc_monthly(): # Deposit of Foreign Currency and Local Currency
     ]
     return df
 
-def cn_fl_monthly(): # Forex Loan
+def fl_monthly(): # Forex Loan
     """
 
     """
@@ -823,7 +823,7 @@ def cn_fl_monthly(): # Forex Loan
     ]
     return df
 
-def cn_drr_monthly(): # Deposit Reserve Ratio
+def drr_monthly(): # Deposit Reserve Ratio
     """
 
     """
@@ -860,7 +860,7 @@ def cn_drr_monthly(): # Deposit Reserve Ratio
     ]
     return df
 
-def cn_interest_monthly(): # Interest
+def interest_monthly(): # Interest
     """
 
     """
@@ -909,7 +909,7 @@ def cn_interest_monthly(): # Interest
     return df
 
 #TODO: SPECIAL CASE
-def cn_gdc_daily(): # gasoline, Diesel and Crude Oil
+def gdc_daily(): # gasoline, Diesel and Crude Oil
     """
     """
     tmp_url = "http://datacenter-web.eastmoney.com/api/data/get?"
