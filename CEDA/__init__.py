@@ -1,5 +1,5 @@
 from CEDA.MacroEcon.cn import (
-    gdp_quarter,
+    gdp_quarterly,
     ppi_monthly,
     cpi_monthly,
     pmi_monthly,

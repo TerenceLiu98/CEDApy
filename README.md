@@ -13,3 +13,4 @@ This is a data collecting project, with both `python` and `R`
 * Thanks [akshare](https://github.com/jindaxiang/akshare/)
 * Thanks [EastMoney](https://www.eastmoney.com)
 * Thanks [St.Louis Fred Reserve Bank](https://fred.stlouisfed.org/)
+* Thanks [eurostat Economic Indicators](https://ec.europa.eu/eurostat/cache/infographs/economy/desktop/index.html)
