@@ -217,6 +217,46 @@ def cn_hi_old_monthly(): # house index old version (2008-2010)
     ]
     return df
 
+# mkt=1&stat=2&city1=%E5%B9%BF%E5%B7%9E&city2=%E4%B8%8A%E6%B5%B7
+
+def cn_hi_new_monthly(city1:str, city2:str): # newly built commercial housing &  second-hand commercial housing
+    """
+    Man: manufacturing
+    Non-Man: Non-manufacturing
+    """
+    tmp_url = "http://data.eastmoney.com/dataapi/cjsj/getnewhousechartdata?"
+    ua = UserAgent()
+    request_header = {"User-Agent": ua.random}
+    request_params_nbch = {
+        "mkt": "1",
+        "stat": "2",
+        "city1": "{}".format(city1),
+        "city2": "{}".format(city2)
+    }
+    request_params_shch = {
+        "mkt": "1",
+        "stat": "3",
+        "city1": "{}".format(city1),
+        "city2": "{}".format(city2)
+    }
+    r_nbch = requests.get(tmp_url, params = request_params_nbch, headers = request_header)
+    r_shch = requests.get(tmp_url, params = request_params_shch, headers = request_header)
+    data_text_nbch = r_nbch.text
+    data_text_shch = r_shch.text
+    data_json_nbch = demjson.decode(data_text_nbch)
+    data_json_shch = demjson.decode(data_text_shch)
+    date_nbch = data_json_nbch['chart']['series']['value']
+    data1_nbch = data_json_nbch['chart']['graphs']['graph'][0]['value']
+    data2_nbch = data_json_nbch['chart']['graphs']['graph'][1]['value']
+    data1_shch = data_json_shch['chart']['graphs']['graph'][0]['value']
+    data2_shch = data_json_shch['chart']['graphs']['graph'][1]['value']
+    df = pd.DataFrame({"Date": date_nbch, 
+                       "City1":data1_nbch, 
+                       "City2":data2_nbch,
+                       "City1":data1_shch, 
+                       "City2":data2_shch})
+    return df
+
 def cn_ci_eei_monthly(): # Climate Index & Entrepreneur Expectation Index
     """
     Man: manufacturing
@@ -461,45 +501,47 @@ def cn_ie_monthly(): # Import & Export
         "Accumulation_Export",
         "Accumulation_Export_YoY",
         "Accumulation_Import",
-        "Accumulation_Import_YoY",
+        "Accumulation_Import_YoY"
     ]
     return df
 
 
-def cn_ie_monthly(): # Import & Export
+def cn_stock_monthly(): # Import & Export
     """
-
+&type=GJZB&sty=ZGZB&js=(%5B(x)%5D)&p=1&ps=200&mkt=2&_=1622084599456
     """
     tmp_url = url["eastmoney"]
     ua = UserAgent()
     request_header = {"User-Agent": ua.random}
     tmp_url = url["eastmoney"]
     request_params = {
-        "cb": "datatable3818891",
+        "cb": "jQuery112308659690274138041_1622084599455",
         "type": "GJZB",
         "sty": "ZGZB",
         "js": "({data:[(x)],pages:(pc)})",
         "p": "1",
         "ps": "200",
-        "mkt": "1",
-        "_": "1622044292103"
+        "mkt": "2",
+        "_": "1622084599456"
     }
     r = requests.get(tmp_url, params = request_params, headers = request_header)
     data_text = r.text
-    data_json = demjson.decode(data_text[data_text.find("{") : -1])
+    data_json = demjson.decode(data_text[data_text.find("(")+1:-1])
     df = pd.DataFrame([item.split(",") for item in data_json["data"]])
     df.columns = [
         "Date",
-        "Current_Month_Export",
-        "Current_Month_Export_YoY",
-        "Current_Month_Export_MoM",
-        "Current_Month_Import",
-        "Current_Month_Import_YoY",
-        "Current_Month_Import_MoM",
-        "Accumulation_Export",
-        "Accumulation_Export_YoY",
-        "Accumulation_Import",
-        "Accumulation_Import_YoY",
+        "SH_Total_Stock_issue",
+        "SZ_Total_Stock_Issue",
+        "SH_Total_Market_Capitalization",
+        "SZ_Total_Market_Capitalization",
+        "SH_Turnover",
+        "SZ_Turnover",
+        "SH_Volume",
+        "SZ_Volume",
+        "SH_Highest",
+        "SZ_Highest",
+        "SH_lowest",
+        "SZ_lowest"
     ]
     return df
 
@@ -512,7 +554,7 @@ def cn_fgr_monthly(): # Forex and Gold Reserve
     request_header = {"User-Agent": ua.random}
     tmp_url = url["eastmoney"]
     request_params = {
-        "cb": "atatable6260802",
+        "cb": "tatable6260802",
         "type": "GJZB",
         "sty": "ZGZB",
         "js": "({data:[(x)],pages:(pc)})",
@@ -535,7 +577,7 @@ def cn_fgr_monthly(): # Forex and Gold Reserve
         "Gold_MoM"
     ]
     return df
-
+#TODO: SPECIAL CASE
 def cn_ctsf_monthly(): # Client Transaction Settlement Funds
     """
 
@@ -553,36 +595,345 @@ def cn_ctsf_monthly(): # Client Transaction Settlement Funds
     df = pd.DataFrame(data_json)
     return df
 
-# TODO: needs help (missing two tables)
+# TODO: SPECIAL CASE
 def cn_sao_monthly(): # Stock Account Overview 
     """
+
     """
     tmp_url = "http://dcfm.eastmoney.com/em_mutisvcexpandinterface/api/js/get?"
     ua = UserAgent()
     request_header = {"User-Agent": ua.random}
     request_params = {
-        "callback": "jQuery1123014377091065513636_1622046865705",
+        "callback": "datatable4006236",
         "type": "GPKHData",
-        "st": "HdDate",
+        "js" : "({data:[(x)],pages:(pc)})",
+        "st": "SDATE",
         "sr": "-1",
-        "sty": "Chart",
         "token": "894050c76af8597a853f5b408b759f5d",
+        "p": "1",
         "ps": "2000",
-        "_": "1622046865706"
+        "_": "1622079339035"
     }
     r = requests.get(tmp_url, params = request_params, headers = request_header)
     data_text = r.text
-    data_json = demjson.decode(data_text[data_text.find("(")+1:-1])
-    df = pd.DataFrame(data_json)
+    data_json = demjson.decode(data_text[data_text.find("{")+6 : -14])
+    df = pd.DataFrame(data_json[0])
     df.columns = [
         "Date",
         "New_Investor",
+        "New_Investor_MoM",
+        "New_Investor_YoY",
         "Active_Investor",
-        "SHIndexClose"
+        "Active_Investor_A_Share",
+        "Active_Investor_B_share",
+        "SHIndex_Close",
+        "SHIndex_Rate",
+        "SHSZ_Market_Capitalization",
+        "SHSZ_Average_Capitalization"
     ]
     df.Date = pd.to_datetime(df.Date, format = "%Y年%m月")
     return df
 
+def cn_fdi_monthly(): # Foreign Direct Investment
+    """
+
+    """
+    tmp_url = url["eastmoney"]
+    ua = UserAgent()
+    request_header = {"User-Agent": ua.random}
+    tmp_url = url["eastmoney"]
+    request_params = {
+        "cb": "datatable1477466",
+        "type": "GJZB",
+        "sty": "ZGZB",
+        "js": "({data:[(x)],pages:(pc)})",
+        "p": "1",
+        "ps": "200",
+        "mkt": "15",
+        "_": "1622044863548"
+    }
+    r = requests.get(tmp_url, params = request_params, headers = request_header)
+    data_text = r.text
+    data_json = demjson.decode(data_text[data_text.find("{") : -1])
+    df = pd.DataFrame([item.split(",") for item in data_json["data"]])
+    df.columns = [
+        "Date",
+        "Current_Month",
+        "YoY",
+        "MoM",
+        "Accumulation",
+        "Accum_YoY"
+    ]
+    return df
+
+def cn_gr_monthly(): # Government Revenue
+    """
+
+    """
+    tmp_url = url["eastmoney"]
+    ua = UserAgent()
+    request_header = {"User-Agent": ua.random}
+    tmp_url = url["eastmoney"]
+    request_params = {
+        "cb": "datatable7840652",
+        "type": "GJZB",
+        "sty": "ZGZB",
+        "js": "({data:[(x)],pages:(pc)})",
+        "p": "1",
+        "ps": "200",
+        "mkt": "14",
+        "_": "1622080618625"
+    }
+    r = requests.get(tmp_url, params = request_params, headers = request_header)
+    data_text = r.text
+    data_json = demjson.decode(data_text[data_text.find("{") : -1])
+    df = pd.DataFrame([item.split(",") for item in data_json["data"]])
+    df.columns = [
+        "Date",
+        "Current_Month",
+        "YoY",
+        "MoM",
+        "Accumulation",
+        "Accum_YoY"
+    ]
+    return df
+
+def cn_ti_monthly(): # Tax Income
+    """
+
+    """
+    tmp_url = url["eastmoney"]
+    ua = UserAgent()
+    request_header = {"User-Agent": ua.random}
+    tmp_url = url["eastmoney"]
+    request_params = {
+        "cb": "datatable8280567",
+        "type": "GJZB",
+        "sty": "ZGZB",
+        "js": "({data:[(x)],pages:(pc)})",
+        "p": "1",
+        "ps": "200",
+        "mkt": "3",
+        "_": "1622080669713"
+    }
+    r = requests.get(tmp_url, params = request_params, headers = request_header)
+    data_text = r.text
+    data_json = demjson.decode(data_text[data_text.find("{") : -1])
+    df = pd.DataFrame([item.split(",") for item in data_json["data"]])
+    df.columns = [
+        "Date",
+        "Current_Month",
+        "YoY",
+        "MoM"
+    ]
+    return df
+
+
+def cn_nl_monthly(): # New Loan
+    """
+
+    """
+    tmp_url = url["eastmoney"]
+    ua = UserAgent()
+    request_header = {"User-Agent": ua.random}
+    tmp_url = url["eastmoney"]
+    request_params = {
+        "cb": "datatable2533707",
+        "type": "GJZB",
+        "sty": "ZGZB",
+        "js": "({data:[(x)],pages:(pc)})",
+        "p": "1",
+        "ps": "200",
+        "mkt": "7",
+        "_": "1622080800162"
+    }
+    r = requests.get(tmp_url, params = request_params, headers = request_header)
+    data_text = r.text
+    data_json = demjson.decode(data_text[data_text.find("{") : -1])
+    df = pd.DataFrame([item.split(",") for item in data_json["data"]])
+    df.columns = [
+        "Date",
+        "Current_Month",
+        "YoY",
+        "MoM",
+        "Accumulation",
+        "Accum_YoY"
+    ]
+    return df
+
+def cn_dfclc_monthly(): # Deposit of Foreign Currency and Local Currency
+    """
+
+    """
+    tmp_url = url["eastmoney"]
+    ua = UserAgent()
+    request_header = {"User-Agent": ua.random}
+    tmp_url = url["eastmoney"]
+    request_params = {
+        "cb": "datatable2899877",
+        "type": "GJZB",
+        "sty": "ZGZB",
+        "js": "({data:[(x)],pages:(pc)})",
+        "p": "1",
+        "ps": "200",
+        "mkt": "18",
+        "_": "1622081057370"
+    }
+    r = requests.get(tmp_url, params = request_params, headers = request_header)
+    data_text = r.text
+    data_json = demjson.decode(data_text[data_text.find("{") : -1])
+    df = pd.DataFrame([item.split(",") for item in data_json["data"]])
+    df.columns = [
+        "Date",
+        "Current_Month",
+        "YoY",
+        "MoM",
+        "Accumulation"
+    ]
+    return df
+
+def cn_fl_monthly(): # Forex Loan
+    """
+
+    """
+    tmp_url = url["eastmoney"]
+    ua = UserAgent()
+    request_header = {"User-Agent": ua.random}
+    tmp_url = url["eastmoney"]
+    request_params = {
+        "cb": "datatable636844",
+        "type": "GJZB",
+        "sty": "ZGZB",
+        "js": "({data:[(x)],pages:(pc)})",
+        "p": "1",
+        "ps": "200",
+        "mkt": "17",
+        "_": "1622081336038"
+    }
+    r = requests.get(tmp_url, params = request_params, headers = request_header)
+    data_text = r.text
+    data_json = demjson.decode(data_text[data_text.find("{") : -1])
+    df = pd.DataFrame([item.split(",") for item in data_json["data"]])
+    df.columns = [
+        "Date",
+        "Current_Month",
+        "YoY",
+        "MoM",
+        "Accumulation"
+    ]
+    return df
+
+def cn_drr_monthly(): # Deposit Reserve Ratio
+    """
+
+    """
+    tmp_url = url["eastmoney"]
+    ua = UserAgent()
+    request_header = {"User-Agent": ua.random}
+    tmp_url = url["eastmoney"]
+    request_params = {
+        "cb": "datatable4285562",
+        "type": "GJZB",
+        "sty": "ZGZB",
+        "js": "({data:[(x)],pages:(pc)})",
+        "p": "1",
+        "ps": "200",
+        "mkt": "23",
+        "_": "1622081448882"
+    }
+    r = requests.get(tmp_url, params = request_params, headers = request_header)
+    data_text = r.text
+    data_json = demjson.decode(data_text[data_text.find("{") : -1])
+    df = pd.DataFrame([item.split(",") for item in data_json["data"]])
+    df.columns = [
+        "Announcement Date",
+        "Effective Date",
+        "Large_Financial_institution_Before",
+        "Large_Financial_institution_After",
+        "Large_Financial_institution_Adj_Rate",
+        "S&M_Financial_institution_Before",
+        "S&M_Financial_institution_After",
+        "S&M_Financial_institution_Adj_Rate",
+        "Comment",
+        "SHIndex_Rate",
+        "SZIndex_Rate"
+    ]
+    return df
+
+def cn_interest_monthly(): # Interest
+    """
+
+    """
+    tmp_url = url["eastmoney"]
+    ua = UserAgent()
+    request_header = {"User-Agent": ua.random}
+    tmp_url = url["eastmoney"]
+    request_params = {
+        "cb": "datatable7591685",
+        "type": "GJZB",
+        "sty": "ZGZB",
+        "js": "({data:[(x)],pages:(pc)})",
+        "p": "1",
+        "ps": "200",
+        "mkt": "13",
+        "_": "1622081956464"
+    }
+    r = requests.get(tmp_url, params = request_params, headers = request_header)
+    data_text = r.text
+    data_json = demjson.decode(data_text[data_text.find("{") : -1])
+    df = pd.DataFrame([item.split(",") for item in data_json["data"]])
+    df.columns = [
+        "Announcement Date",
+        "Deposit_Benchmark_Interest_Rate_Before",
+        "Deposit_Benchmark_Interest_Rate_After",
+        "Deposit_Benchmark_Interest_Rate_Adj_Rate",
+        "Loan_Benchmark_Interest_Rate_Before",
+        "Loan_Benchmark_Interest_Rate_After",
+        "Loan_Benchmark_Interest_Rate_Adj_Rate",
+        "SHIndex_Rate",
+        "SZIndex_Rate",
+        "Effective Date"
+    ]
+    df = df[[
+        "Announcement Date",
+        "Effective Date",
+        "Deposit_Benchmark_Interest_Rate_Before",
+        "Deposit_Benchmark_Interest_Rate_After",
+        "Deposit_Benchmark_Interest_Rate_Adj_Rate",
+        "Loan_Benchmark_Interest_Rate_Before",
+        "Loan_Benchmark_Interest_Rate_After",
+        "Loan_Benchmark_Interest_Rate_Adj_Rate",
+        "SHIndex_Rate",
+        "SZIndex_Rate"
+    ]]
+    return df
+
+#TODO: SPECIAL CASE
+def cn_gdc_daily(): # gasoline, Diesel and Crude Oil
+    """
+    """
+    tmp_url = "http://datacenter-web.eastmoney.com/api/data/get?"
+    ua = UserAgent()
+    request_header = {"User-Agent": ua.random}
+    request_params = {
+        "callback": "jQuery112302601302322321093_1622082348721",
+        "type": "RPTA_WEB_JY_HQ",
+        "sty": "ALL",
+        "st": "date",
+        "sr": "-1",
+        "token": "894050c76af8597a853f5b408b759f5d",
+        "p": "1",
+        "ps": "50000",
+        "source": "WEB",
+        "_":"1622082348722"
+    }
+    r = requests.get(tmp_url, params = request_params, headers = request_header)
+    data_text = r.text
+    data_json = demjson.decode(data_text[data_text.find("{") : -2])
+    df = pd.DataFrame(data_json["result"]["data"])
+    df.columns = ["Crude_Oil", "Date", "Gasoline", "Diesel"]
+    df = df[["Date", "Gasoline", "Diesel", "Crude_Oil"]]
+    return df
 
 """
 if __name__ == "__main__":
