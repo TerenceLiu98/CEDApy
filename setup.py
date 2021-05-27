@@ -2,8 +2,8 @@ from setuptools import setup, find_packages
 import os
 setup(
     name = "CEDApy",
-    version = "0.1-alpha",
-    keywords = "economic data api",
+    version = "0.2-beta",
+    keywords = "economic data",
     long_description = open(
     os.path.join(
         os.path.dirname(__file__),

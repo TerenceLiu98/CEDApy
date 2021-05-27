@@ -2,21 +2,21 @@
 
 ## Introduction
 
-This is a data collecting project, with both `python` and `R`
+This is a economic data collecting library, with both `python` and `R`
 
 * `python` version: [https://github.com/TerenceLiu98/CEDApy](https://github.com/TerenceLiu98/CEDApy)
 * `R` version: [https://github.com/TerenceLiu98/CEDAr](https://github.com/TerenceLiu98/CEDAr) *Not Start Yet*
 
 ## Installation
 
-1. Via the source code
-2. 
+Via the source code
+
 ```shell
 git clone https://github.com/TerenceLiu98/CEDApy.git
 python setup.py install
 ```
 
-2. Via the `pypi`:
+Via the `pypi`:
 
 ```shell
 python -m pip install CEDApy
