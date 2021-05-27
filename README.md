@@ -5,7 +5,7 @@
 This is a data collecting project, with both `python` and `R`
 
 * `python` version: (https://github.com/TerenceLiu98/CEDApy)[https://github.com/TerenceLiu98/CEDApy]
-* `R` version: (https://github.com/TerenceLiu98/CEDAr)[https://github.com/TerenceLiu98/CEDAr]
+* `R` version: (https://github.com/TerenceLiu98/CEDAr)[https://github.com/TerenceLiu98/CEDAr] *Not Start Yet*
 
 
 ## Acknowledgement
