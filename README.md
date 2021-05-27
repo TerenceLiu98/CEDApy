@@ -12,5 +12,4 @@ This is a data collecting project, with both `python` and `R`
 
 * Thanks [akshare](https://github.com/jindaxiang/akshare/)
 * Thanks [EastMoney](https://www.eastmoney.com)
-
-https://fred.stlouisfed.org/graph/fredgraph.csv?id=GDP&cosd=1947-01-01&coed=2021-01-01
+* Thanks [St.Louis Fred Reserve Bank](https://fred.stlouisfed.org/)
