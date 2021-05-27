@@ -7,6 +7,13 @@ This is a data collecting project, with both `python` and `R`
 * `python` version: (https://github.com/TerenceLiu98/CEDApy)[https://github.com/TerenceLiu98/CEDApy]
 * `R` version: (https://github.com/TerenceLiu98/CEDAr)[https://github.com/TerenceLiu98/CEDAr]
 
+## Installation
+
+```python
+conda create -n CEDA python=3.7
+conda activate CEDA
+python setup.py install
+```
 
 ## Acknowledgement
 
