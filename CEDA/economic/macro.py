@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import re
 import demjson
 import requests
 from fake_useragent import UserAgent
