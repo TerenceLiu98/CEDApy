@@ -1,4 +1,4 @@
-# China Economic Data API
+# Centralized Economic Data API
 
 ## Introduction
 
