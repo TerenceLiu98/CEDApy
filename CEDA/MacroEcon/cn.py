@@ -4,7 +4,6 @@ import re
 import demjson
 import requests
 from fake_useragent import UserAgent
-from config import config
 
 # TODO need add comments
 

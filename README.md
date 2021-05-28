@@ -22,11 +22,12 @@ Via the `pypi`:
 python -m pip install CEDApy
 ```
 
-
 ## Acknowledgement
 
 * Thanks [akshare](https://github.com/jindaxiang/akshare/)
 * Thanks [EastMoney](https://www.eastmoney.com)
-* Thanks [St.Louis Fred Reserve Bank](https://fred.stlouisfed.org/)
+* Thanks [St.Louis Federal Reserve Bank](https://fred.stlouisfed.org/)
+* Thanks [Chicago Federal Reserve Bank](https://www.chicagofed.org/)
+* Thanks [Philadelphia Federal Reserve Bank](https://www.philadelphiafed.org/)
 * Thanks [eurostat Economic Indicators](https://ec.europa.eu/eurostat/cache/infographs/economy/desktop/index.html)
 * Thanks [Europen Central Bank](https://www.ecb.europa.eu)
