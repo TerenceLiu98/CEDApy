@@ -29,3 +29,4 @@ python -m pip install CEDApy
 * Thanks [EastMoney](https://www.eastmoney.com)
 * Thanks [St.Louis Fred Reserve Bank](https://fred.stlouisfed.org/)
 * Thanks [eurostat Economic Indicators](https://ec.europa.eu/eurostat/cache/infographs/economy/desktop/index.html)
+* Thanks [Europen Central Bank](https://www.ecb.europa.eu)
