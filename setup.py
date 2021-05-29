@@ -15,6 +15,17 @@ setup(
     url = "https://github.com/TerenceLiu98/CEDApy",
     packages = find_packages(),
     license = "MIT",
+    install_requires=[
+        "numpy>=1.15.4",
+        "pandas>=0.25",
+        "requests>=2.22.0",
+        "demjson>=2.2.4",
+        "pillow>=6.2.0",
+        "xlrd==1.2.0",
+        "tqdm>=4.43.0",
+        "tabulate>=0.8.6",
+        "fake_useragent"
+    ],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
