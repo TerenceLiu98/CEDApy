@@ -7,7 +7,15 @@ url = {
     "dukascopy": "http://data.uicstat.com/api_1.0"
 }
 
-def market_data(instrument:str, startdate:str, enddate:str, timeframe:str, pricetype:str, volume:bool, flat:bool):
+
+def market_data(
+        instrument: str,
+        startdate: str,
+        enddate: str,
+        timeframe: str,
+        pricetype: str,
+        volume: bool,
+        flat: bool):
     tmp_url = url["dukascopy"]
     ua = UserAgent()
     request_header = {"User-Agent": ua.random}
@@ -21,7 +29,7 @@ def market_data(instrument:str, startdate:str, enddate:str, timeframe:str, price
         "flat": "{}".format(flat)
 
     }
-    r = requests.get(tmp_url, params = request_params, headers = request_header)
+    r = requests.get(tmp_url, params=request_params, headers=request_header)
     data_text = r.text
     data_json = demjson.decode(data_text)
     df = pd.DataFrame(data_json['result'])
@@ -36,11 +44,12 @@ def market_data(instrument:str, startdate:str, enddate:str, timeframe:str, price
     ]
     return df
 
+
 if __name__ == "__main__":
-    data = market_data(instrument="eurusd", 
-                       startdate="2020-01-01", 
-                       enddate="2021-01-01", 
-                       timeframe="d1", 
-                       pricetype="bid", 
-                       volume=True, 
+    data = market_data(instrument="eurusd",
+                       startdate="2020-01-01",
+                       enddate="2021-01-01",
+                       timeframe="d1",
+                       pricetype="bid",
+                       volume=True,
                        flat=True)
