@@ -47,18 +47,9 @@ def market_data(
 
 if __name__ == "__main__":
     data = market_data(instrument="eurusd",
-<<<<<<< HEAD
                        startdate="2020-01-01",
                        enddate="2021-01-01",
                        timeframe="d1",
                        pricetype="bid",
                        volume=True,
                        flat=True)
-=======
-                        startdate="2020-01-01",
-                        enddate="2021-01-01",
-                        timeframe="d1",
-                        pricetype="bid",
-                        volume=True,
-                        flat=True)
->>>>>>> master
