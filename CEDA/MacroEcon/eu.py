@@ -5,7 +5,6 @@ import demjson
 import requests
 from fake_useragent import UserAgent
 
-# TODO need add comments
 
 url = {
     "eurostat": "http://ec.europa.eu/eurostat/wdds/rest/data/v2.1/json/en/",
