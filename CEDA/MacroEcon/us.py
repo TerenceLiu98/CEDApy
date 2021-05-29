@@ -3,10 +3,14 @@ import numpy as np
 import requests
 from fake_useragent import UserAgent
 import io
+import os 
+import demjson
 
 # Main Economic Indicators: https://alfred.stlouisfed.org/release?rid=205
 url = {
-    "fred_econ": "https://fred.stlouisfed.org/graph/fredgraph.csv?"
+    "fred_econ": "https://fred.stlouisfed.org/graph/fredgraph.csv?",
+    "philfed": "https://www.philadelphiafed.org/surveys-and-data/real-time-data-research/",
+    "chicagofed": "https://www.chicagofed.org/~/media/publications/"
 }
 
 def gdp_quarterly(startdate="1947-01-01", enddate="2021-01-01"):
@@ -681,4 +685,95 @@ def bir(startdate="2003-01-01", enddate="2021-01-01"):
     df_10y["DATE"] = pd.to_datetime(df_10y["DATE"], format="%Y-%m-%d")
     df = pd.merge_asof(df_5y, df_10y, on = "DATE", direction = "backward")
     df.columns = ["Date", "BIR_5y", "BIR_10y"]
+    return df
+
+def adsbci():
+    """
+    An index designed to track real business conditions at high observation frequency
+    """
+    ua = UserAgent()
+    request_header = {"User-Agent": ua.random}
+    tmp_url = url["philfed"] + "ads"
+    r = requests.get(tmp_url, headers = request_header)
+    file = open("ads_temp.xls", "wb")
+    file.write(r.content)
+    file.close()
+    df = pd.read_excel("ads_temp.xls")
+    df.columns = ["Date", "ADS_Index"]
+    df['Date'] = pd.to_datetime(df["Date"], format="%Y:%m:%d")
+    os.remove("ads_temp.xls")
+    return df
+
+def pci():
+    """
+    Tracks the degree of political disagreement among U.S. politicians at the federal level, Monthly
+    """
+    df = pd.read_excel("https://www.philadelphiafed.org/-/media/frbp/assets/data-visualizations/partisan-conflict.xlsx")
+    df["Date"] = df["Year"].astype(str) + df["Month"]
+    df["Date"] = pd.to_datetime(df["Date"], format = "%Y%B")
+    df = df.drop(["Year", "Month"], axis=1)
+    df = df[["Date", "Partisan Conflict"]]
+    return df
+
+def inflation_noewcasting():
+    """
+    
+    """
+    ua = UserAgent()
+    request_header = {"User-Agent": ua.random}
+    tmp_url = "https://www.clevelandfed.org/~/media/files/charting/%20nowcast_quarter.json"
+
+    r = requests.get(tmp_url, headers = request_header)
+    tmp_df = pd.DataFrame(demjson.decode(r.text))
+    df = pd.DataFrame()
+    for i in range(0, len(tmp_df)):
+        date = tmp_df['chart'][i]['subcaption'][:4] + "/"  + \
+            pd.DataFrame(tmp_df["dataset"][i][0]['data'])['tooltext'].str.extract(r"\b(0?[1-9]|1[0-2])/(0?[1-9]|[12][0-9]|3[01])\b")[0] + "/"  + \
+            pd.DataFrame(tmp_df["dataset"][i][0]['data'])['tooltext'].str.extract(r"\b(0?[1-9]|1[0-2])/(0?[1-9]|[12][0-9]|3[01])\b")[1]
+        CPI_I = pd.DataFrame((pd.DataFrame(tmp_df["dataset"][i])['data'])[0])["value"]
+        C_CPI_I = pd.DataFrame((pd.DataFrame(tmp_df["dataset"][i])['data'])[1])["value"]
+        PCE_I = pd.DataFrame((pd.DataFrame(tmp_df["dataset"][i])['data'])[2])["value"]
+        C_PCE_I = pd.DataFrame((pd.DataFrame(tmp_df["dataset"][i])['data'])[3])["value"]
+        A_CPI_I = pd.DataFrame((pd.DataFrame(tmp_df["dataset"][i])['data'])[4])["value"]
+        A_C_CPI_I = pd.DataFrame((pd.DataFrame(tmp_df["dataset"][i])['data'])[5])["value"]
+        A_PCE_I = pd.DataFrame((pd.DataFrame(tmp_df["dataset"][i])['data'])[6])["value"]
+        A_C_PCE_I = pd.DataFrame((pd.DataFrame(tmp_df["dataset"][i])['data'])[7])["value"]
+        tmp_df2 = pd.DataFrame({"date": date,
+                                "CPI_I": CPI_I,
+                                "C_CPI_I": C_CPI_I,
+                                "PCE_I": PCE_I,
+                                "C_PCE_I": C_PCE_I,
+                                "A_CPI_I": A_CPI_I,
+                                "A_C_CPI_I": A_C_CPI_I,
+                                "A_PCE_I": A_PCE_I,
+                                "A_C_PCE_I": A_C_PCE_I})
+        df = pd.concat([df,tmp_df2], axis=0)
+        df.reset_index(drop=True, inplace=True)
+    
+    df.replace('', np.nan, inplace = True)
+    return df
+
+def bbki():
+    tmp_url = url["chicagofed"] + "bbki/bbki-monthly-data-series-csv.csv"
+    df = pd.read_csv(tmp_url)
+    return df
+
+def cfnai():
+    tmp_url = url["chicagofed"] + "cfnai/cfnai-data-series-csv.csv"
+    df = pd.read_csv(tmp_url)
+    return df
+
+def cfsbc():
+    tmp_url = url["chicagofed"] + "cfsbc-activity-index-csv.csv"
+    df = pd.read_csv(tmp_url)
+    return df
+
+def nfci():
+    tmp_url = url["chicagofed"] + "nfci/decomposition-nfci-csv.csv"
+    df = pd.read_csv(tmp_url)
+    return df
+
+def nfci():
+    tmp_url = url["chicagofed"] + "nfci/decomposition-anfci-csv.csv"
+    df = pd.read_csv(tmp_url)
     return df
