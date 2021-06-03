@@ -22,6 +22,7 @@ setup(
         "demjson>=2.2.4",
         "html5lib>=1.0.1",
         "xlrd==1.2.0",
+        "bs4"
     ],
     license = "MIT",
     classifiers=[
