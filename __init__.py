@@ -1,1 +1,1 @@
-name = "CEDApy"
+name = "CEDA"
