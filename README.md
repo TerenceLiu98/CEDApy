@@ -32,7 +32,7 @@ python -m pip install CEDApy
 * Thanks [Philadelphia Federal Reserve Bank](https://www.philadelphiafed.org/)
 * Thanks [eurostat Economic Indicators](https://ec.europa.eu/eurostat/cache/infographs/economy/desktop/index.html)
 * Thanks [Europen Central Bank](https://www.ecb.europa.eu)
-
+* Thanks [MarketWatch](https://www.marketwatch.com/)
 
 ## If you want to cite...
 
