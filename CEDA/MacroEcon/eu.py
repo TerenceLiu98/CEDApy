@@ -5,7 +5,6 @@ import demjson
 import requests
 from fake_useragent import UserAgent
 
-
 url = {
     "eurostat": "http://ec.europa.eu/eurostat/wdds/rest/data/v2.1/json/en/",
     "ecb": "https://sdw-wsrest.ecb.europa.eu/service/data/"
@@ -26,7 +25,7 @@ class ecb_data(object):
         """
         """
         tmp_url = self.url + "{}/".format(datacode) + "{}".format(key)
-        ua = UserAgent()
+        ua = UserAgent(verify_ssl=False)
         request_header = {"User-Agent": ua.random, 'Accept': 'text/csv'}
         request_params = {
             "startPeriod": "{}".format(startdate),
@@ -53,7 +52,7 @@ class eurostat_data(object):
         """
         """
         tmp_url = self.url + "{}".format(datasetcode)
-        ua = UserAgent()
+        ua = UserAgent(verify_ssl=False)
         request_header = {"User-Agent": ua.random, 'Accept': 'text/csv'}
         request_params = {
             "precision": "{}".format(precision),

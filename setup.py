@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 import os
 setup(
     name = "CEDApy",
-    version = "1.0.6",
+    version = "1.0.8",
     keywords = "quantitative economic data",
     long_description = open(
     os.path.join(
@@ -23,7 +23,8 @@ setup(
         "html5lib>=1.0.1",
         "xlrd==1.2.0",
         "bs4",
-        "urllib3>=1.26.5"
+        "urllib3>=1.26.5",
+        "fake-useragent"
     ],
     license = "MIT",
     classifiers=[

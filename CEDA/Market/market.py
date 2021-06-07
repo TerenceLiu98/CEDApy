@@ -13,7 +13,6 @@ url = {
     "moneywatch": "https://www.marketwatch.com/investing/"
 }
 
-
 def dukascopy(
         instrument: str,
         startdate: str,
@@ -23,7 +22,7 @@ def dukascopy(
         volume: bool,
         flat: bool):
     tmp_url = url["dukascopy"]
-    ua = UserAgent()
+    ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     request_params = {
         "instrument": "{}".format(instrument),
@@ -50,30 +49,66 @@ def dukascopy(
     ]
     return df
 
-def currency_list(instrument = "eurusd", startdate="01/01/2020", enddate = "01/01/2021"):
+def FX(instrument = "eurusd", startdate="01/01/2020", enddate = "01/01/2021", long=False):
     """
     https://www.marketwatch.com/investing/
     """
-    tmp_url = url["moneywatch"] + "currency/{}/downloaddatapartial".format(instrument)
-    ua = UserAgent()
-    request_header = {"User-Agent": ua.random}
-    request_params = urlencode({
-        "startdate": r"{}".format(startdate),
-        "enddate": r"{}".format(enddate),
-        "daterange": "d30",
-        "frequency": "p1d",
-        "csvdownload": "true",
-        "downloadpartial": "false",
-        "newdates": "false"}, quote_via= quote)
-    r = requests.get(tmp_url, params=request_params, headers=request_header)
-    data_text = r.content
-    df = pd.read_csv(io.StringIO(data_text.decode('utf-8')))
-    Date = []
-    for i in range(0, len(df)):
-        Date.append(datetime.strptime(df["Date"][i], "%m/%d/%Y"))
-    
-    df["Date"] = Date
-    return df
+    if long == False:
+        tmp_url = url["moneywatch"] + "currency/{}/downloaddatapartial".format(instrument)
+        ua = UserAgent(verify_ssl=False)
+        request_header = {"User-Agent": ua.random}
+        request_params = urlencode({
+            "startdate": r"{}".format(startdate),
+            "enddate": r"{}".format(enddate),
+            "daterange": "d30",
+            "frequency": "p1d",
+            "csvdownload": "true",
+            "downloadpartial": "false",
+            "newdates": "false"}, quote_via= quote)
+        r = requests.get(tmp_url, params=request_params.replace("%2F", "/").replace("%20", " ").replace("%3A", ":"), headers=request_header)
+        data_text = r.content
+        df = pd.read_csv(io.StringIO(data_text.decode('utf-8')))
+        Date = []
+        for i in range(0, len(df)):
+            Date.append(datetime.strptime(df["Date"][i], "%m/%d/%Y"))
+        
+        df["Date"] = Date
+        return df
+    else:
+        tmp_url = url["moneywatch"] + "currency/{}/downloaddatapartial".format(instrument)
+        ua = UserAgent(verify_ssl=False)
+        request_header = {"User-Agent": ua.random}
+        df = pd.DataFrame()
+        for i in range(int(startdate[6:10]), int(enddate[6:10])):
+            tmp_startdate = "01/01/" + str(i) + " 00:00:00"
+            if i+1 == int(enddate[6:10]):
+                tmp_enddate = enddate[0:6] + str((i+1)) + " 00:00:00"
+            else:
+                tmp_enddate = "01/01" + str((i+1)) + " 00:00:00"
+            request_params = urlencode({
+                "startdate": r"{}".format(tmp_startdate),
+                "enddate": r"{}".format(tmp_enddate),
+                "daterange": "d30",
+                "frequency": "p1d",
+                "csvdownload": "true",
+                "downloadpartial": "false",
+                "newdates": "false"}, quote_via= quote)
+            r = requests.get(tmp_url, params=request_params.replace("%2F", "/").replace("%20", " ").replace("%3A", ":"), headers=request_header)
+            data_text = r.content
+            tmp_df = pd.read_csv(io.StringIO(data_text.decode('utf-8')))
+            Date = []
+            for i in range(0, len(tmp_df)):
+                Date.append(datetime.strptime(tmp_df["Date"][i], "%m/%d/%Y"))
+            
+            tmp_df["Date"] = Date
+            if i == int(startdate[6:10]):
+                df = tmp_df
+            else:
+                df = pd.concat([tmp_df, df], axis=0) 
+        
+        df.reset_index(drop=True, inplace = True)
+        return df
+
 
 
 if __name__ == "__main__":
@@ -84,3 +119,6 @@ if __name__ == "__main__":
                        pricetype="bid",
                        volume=True,
                        flat=True)
+
+
+#https://www.marketwatch.com/investing/currency/eurusd/downloaddatapartial?startdate=01/04/1971 00:00:00&enddate=06/04/2021 00:00:00&daterange=d30&frequency=p1d&csvdownload=true&downloadpartial=false&newdates=false

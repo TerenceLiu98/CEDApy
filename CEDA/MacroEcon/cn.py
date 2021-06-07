@@ -18,7 +18,7 @@ def gdp_quarterly():
     YoY: year on year growth
     Data source: http://data.eastmoney.com/cjsj/gdp.html
     """
-    ua = UserAgent()
+    ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     tmp_url = url["eastmoney"]
     request_params = {
@@ -66,7 +66,7 @@ def ppi_monthly():
     Accum: Accumulation
     Data source: http://data.eastmoney.com/cjsj/ppi.html
     """
-    ua = UserAgent()
+    ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     tmp_url = url["eastmoney"]
     request_params = {
@@ -105,7 +105,7 @@ def cpi_monthly():
     Data source: http://data.eastmoney.com/cjsj/cpi.html
     """
     tmp_url = url["eastmoney"]
-    ua = UserAgent()
+    ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     tmp_url = url["eastmoney"]
     request_params = {
@@ -170,7 +170,7 @@ def pmi_monthly():
     Data Source: http://data.eastmoney.com/cjsj/pmi.html
     """
     tmp_url = url["eastmoney"]
-    ua = UserAgent()
+    ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     tmp_url = url["eastmoney"]
     request_params = {
@@ -209,7 +209,7 @@ def fai_monthly():  # fix asset investment
     Data Source: http://data.eastmoney.com/cjsj/gdzctz.html
     """
     tmp_url = url["eastmoney"]
-    ua = UserAgent()
+    ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     tmp_url = url["eastmoney"]
     request_params = {
@@ -248,7 +248,7 @@ def hi_old_monthly():  # house index old version (2008-2010)
     Data Source: http://data.eastmoney.com/cjsj/house.html
     """
     tmp_url = url["eastmoney"]
-    ua = UserAgent()
+    ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     tmp_url = url["eastmoney"]
     request_params = {
@@ -295,7 +295,7 @@ def hi_new_monthly(city1: str, city2: str):
     Data Source: http://data.eastmoney.com/cjsj/newhouse.html
     """
     tmp_url = "http://data.eastmoney.com/dataapi/cjsj/getnewhousechartdata?"
-    ua = UserAgent()
+    ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     request_params_nbch_MoM = {
         "mkt": "1",
@@ -379,7 +379,7 @@ def ci_eei_monthly():  # Climate Index & Entrepreneur Expectation Index
     Data Source: http://data.eastmoney.com/cjsj/qyjqzs.html
     """
     tmp_url = url["eastmoney"]
-    ua = UserAgent()
+    ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     tmp_url = url["eastmoney"]
     request_params = {
@@ -421,7 +421,7 @@ def ig_monthly():  # Industry Growth
     Data Source: http://data.eastmoney.com/cjsj/gyzjz.html
     """
     tmp_url = url["eastmoney"]
-    ua = UserAgent()
+    ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     tmp_url = url["eastmoney"]
     request_params = {
@@ -456,7 +456,7 @@ def cgpi_monthly():  # Corporate Goods Price Index
     Data Source: http://data.eastmoney.com/cjsj/qyspjg.html
     """
     tmp_url = url["eastmoney"]
-    ua = UserAgent()
+    ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     tmp_url = url["eastmoney"]
     request_params = {
@@ -517,7 +517,7 @@ def cci_csi_cei_monthly():  # Consumer Confidence Index & Consumer Satisfaction 
     Data Source: http://data.eastmoney.com/cjsj/xfzxx.html
     """
     tmp_url = url["eastmoney"]
-    ua = UserAgent()
+    ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     tmp_url = url["eastmoney"]
     request_params = {
@@ -565,7 +565,7 @@ def trscg_monthly():  # Total Retail Sales of Consumer Goods
     Data Source: http://data.eastmoney.com/cjsj/xfp.html
     """
     tmp_url = url["eastmoney"]
-    ua = UserAgent()
+    ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     tmp_url = url["eastmoney"]
     request_params = {
@@ -606,7 +606,7 @@ def ms_monthly():  # monetary Supply
     Data Source: http://data.eastmoney.com/cjsj/hbgyl.html
     """
     tmp_url = url["eastmoney"]
-    ua = UserAgent()
+    ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     tmp_url = url["eastmoney"]
     request_params = {
@@ -650,7 +650,7 @@ def ie_monthly():  # Import & Export
     Data Source: http://data.eastmoney.com/cjsj/hgjck.html
     """
     tmp_url = url["eastmoney"]
-    ua = UserAgent()
+    ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     tmp_url = url["eastmoney"]
     request_params = {
@@ -704,7 +704,7 @@ def stock_monthly():  # Import & Export
     Data Source: http://data.eastmoney.com/cjsj/gpjytj.html
     """
     tmp_url = url["eastmoney"]
-    ua = UserAgent()
+    ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     tmp_url = url["eastmoney"]
     request_params = {
@@ -747,7 +747,7 @@ def fgr_monthly():  # Forex and Gold Reserve
     Data Source: http://data.eastmoney.com/cjsj/gpjytj.html
     """
     tmp_url = url["eastmoney"]
-    ua = UserAgent()
+    ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     tmp_url = url["eastmoney"]
     request_params = {
@@ -790,7 +790,7 @@ def ctsf_monthly():  # Client Transaction Settlement Funds
     http://data.eastmoney.com/cjsj/banktransfer.html
     """
     tmp_url = "http://data.eastmoney.com/dataapi/cjsj/getbanktransferdata?"
-    ua = UserAgent()
+    ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     request_params = {
         "p": "1",
@@ -814,7 +814,7 @@ def sao_monthly():  # Stock Account Overview
     http://data.eastmoney.com/cjsj/gpkhsj.html
     """
     tmp_url = "http://dcfm.eastmoney.com/em_mutisvcexpandinterface/api/js/get?"
-    ua = UserAgent()
+    ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     request_params = {
         "callback": "datatable4006236",
@@ -858,7 +858,7 @@ def fdi_monthly():  # Foreign Direct Investment
     http://data.eastmoney.com/cjsj/fdi.html
     """
     tmp_url = url["eastmoney"]
-    ua = UserAgent()
+    ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     tmp_url = url["eastmoney"]
     request_params = {
@@ -897,7 +897,7 @@ def gr_monthly():  # Government Revenue
     http://data.eastmoney.com/cjsj/czsr.html
     """
     tmp_url = url["eastmoney"]
-    ua = UserAgent()
+    ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     tmp_url = url["eastmoney"]
     request_params = {
@@ -935,7 +935,7 @@ def ti_monthly():  # Tax Income
     http://data.eastmoney.com/cjsj/qgsssr.html
     """
     tmp_url = url["eastmoney"]
-    ua = UserAgent()
+    ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     tmp_url = url["eastmoney"]
     request_params = {
@@ -971,7 +971,7 @@ def nl_monthly():  # New Loan
     http://data.eastmoney.com/cjsj/xzxd.html
     """
     tmp_url = url["eastmoney"]
-    ua = UserAgent()
+    ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     tmp_url = url["eastmoney"]
     request_params = {
@@ -1009,7 +1009,7 @@ def dfclc_monthly():  # Deposit of Foreign Currency and Local Currency
     http://data.eastmoney.com/cjsj/wbck.html
     """
     tmp_url = url["eastmoney"]
-    ua = UserAgent()
+    ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     tmp_url = url["eastmoney"]
     request_params = {
@@ -1046,7 +1046,7 @@ def fl_monthly():  # Forex Loan
     http://data.eastmoney.com/cjsj/whxd.html
     """
     tmp_url = url["eastmoney"]
-    ua = UserAgent()
+    ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     tmp_url = url["eastmoney"]
     request_params = {
@@ -1083,7 +1083,7 @@ def drr_monthly():  # Deposit Reserve Ratio
     http://data.eastmoney.com/cjsj/ckzbj.html
     """
     tmp_url = url["eastmoney"]
-    ua = UserAgent()
+    ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     tmp_url = url["eastmoney"]
     request_params = {
@@ -1136,7 +1136,7 @@ def interest_monthly():  # Interest
     http://data.eastmoney.com/cjsj/yhll.html
     """
     tmp_url = url["eastmoney"]
-    ua = UserAgent()
+    ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     tmp_url = url["eastmoney"]
     request_params = {
@@ -1188,7 +1188,7 @@ def gdc_daily():  # gasoline, Diesel and Crude Oil
     http://data.eastmoney.com/cjsj/oil_default.html
     """
     tmp_url = "http://datacenter-web.eastmoney.com/api/data/get?"
-    ua = UserAgent()
+    ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     request_params = {
         "callback": "jQuery112302601302322321093_1622082348721",

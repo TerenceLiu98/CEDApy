@@ -20,7 +20,7 @@ def gdp_quarterly(startdate="1947-01-01", enddate="2021-01-01"):
     Return: pd.DataFrame
     """
     tmp_url = url["fred_econ"]
-    ua = UserAgent()
+    ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     request_params = {
         "id": "GDP",
@@ -39,7 +39,7 @@ def gdpc1_quarterly(startdate="1947-01-01", enddate="2021-01-01"):
     Return: pd.DataFrame
     """
     tmp_url = url["fred_econ"]
-    ua = UserAgent()
+    ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     request_params = {
         "id": "GDPC1",
@@ -58,7 +58,7 @@ def oecd_gdp_monthly(startdate="1947-01-01", enddate="2021-01-01"):
     Return: pd.DataFrame
     """
     tmp_url = url["fred_econ"]
-    ua = UserAgent()
+    ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     request_params = {
         "id": "USALORSGPNOSTSAM",
@@ -77,7 +77,7 @@ def payems_monthly(startdate="1939-01-01", enddate="2021-01-01"):
     Return: pd.DataFrame
     """
     tmp_url = url["fred_econ"]
-    ua = UserAgent()
+    ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     request_params = {
         "id": "PAYEMS",
@@ -96,7 +96,7 @@ def unrate(startdate="1948-01-01", enddate="2021-01-01"):
     Return: pd.DataFrame
     """
     tmp_url = url["fred_econ"]
-    ua = UserAgent()
+    ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     request_params = {
         "id": "LRUN64TTUSM156S",
@@ -107,7 +107,7 @@ def unrate(startdate="1948-01-01", enddate="2021-01-01"):
     data_text = r.content
     df_monthly = pd.read_csv(io.StringIO(data_text.decode('utf-8')))
     df_monthly["DATE"] = pd.to_datetime(df_monthly["DATE"], format="%Y-%m-%d")
-    ua = UserAgent()
+    ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     request_params = {
         "id": "LRUN64TTUSQ156S",
@@ -118,7 +118,7 @@ def unrate(startdate="1948-01-01", enddate="2021-01-01"):
     data_text = r.content
     df_quarterly = pd.read_csv(io.StringIO(data_text.decode('utf-8')))
     df_quarterly["DATE"] = pd.to_datetime(df_quarterly["DATE"], format="%Y-%m-%d")
-    ua = UserAgent()
+    ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     request_params = {
         "id": "LRUN64TTUSA156S",
@@ -141,7 +141,7 @@ def erate(startdate="1955-01-01", enddate="2021-01-01"):
     Return: pd.DataFrame
     """
     tmp_url = url["fred_econ"]
-    ua = UserAgent()
+    ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     request_params = {
         "id": "LREM25TTUSM156S",
@@ -152,7 +152,7 @@ def erate(startdate="1955-01-01", enddate="2021-01-01"):
     data_text = r.content
     df_monthly = pd.read_csv(io.StringIO(data_text.decode('utf-8')))
     df_monthly["DATE"] = pd.to_datetime(df_monthly["DATE"], format="%Y-%m-%d")
-    ua = UserAgent()
+    ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     request_params = {
         "id": "LREM25TTUSQ156S",
@@ -163,7 +163,7 @@ def erate(startdate="1955-01-01", enddate="2021-01-01"):
     data_text = r.content
     df_quarterly = pd.read_csv(io.StringIO(data_text.decode('utf-8')))
     df_quarterly["DATE"] = pd.to_datetime(df_quarterly["DATE"], format="%Y-%m-%d")
-    ua = UserAgent()
+    ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     request_params = {
         "id": "LREM25TTUSA156S",
@@ -185,7 +185,7 @@ def pce_monthly(startdate="1959-01-01", enddate="2021-01-01"):
     Return: pd.DataFrame
     """
     tmp_url = url["fred_econ"]
-    ua = UserAgent()
+    ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     request_params = {
         "id": "PCE",
@@ -204,7 +204,7 @@ def cpi(startdate="1960-01-01", enddate="2021-01-01"):
     Return: pd.DataFrame
     """
     tmp_url = url["fred_econ"]
-    ua = UserAgent()
+    ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     request_params = {
         "id": "CPALTT01USM661S",
@@ -215,7 +215,7 @@ def cpi(startdate="1960-01-01", enddate="2021-01-01"):
     data_text = r.content
     df_monthly = pd.read_csv(io.StringIO(data_text.decode('utf-8')))
     df_monthly["DATE"] = pd.to_datetime(df_monthly["DATE"], format="%Y-%m-%d")
-    ua = UserAgent()
+    ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     request_params = {
         "id": "CPALTT01USQ661S",
@@ -226,7 +226,7 @@ def cpi(startdate="1960-01-01", enddate="2021-01-01"):
     data_text = r.content
     df_quarterly = pd.read_csv(io.StringIO(data_text.decode('utf-8')))
     df_quarterly["DATE"] = pd.to_datetime(df_quarterly["DATE"], format="%Y-%m-%d")
-    ua = UserAgent()
+    ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     request_params = {
         "id": "CPALTT01USA661S",
@@ -249,7 +249,7 @@ def m1(startdate="1960-01-01", enddate="2021-01-01"):
     Return: pd.DataFrame
     """
     tmp_url = url["fred_econ"]
-    ua = UserAgent()
+    ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     request_params = {
         "id": "WM1NS",
@@ -260,7 +260,7 @@ def m1(startdate="1960-01-01", enddate="2021-01-01"):
     data_text = r.content
     df_weekly = pd.read_csv(io.StringIO(data_text.decode('utf-8')))
     df_weekly["DATE"] = pd.to_datetime(df_weekly["DATE"], format="%Y-%m-%d")
-    ua = UserAgent()
+    ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     request_params = {
         "id": "MANMM101USM657S",
@@ -271,7 +271,7 @@ def m1(startdate="1960-01-01", enddate="2021-01-01"):
     data_text = r.content
     df_monthly = pd.read_csv(io.StringIO(data_text.decode('utf-8')))
     df_monthly["DATE"] = pd.to_datetime(df_monthly["DATE"], format="%Y-%m-%d")
-    ua = UserAgent()
+    ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     request_params = {
         "id": "MANMM101USQ657S",
@@ -282,7 +282,7 @@ def m1(startdate="1960-01-01", enddate="2021-01-01"):
     data_text = r.content
     df_quarterly = pd.read_csv(io.StringIO(data_text.decode('utf-8')))
     df_quarterly["DATE"] = pd.to_datetime(df_quarterly["DATE"], format="%Y-%m-%d")
-    ua = UserAgent()
+    ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     request_params = {
         "id": "MANMM101USA657S",
@@ -306,7 +306,7 @@ def m2(startdate="1960-01-01", enddate="2021-01-01"):
     Return: pd.DataFrame
     """
     tmp_url = url["fred_econ"]
-    ua = UserAgent()
+    ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     request_params = {
         "id": "WM2NS",
@@ -317,7 +317,7 @@ def m2(startdate="1960-01-01", enddate="2021-01-01"):
     data_text = r.content
     df_weekly = pd.read_csv(io.StringIO(data_text.decode('utf-8')))
     df_weekly["DATE"] = pd.to_datetime(df_weekly["DATE"], format="%Y-%m-%d")
-    ua = UserAgent()
+    ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     request_params = {
         "id": "M2SL",
@@ -338,7 +338,7 @@ def m3(startdate="1960-01-01", enddate="2021-01-01"):
     Return: pd.DataFrame
     """
     tmp_url = url["fred_econ"]
-    ua = UserAgent()
+    ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     request_params = {
         "id": "MABMM301USM657S",
@@ -349,7 +349,7 @@ def m3(startdate="1960-01-01", enddate="2021-01-01"):
     data_text = r.content
     df_monthly = pd.read_csv(io.StringIO(data_text.decode('utf-8')))
     df_monthly["DATE"] = pd.to_datetime(df_monthly["DATE"], format="%Y-%m-%d")
-    ua = UserAgent()
+    ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     request_params = {
         "id": "MABMM301USQ657S",
@@ -360,7 +360,7 @@ def m3(startdate="1960-01-01", enddate="2021-01-01"):
     data_text = r.content
     df_quarterly = pd.read_csv(io.StringIO(data_text.decode('utf-8')))
     df_quarterly["DATE"] = pd.to_datetime(df_quarterly["DATE"], format="%Y-%m-%d")
-    ua = UserAgent()
+    ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     request_params = {
         "id": "MABMM301USA657S",
@@ -383,7 +383,7 @@ def ltgby(startdate="1955-01-01", enddate="2021-01-01"):
     Return: pd.DataFrame
     """
     tmp_url = url["fred_econ"]
-    ua = UserAgent()
+    ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     request_params = {
         "id": "IRLTLT01USM156N",
@@ -394,7 +394,7 @@ def ltgby(startdate="1955-01-01", enddate="2021-01-01"):
     data_text = r.content
     df_monthly = pd.read_csv(io.StringIO(data_text.decode('utf-8')))
     df_monthly["DATE"] = pd.to_datetime(df_monthly["DATE"], format="%Y-%m-%d")
-    ua = UserAgent()
+    ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     request_params = {
         "id": "IRLTLT01USQ156N",
@@ -405,7 +405,7 @@ def ltgby(startdate="1955-01-01", enddate="2021-01-01"):
     data_text = r.content
     df_quarterly = pd.read_csv(io.StringIO(data_text.decode('utf-8')))
     df_quarterly["DATE"] = pd.to_datetime(df_quarterly["DATE"], format="%Y-%m-%d")
-    ua = UserAgent()
+    ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     request_params = {
         "id": "IRLTLT01USA156N",
@@ -428,7 +428,7 @@ def gdp_ipd(startdate="1955-01-01", enddate="2021-01-01"):
     Return: pd.DataFrame
     """
     tmp_url = url["fred_econ"]
-    ua = UserAgent()
+    ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     request_params = {
         "id": "USAGDPDEFQISMEI",
@@ -439,7 +439,7 @@ def gdp_ipd(startdate="1955-01-01", enddate="2021-01-01"):
     data_text = r.content
     df_quarterly = pd.read_csv(io.StringIO(data_text.decode('utf-8')))
     df_quarterly["DATE"] = pd.to_datetime(df_quarterly["DATE"], format="%Y-%m-%d")
-    ua = UserAgent()
+    ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     request_params = {
         "id": "USAGDPDEFAISMEI",
@@ -461,7 +461,7 @@ def cci(startdate="1955-01-01", enddate="2021-01-01"):
     Return: pd.DataFrame
     """
     tmp_url = url["fred_econ"]
-    ua = UserAgent()
+    ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     request_params = {
         "id": "CSCICP03USM665S",
@@ -481,7 +481,7 @@ def bci(startdate="1955-01-01", enddate="2021-01-01"):
     Return: pd.DataFrame
     """
     tmp_url = url["fred_econ"]
-    ua = UserAgent()
+    ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     request_params = {
         "id": "BSCICP03USM665S",
@@ -502,7 +502,7 @@ def ibr_3(startdate="1965-01-01", enddate="2021-01-01"):
     Description: Percent, Not Seasonally Adjusted, Monthly and Quarterly
     """
     tmp_url = url["fred_econ"]
-    ua = UserAgent()
+    ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     request_params = {
         "id": "IR3TIB01USM156N",
@@ -513,7 +513,7 @@ def ibr_3(startdate="1965-01-01", enddate="2021-01-01"):
     data_text = r.content
     df_monthly = pd.read_csv(io.StringIO(data_text.decode('utf-8')))
     df_monthly["DATE"] = pd.to_datetime(df_monthly["DATE"], format="%Y-%m-%d")
-    ua = UserAgent()
+    ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     request_params = {
         "id": "IR3TIB01USQ156N",
@@ -533,7 +533,7 @@ def gfcf_3(startdate="1965-01-01", enddate="2021-01-01"):
     Description: United States Dollars,Not Seasonally Adjusted, Quarterly and Annually
     """
     tmp_url = url["fred_econ"]
-    ua = UserAgent()
+    ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     request_params = {
         "id": "USAGFCFQDSMEI",
@@ -544,7 +544,7 @@ def gfcf_3(startdate="1965-01-01", enddate="2021-01-01"):
     data_text = r.content
     df_quarterly = pd.read_csv(io.StringIO(data_text.decode('utf-8')))
     df_quarterly["DATE"] = pd.to_datetime(df_quarterly["DATE"], format="%Y-%m-%d")
-    ua = UserAgent()
+    ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     request_params = {
         "id": "USAGFCFADSMEI",
@@ -566,7 +566,7 @@ def pfce(startdate="1955-01-01", enddate="2021-01-01"):
     Return: pd.DataFrame
     """
     tmp_url = url["fred_econ"]
-    ua = UserAgent()
+    ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     request_params = {
         "id": "USAPFCEQDSMEI",
@@ -577,7 +577,7 @@ def pfce(startdate="1955-01-01", enddate="2021-01-01"):
     data_text = r.content
     df_quarterly = pd.read_csv(io.StringIO(data_text.decode('utf-8')))
     df_quarterly["DATE"] = pd.to_datetime(df_quarterly["DATE"], format="%Y-%m-%d")
-    ua = UserAgent()
+    ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     request_params = {
         "id": "USAPFCEADSMEI",
@@ -598,7 +598,7 @@ def tlp(startdate="1955-01-01", enddate="2021-01-01"):
     Return: pd.DataFrame
     """
     tmp_url = url["fred_econ"]
-    ua = UserAgent()
+    ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     request_params = {
         "id": "ULQELP01USQ657S",
@@ -609,7 +609,7 @@ def tlp(startdate="1955-01-01", enddate="2021-01-01"):
     data_text = r.content
     df_quarterly = pd.read_csv(io.StringIO(data_text.decode('utf-8')))
     df_quarterly["DATE"] = pd.to_datetime(df_quarterly["DATE"], format="%Y-%m-%d")
-    ua = UserAgent()
+    ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     request_params = {
         "id": "ULQELP01USQ659S",
@@ -630,7 +630,7 @@ def rt(startdate="1955-01-01", enddate="2021-01-01"):
     Return: pd.DataFrame
     """
     tmp_url = url["fred_econ"]
-    ua = UserAgent()
+    ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     request_params = {
         "id": "USASARTMISMEI",
@@ -662,7 +662,7 @@ def bir(startdate="2003-01-01", enddate="2021-01-01"):
     Return: pd.DataFrame
     """
     tmp_url = url["fred_econ"]
-    ua = UserAgent()
+    ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     request_params = {
         "id": "T5YIE",
@@ -691,7 +691,7 @@ def adsbci():
     """
     An index designed to track real business conditions at high observation frequency
     """
-    ua = UserAgent()
+    ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     tmp_url = url["philfed"] + "ads"
     r = requests.get(tmp_url, headers = request_header)
@@ -719,7 +719,7 @@ def inflation_noewcasting():
     """
     
     """
-    ua = UserAgent()
+    ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     tmp_url = "https://www.clevelandfed.org/~/media/files/charting/%20nowcast_quarter.json"
 
