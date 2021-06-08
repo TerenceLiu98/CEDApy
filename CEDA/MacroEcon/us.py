@@ -3,15 +3,15 @@ import numpy as np
 import requests
 from fake_useragent import UserAgent
 import io
-import os 
+import os
 import demjson
 
 # Main Economic Indicators: https://alfred.stlouisfed.org/release?rid=205
 url = {
     "fred_econ": "https://fred.stlouisfed.org/graph/fredgraph.csv?",
     "philfed": "https://www.philadelphiafed.org/surveys-and-data/real-time-data-research/",
-    "chicagofed": "https://www.chicagofed.org/~/media/publications/"
-}
+    "chicagofed": "https://www.chicagofed.org/~/media/publications/"}
+
 
 def gdp_quarterly(startdate="1947-01-01", enddate="2021-01-01"):
     """
@@ -27,10 +27,11 @@ def gdp_quarterly(startdate="1947-01-01", enddate="2021-01-01"):
         "cosd": "{}".format(startdate),
         "coed": "{}".format(enddate)
     }
-    r = requests.get(tmp_url, params = request_params, headers = request_header)
+    r = requests.get(tmp_url, params=request_params, headers=request_header)
     data_text = r.content
     df = pd.read_csv(io.StringIO(data_text.decode('utf-8')))
     return df
+
 
 def gdpc1_quarterly(startdate="1947-01-01", enddate="2021-01-01"):
     """
@@ -46,10 +47,11 @@ def gdpc1_quarterly(startdate="1947-01-01", enddate="2021-01-01"):
         "cosd": "{}".format(startdate),
         "coed": "{}".format(enddate)
     }
-    r = requests.get(tmp_url, params = request_params, headers = request_header)
+    r = requests.get(tmp_url, params=request_params, headers=request_header)
     data_text = r.content
     df = pd.read_csv(io.StringIO(data_text.decode('utf-8')))
     return df
+
 
 def oecd_gdp_monthly(startdate="1947-01-01", enddate="2021-01-01"):
     """
@@ -65,10 +67,11 @@ def oecd_gdp_monthly(startdate="1947-01-01", enddate="2021-01-01"):
         "cosd": "{}".format(startdate),
         "coed": "{}".format(enddate)
     }
-    r = requests.get(tmp_url, params = request_params, headers = request_header)
+    r = requests.get(tmp_url, params=request_params, headers=request_header)
     data_text = r.content
     df = pd.read_csv(io.StringIO(data_text.decode('utf-8')))
     return df
+
 
 def payems_monthly(startdate="1939-01-01", enddate="2021-01-01"):
     """
@@ -84,10 +87,11 @@ def payems_monthly(startdate="1939-01-01", enddate="2021-01-01"):
         "cosd": "{}".format(startdate),
         "coed": "{}".format(enddate)
     }
-    r = requests.get(tmp_url, params = request_params, headers = request_header)
+    r = requests.get(tmp_url, params=request_params, headers=request_header)
     data_text = r.content
     df = pd.read_csv(io.StringIO(data_text.decode('utf-8')))
     return df
+
 
 def unrate(startdate="1948-01-01", enddate="2021-01-01"):
     """
@@ -103,7 +107,7 @@ def unrate(startdate="1948-01-01", enddate="2021-01-01"):
         "cosd": "{}".format(startdate),
         "coed": "{}".format(enddate)
     }
-    r = requests.get(tmp_url, params = request_params, headers = request_header)
+    r = requests.get(tmp_url, params=request_params, headers=request_header)
     data_text = r.content
     df_monthly = pd.read_csv(io.StringIO(data_text.decode('utf-8')))
     df_monthly["DATE"] = pd.to_datetime(df_monthly["DATE"], format="%Y-%m-%d")
@@ -114,10 +118,11 @@ def unrate(startdate="1948-01-01", enddate="2021-01-01"):
         "cosd": "{}".format(startdate),
         "coed": "{}".format(enddate)
     }
-    r = requests.get(tmp_url, params = request_params, headers = request_header)
+    r = requests.get(tmp_url, params=request_params, headers=request_header)
     data_text = r.content
     df_quarterly = pd.read_csv(io.StringIO(data_text.decode('utf-8')))
-    df_quarterly["DATE"] = pd.to_datetime(df_quarterly["DATE"], format="%Y-%m-%d")
+    df_quarterly["DATE"] = pd.to_datetime(
+        df_quarterly["DATE"], format="%Y-%m-%d")
     ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     request_params = {
@@ -125,14 +130,20 @@ def unrate(startdate="1948-01-01", enddate="2021-01-01"):
         "cosd": "{}".format(startdate),
         "coed": "{}".format(enddate)
     }
-    r = requests.get(tmp_url, params = request_params, headers = request_header)
+    r = requests.get(tmp_url, params=request_params, headers=request_header)
     data_text = r.content
     df_annually = pd.read_csv(io.StringIO(data_text.decode('utf-8')))
-    df_annually["DATE"] = pd.to_datetime(df_annually["DATE"], format="%Y-%m-%d")
-    df = pd.merge_asof(df_monthly, df_quarterly, on = "DATE", direction = "backward")
-    df = pd.merge_asof(df, df_annually, on = "DATE", direction = "backward")
+    df_annually["DATE"] = pd.to_datetime(
+        df_annually["DATE"], format="%Y-%m-%d")
+    df = pd.merge_asof(
+        df_monthly,
+        df_quarterly,
+        on="DATE",
+        direction="backward")
+    df = pd.merge_asof(df, df_annually, on="DATE", direction="backward")
     df.columns = ["Date", "UR_Monthly", "UR_Quarterly", "UR_Annually"]
     return df
+
 
 def erate(startdate="1955-01-01", enddate="2021-01-01"):
     """
@@ -148,7 +159,7 @@ def erate(startdate="1955-01-01", enddate="2021-01-01"):
         "cosd": "{}".format(startdate),
         "coed": "{}".format(enddate)
     }
-    r = requests.get(tmp_url, params = request_params, headers = request_header)
+    r = requests.get(tmp_url, params=request_params, headers=request_header)
     data_text = r.content
     df_monthly = pd.read_csv(io.StringIO(data_text.decode('utf-8')))
     df_monthly["DATE"] = pd.to_datetime(df_monthly["DATE"], format="%Y-%m-%d")
@@ -159,10 +170,11 @@ def erate(startdate="1955-01-01", enddate="2021-01-01"):
         "cosd": "{}".format(startdate),
         "coed": "{}".format(enddate)
     }
-    r = requests.get(tmp_url, params = request_params, headers = request_header)
+    r = requests.get(tmp_url, params=request_params, headers=request_header)
     data_text = r.content
     df_quarterly = pd.read_csv(io.StringIO(data_text.decode('utf-8')))
-    df_quarterly["DATE"] = pd.to_datetime(df_quarterly["DATE"], format="%Y-%m-%d")
+    df_quarterly["DATE"] = pd.to_datetime(
+        df_quarterly["DATE"], format="%Y-%m-%d")
     ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     request_params = {
@@ -170,13 +182,19 @@ def erate(startdate="1955-01-01", enddate="2021-01-01"):
         "cosd": "{}".format(startdate),
         "coed": "{}".format(enddate)
     }
-    r = requests.get(tmp_url, params = request_params, headers = request_header)
+    r = requests.get(tmp_url, params=request_params, headers=request_header)
     data_text = r.content
     df_annually = pd.read_csv(io.StringIO(data_text.decode('utf-8')))
-    df_annually["DATE"] = pd.to_datetime(df_annually["DATE"], format="%Y-%m-%d")
-    df = pd.merge_asof(df_monthly, df_quarterly, on = "DATE", direction = "backward")
-    df = pd.merge_asof(df, df_annually, on = "DATE", direction = "backward")
+    df_annually["DATE"] = pd.to_datetime(
+        df_annually["DATE"], format="%Y-%m-%d")
+    df = pd.merge_asof(
+        df_monthly,
+        df_quarterly,
+        on="DATE",
+        direction="backward")
+    df = pd.merge_asof(df, df_annually, on="DATE", direction="backward")
     df.columns = ["Date", "ER_Monthly", "ER_Quarterly", "ER_Annually"]
+
 
 def pce_monthly(startdate="1959-01-01", enddate="2021-01-01"):
     """
@@ -192,10 +210,11 @@ def pce_monthly(startdate="1959-01-01", enddate="2021-01-01"):
         "cosd": "{}".format(startdate),
         "coed": "{}".format(enddate)
     }
-    r = requests.get(tmp_url, params = request_params, headers = request_header)
+    r = requests.get(tmp_url, params=request_params, headers=request_header)
     data_text = r.content
     df = pd.read_csv(io.StringIO(data_text.decode('utf-8')))
     return df
+
 
 def cpi(startdate="1960-01-01", enddate="2021-01-01"):
     """
@@ -211,7 +230,7 @@ def cpi(startdate="1960-01-01", enddate="2021-01-01"):
         "cosd": "{}".format(startdate),
         "coed": "{}".format(enddate)
     }
-    r = requests.get(tmp_url, params = request_params, headers = request_header)
+    r = requests.get(tmp_url, params=request_params, headers=request_header)
     data_text = r.content
     df_monthly = pd.read_csv(io.StringIO(data_text.decode('utf-8')))
     df_monthly["DATE"] = pd.to_datetime(df_monthly["DATE"], format="%Y-%m-%d")
@@ -222,10 +241,11 @@ def cpi(startdate="1960-01-01", enddate="2021-01-01"):
         "cosd": "{}".format(startdate),
         "coed": "{}".format(enddate)
     }
-    r = requests.get(tmp_url, params = request_params, headers = request_header)
+    r = requests.get(tmp_url, params=request_params, headers=request_header)
     data_text = r.content
     df_quarterly = pd.read_csv(io.StringIO(data_text.decode('utf-8')))
-    df_quarterly["DATE"] = pd.to_datetime(df_quarterly["DATE"], format="%Y-%m-%d")
+    df_quarterly["DATE"] = pd.to_datetime(
+        df_quarterly["DATE"], format="%Y-%m-%d")
     ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     request_params = {
@@ -233,14 +253,20 @@ def cpi(startdate="1960-01-01", enddate="2021-01-01"):
         "cosd": "{}".format(startdate),
         "coed": "{}".format(enddate)
     }
-    r = requests.get(tmp_url, params = request_params, headers = request_header)
+    r = requests.get(tmp_url, params=request_params, headers=request_header)
     data_text = r.content
     df_annually = pd.read_csv(io.StringIO(data_text.decode('utf-8')))
-    df_annually["DATE"] = pd.to_datetime(df_annually["DATE"], format="%Y-%m-%d")
-    df = pd.merge_asof(df_monthly, df_quarterly, on = "DATE", direction = "backward")
-    df = pd.merge_asof(df, df_annually, on = "DATE", direction = "backward")
+    df_annually["DATE"] = pd.to_datetime(
+        df_annually["DATE"], format="%Y-%m-%d")
+    df = pd.merge_asof(
+        df_monthly,
+        df_quarterly,
+        on="DATE",
+        direction="backward")
+    df = pd.merge_asof(df, df_annually, on="DATE", direction="backward")
     df.columns = ["Date", "CPI_Monthly", "CPI_Quarterly", "CPI_Annually"]
     return df
+
 
 def m1(startdate="1960-01-01", enddate="2021-01-01"):
     """
@@ -256,7 +282,7 @@ def m1(startdate="1960-01-01", enddate="2021-01-01"):
         "cosd": "{}".format(startdate),
         "coed": "{}".format(enddate)
     }
-    r = requests.get(tmp_url, params = request_params, headers = request_header)
+    r = requests.get(tmp_url, params=request_params, headers=request_header)
     data_text = r.content
     df_weekly = pd.read_csv(io.StringIO(data_text.decode('utf-8')))
     df_weekly["DATE"] = pd.to_datetime(df_weekly["DATE"], format="%Y-%m-%d")
@@ -267,7 +293,7 @@ def m1(startdate="1960-01-01", enddate="2021-01-01"):
         "cosd": "{}".format(startdate),
         "coed": "{}".format(enddate)
     }
-    r = requests.get(tmp_url, params = request_params, headers = request_header)
+    r = requests.get(tmp_url, params=request_params, headers=request_header)
     data_text = r.content
     df_monthly = pd.read_csv(io.StringIO(data_text.decode('utf-8')))
     df_monthly["DATE"] = pd.to_datetime(df_monthly["DATE"], format="%Y-%m-%d")
@@ -278,10 +304,11 @@ def m1(startdate="1960-01-01", enddate="2021-01-01"):
         "cosd": "{}".format(startdate),
         "coed": "{}".format(enddate)
     }
-    r = requests.get(tmp_url, params = request_params, headers = request_header)
+    r = requests.get(tmp_url, params=request_params, headers=request_header)
     data_text = r.content
     df_quarterly = pd.read_csv(io.StringIO(data_text.decode('utf-8')))
-    df_quarterly["DATE"] = pd.to_datetime(df_quarterly["DATE"], format="%Y-%m-%d")
+    df_quarterly["DATE"] = pd.to_datetime(
+        df_quarterly["DATE"], format="%Y-%m-%d")
     ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     request_params = {
@@ -289,15 +316,22 @@ def m1(startdate="1960-01-01", enddate="2021-01-01"):
         "cosd": "{}".format(startdate),
         "coed": "{}".format(enddate)
     }
-    r = requests.get(tmp_url, params = request_params, headers = request_header)
+    r = requests.get(tmp_url, params=request_params, headers=request_header)
     data_text = r.content
     df_annually = pd.read_csv(io.StringIO(data_text.decode('utf-8')))
-    df_annually["DATE"] = pd.to_datetime(df_annually["DATE"], format="%Y-%m-%d")
-    df = pd.merge_asof(df_weekly, df_monthly, on = "DATE", direction = "backward")
-    df = pd.merge_asof(df, df_quarterly, on = "DATE", direction = "backward")
-    df = pd.merge_asof(df, df_annually, on = "DATE", direction = "backward")
-    df.columns = ["Date", "M1_weekly", "M1_Monthly", "M1_Quarterly", "M1_Annually"]
+    df_annually["DATE"] = pd.to_datetime(
+        df_annually["DATE"], format="%Y-%m-%d")
+    df = pd.merge_asof(df_weekly, df_monthly, on="DATE", direction="backward")
+    df = pd.merge_asof(df, df_quarterly, on="DATE", direction="backward")
+    df = pd.merge_asof(df, df_annually, on="DATE", direction="backward")
+    df.columns = [
+        "Date",
+        "M1_weekly",
+        "M1_Monthly",
+        "M1_Quarterly",
+        "M1_Annually"]
     return df
+
 
 def m2(startdate="1960-01-01", enddate="2021-01-01"):
     """
@@ -313,7 +347,7 @@ def m2(startdate="1960-01-01", enddate="2021-01-01"):
         "cosd": "{}".format(startdate),
         "coed": "{}".format(enddate)
     }
-    r = requests.get(tmp_url, params = request_params, headers = request_header)
+    r = requests.get(tmp_url, params=request_params, headers=request_header)
     data_text = r.content
     df_weekly = pd.read_csv(io.StringIO(data_text.decode('utf-8')))
     df_weekly["DATE"] = pd.to_datetime(df_weekly["DATE"], format="%Y-%m-%d")
@@ -324,12 +358,13 @@ def m2(startdate="1960-01-01", enddate="2021-01-01"):
         "cosd": "{}".format(startdate),
         "coed": "{}".format(enddate)
     }
-    r = requests.get(tmp_url, params = request_params, headers = request_header)
+    r = requests.get(tmp_url, params=request_params, headers=request_header)
     data_text = r.content
     df_monthly = pd.read_csv(io.StringIO(data_text.decode('utf-8')))
     df_monthly["DATE"] = pd.to_datetime(df_monthly["DATE"], format="%Y-%m-%d")
-    df = pd.merge_asof(df_weekly, df_monthly, on = "DATE", direction = "backward")
+    df = pd.merge_asof(df_weekly, df_monthly, on="DATE", direction="backward")
     df.columns = ["Date", "M2_Weekly", "M2_Monthly"]
+
 
 def m3(startdate="1960-01-01", enddate="2021-01-01"):
     """
@@ -345,7 +380,7 @@ def m3(startdate="1960-01-01", enddate="2021-01-01"):
         "cosd": "{}".format(startdate),
         "coed": "{}".format(enddate)
     }
-    r = requests.get(tmp_url, params = request_params, headers = request_header)
+    r = requests.get(tmp_url, params=request_params, headers=request_header)
     data_text = r.content
     df_monthly = pd.read_csv(io.StringIO(data_text.decode('utf-8')))
     df_monthly["DATE"] = pd.to_datetime(df_monthly["DATE"], format="%Y-%m-%d")
@@ -356,10 +391,11 @@ def m3(startdate="1960-01-01", enddate="2021-01-01"):
         "cosd": "{}".format(startdate),
         "coed": "{}".format(enddate)
     }
-    r = requests.get(tmp_url, params = request_params, headers = request_header)
+    r = requests.get(tmp_url, params=request_params, headers=request_header)
     data_text = r.content
     df_quarterly = pd.read_csv(io.StringIO(data_text.decode('utf-8')))
-    df_quarterly["DATE"] = pd.to_datetime(df_quarterly["DATE"], format="%Y-%m-%d")
+    df_quarterly["DATE"] = pd.to_datetime(
+        df_quarterly["DATE"], format="%Y-%m-%d")
     ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     request_params = {
@@ -367,16 +403,22 @@ def m3(startdate="1960-01-01", enddate="2021-01-01"):
         "cosd": "{}".format(startdate),
         "coed": "{}".format(enddate)
     }
-    r = requests.get(tmp_url, params = request_params, headers = request_header)
+    r = requests.get(tmp_url, params=request_params, headers=request_header)
     data_text = r.content
     df_annually = pd.read_csv(io.StringIO(data_text.decode('utf-8')))
-    df_annually["DATE"] = pd.to_datetime(df_annually["DATE"], format="%Y-%m-%d")
-    df = pd.merge_asof(df_monthly, df_quarterly, on = "DATE", direction = "backward")
-    df = pd.merge_asof(df, df_annually, on = "DATE", direction = "backward")
+    df_annually["DATE"] = pd.to_datetime(
+        df_annually["DATE"], format="%Y-%m-%d")
+    df = pd.merge_asof(
+        df_monthly,
+        df_quarterly,
+        on="DATE",
+        direction="backward")
+    df = pd.merge_asof(df, df_annually, on="DATE", direction="backward")
     df.columns = ["Date", "M3_Monthly", "M3_Quarterly", "M3_Annually"]
     return df
 
-def ltgby(startdate="1955-01-01", enddate="2021-01-01"):
+
+def ltgby_10(startdate="1955-01-01", enddate="2021-01-01"):
     """
     Full Name: Long-Term Government Bond Yields: 10-year: Main (Including Benchmark) for the United States
     Description: Percent,Not Seasonally Adjusted, Monthly, Quarterly and Annually
@@ -390,7 +432,7 @@ def ltgby(startdate="1955-01-01", enddate="2021-01-01"):
         "cosd": "{}".format(startdate),
         "coed": "{}".format(enddate)
     }
-    r = requests.get(tmp_url, params = request_params, headers = request_header)
+    r = requests.get(tmp_url, params=request_params, headers=request_header)
     data_text = r.content
     df_monthly = pd.read_csv(io.StringIO(data_text.decode('utf-8')))
     df_monthly["DATE"] = pd.to_datetime(df_monthly["DATE"], format="%Y-%m-%d")
@@ -401,10 +443,11 @@ def ltgby(startdate="1955-01-01", enddate="2021-01-01"):
         "cosd": "{}".format(startdate),
         "coed": "{}".format(enddate)
     }
-    r = requests.get(tmp_url, params = request_params, headers = request_header)
+    r = requests.get(tmp_url, params=request_params, headers=request_header)
     data_text = r.content
     df_quarterly = pd.read_csv(io.StringIO(data_text.decode('utf-8')))
-    df_quarterly["DATE"] = pd.to_datetime(df_quarterly["DATE"], format="%Y-%m-%d")
+    df_quarterly["DATE"] = pd.to_datetime(
+        df_quarterly["DATE"], format="%Y-%m-%d")
     ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     request_params = {
@@ -412,14 +455,20 @@ def ltgby(startdate="1955-01-01", enddate="2021-01-01"):
         "cosd": "{}".format(startdate),
         "coed": "{}".format(enddate)
     }
-    r = requests.get(tmp_url, params = request_params, headers = request_header)
+    r = requests.get(tmp_url, params=request_params, headers=request_header)
     data_text = r.content
     df_annually = pd.read_csv(io.StringIO(data_text.decode('utf-8')))
-    df_annually["DATE"] = pd.to_datetime(df_annually["DATE"], format="%Y-%m-%d")
-    df = pd.merge_asof(df_monthly, df_quarterly, on = "DATE", direction = "backward")
-    df = pd.merge_asof(df, df_annually, on = "DATE", direction = "backward")
+    df_annually["DATE"] = pd.to_datetime(
+        df_annually["DATE"], format="%Y-%m-%d")
+    df = pd.merge_asof(
+        df_monthly,
+        df_quarterly,
+        on="DATE",
+        direction="backward")
+    df = pd.merge_asof(df, df_annually, on="DATE", direction="backward")
     df.columns = ["Date", "ltgby_Monthly", "ltgby_Quarterly", "ltgby_Annually"]
     return df
+
 
 def gdp_ipd(startdate="1955-01-01", enddate="2021-01-01"):
     """
@@ -435,10 +484,11 @@ def gdp_ipd(startdate="1955-01-01", enddate="2021-01-01"):
         "cosd": "{}".format(startdate),
         "coed": "{}".format(enddate)
     }
-    r = requests.get(tmp_url, params = request_params, headers = request_header)
+    r = requests.get(tmp_url, params=request_params, headers=request_header)
     data_text = r.content
     df_quarterly = pd.read_csv(io.StringIO(data_text.decode('utf-8')))
-    df_quarterly["DATE"] = pd.to_datetime(df_quarterly["DATE"], format="%Y-%m-%d")
+    df_quarterly["DATE"] = pd.to_datetime(
+        df_quarterly["DATE"], format="%Y-%m-%d")
     ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     request_params = {
@@ -446,13 +496,19 @@ def gdp_ipd(startdate="1955-01-01", enddate="2021-01-01"):
         "cosd": "{}".format(startdate),
         "coed": "{}".format(enddate)
     }
-    r = requests.get(tmp_url, params = request_params, headers = request_header)
+    r = requests.get(tmp_url, params=request_params, headers=request_header)
     data_text = r.content
     df_annually = pd.read_csv(io.StringIO(data_text.decode('utf-8')))
-    df_annually["DATE"] = pd.to_datetime(df_annually["DATE"], format="%Y-%m-%d")
-    df = pd.merge_asof(df_quarterly, df_annually, on = "DATE", direction = "backward")
+    df_annually["DATE"] = pd.to_datetime(
+        df_annually["DATE"], format="%Y-%m-%d")
+    df = pd.merge_asof(
+        df_quarterly,
+        df_annually,
+        on="DATE",
+        direction="backward")
     df.columns = ["Date", "gdp_ipd_Quarterly", "gdp_ipd_Annually"]
     return df
+
 
 def cci(startdate="1955-01-01", enddate="2021-01-01"):
     """
@@ -468,11 +524,12 @@ def cci(startdate="1955-01-01", enddate="2021-01-01"):
         "cosd": "{}".format(startdate),
         "coed": "{}".format(enddate)
     }
-    r = requests.get(tmp_url, params = request_params, headers = request_header)
+    r = requests.get(tmp_url, params=request_params, headers=request_header)
     data_text = r.content
     df = pd.read_csv(io.StringIO(data_text.decode('utf-8')))
     df.columns = ["Date", "CCI_Monthly"]
     return df
+
 
 def bci(startdate="1955-01-01", enddate="2021-01-01"):
     """
@@ -488,12 +545,11 @@ def bci(startdate="1955-01-01", enddate="2021-01-01"):
         "cosd": "{}".format(startdate),
         "coed": "{}".format(enddate)
     }
-    r = requests.get(tmp_url, params = request_params, headers = request_header)
+    r = requests.get(tmp_url, params=request_params, headers=request_header)
     data_text = r.content
     df = pd.read_csv(io.StringIO(data_text.decode('utf-8')))
     df.columns = ["Date", "BCI_Annually"]
     return df
-
 
 
 def ibr_3(startdate="1965-01-01", enddate="2021-01-01"):
@@ -509,7 +565,7 @@ def ibr_3(startdate="1965-01-01", enddate="2021-01-01"):
         "cosd": "{}".format(startdate),
         "coed": "{}".format(enddate)
     }
-    r = requests.get(tmp_url, params = request_params, headers = request_header)
+    r = requests.get(tmp_url, params=request_params, headers=request_header)
     data_text = r.content
     df_monthly = pd.read_csv(io.StringIO(data_text.decode('utf-8')))
     df_monthly["DATE"] = pd.to_datetime(df_monthly["DATE"], format="%Y-%m-%d")
@@ -520,12 +576,18 @@ def ibr_3(startdate="1965-01-01", enddate="2021-01-01"):
         "cosd": "{}".format(startdate),
         "coed": "{}".format(enddate)
     }
-    r = requests.get(tmp_url, params = request_params, headers = request_header)
+    r = requests.get(tmp_url, params=request_params, headers=request_header)
     data_text = r.content
     df_quarterly = pd.read_csv(io.StringIO(data_text.decode('utf-8')))
-    df_quarterly["DATE"] = pd.to_datetime(df_quarterly["DATE"], format="%Y-%m-%d")
-    df = pd.merge_asof(df_quarterly, df_quarterly, on = "DATE", direction = "backward")
+    df_quarterly["DATE"] = pd.to_datetime(
+        df_quarterly["DATE"], format="%Y-%m-%d")
+    df = pd.merge_asof(
+        df_quarterly,
+        df_quarterly,
+        on="DATE",
+        direction="backward")
     df.columns = ["Date", "ibr3_monthly", "ibr3_Quarterly"]
+
 
 def gfcf_3(startdate="1965-01-01", enddate="2021-01-01"):
     """
@@ -540,10 +602,11 @@ def gfcf_3(startdate="1965-01-01", enddate="2021-01-01"):
         "cosd": "{}".format(startdate),
         "coed": "{}".format(enddate)
     }
-    r = requests.get(tmp_url, params = request_params, headers = request_header)
+    r = requests.get(tmp_url, params=request_params, headers=request_header)
     data_text = r.content
     df_quarterly = pd.read_csv(io.StringIO(data_text.decode('utf-8')))
-    df_quarterly["DATE"] = pd.to_datetime(df_quarterly["DATE"], format="%Y-%m-%d")
+    df_quarterly["DATE"] = pd.to_datetime(
+        df_quarterly["DATE"], format="%Y-%m-%d")
     ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     request_params = {
@@ -551,11 +614,16 @@ def gfcf_3(startdate="1965-01-01", enddate="2021-01-01"):
         "cosd": "{}".format(startdate),
         "coed": "{}".format(enddate)
     }
-    r = requests.get(tmp_url, params = request_params, headers = request_header)
+    r = requests.get(tmp_url, params=request_params, headers=request_header)
     data_text = r.content
     df_annually = pd.read_csv(io.StringIO(data_text.decode('utf-8')))
-    df_annually["DATE"] = pd.to_datetime(df_annually["DATE"], format="%Y-%m-%d")
-    df = pd.merge_asof(df_quarterly, df_quarterly, on = "DATE", direction = "backward")
+    df_annually["DATE"] = pd.to_datetime(
+        df_annually["DATE"], format="%Y-%m-%d")
+    df = pd.merge_asof(
+        df_quarterly,
+        df_quarterly,
+        on="DATE",
+        direction="backward")
     df.columns = ["Date", "ibr3_monthly", "ibr3_Annually"]
 
 
@@ -573,10 +641,11 @@ def pfce(startdate="1955-01-01", enddate="2021-01-01"):
         "cosd": "{}".format(startdate),
         "coed": "{}".format(enddate)
     }
-    r = requests.get(tmp_url, params = request_params, headers = request_header)
+    r = requests.get(tmp_url, params=request_params, headers=request_header)
     data_text = r.content
     df_quarterly = pd.read_csv(io.StringIO(data_text.decode('utf-8')))
-    df_quarterly["DATE"] = pd.to_datetime(df_quarterly["DATE"], format="%Y-%m-%d")
+    df_quarterly["DATE"] = pd.to_datetime(
+        df_quarterly["DATE"], format="%Y-%m-%d")
     ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     request_params = {
@@ -584,12 +653,18 @@ def pfce(startdate="1955-01-01", enddate="2021-01-01"):
         "cosd": "{}".format(startdate),
         "coed": "{}".format(enddate)
     }
-    r = requests.get(tmp_url, params = request_params, headers = request_header)
+    r = requests.get(tmp_url, params=request_params, headers=request_header)
     data_text = r.content
     df_annually = pd.read_csv(io.StringIO(data_text.decode('utf-8')))
-    df_annually["DATE"] = pd.to_datetime(df_annually["DATE"], format="%Y-%m-%d")
-    df = pd.merge_asof(df_quarterly, df_annually, on = "DATE", direction = "backward")
+    df_annually["DATE"] = pd.to_datetime(
+        df_annually["DATE"], format="%Y-%m-%d")
+    df = pd.merge_asof(
+        df_quarterly,
+        df_annually,
+        on="DATE",
+        direction="backward")
     df.columns = ["Date", "PFCE_Quarterly", "PFCE_Annually"]
+
 
 def tlp(startdate="1955-01-01", enddate="2021-01-01"):
     """
@@ -605,10 +680,11 @@ def tlp(startdate="1955-01-01", enddate="2021-01-01"):
         "cosd": "{}".format(startdate),
         "coed": "{}".format(enddate)
     }
-    r = requests.get(tmp_url, params = request_params, headers = request_header)
+    r = requests.get(tmp_url, params=request_params, headers=request_header)
     data_text = r.content
     df_quarterly = pd.read_csv(io.StringIO(data_text.decode('utf-8')))
-    df_quarterly["DATE"] = pd.to_datetime(df_quarterly["DATE"], format="%Y-%m-%d")
+    df_quarterly["DATE"] = pd.to_datetime(
+        df_quarterly["DATE"], format="%Y-%m-%d")
     ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     request_params = {
@@ -616,12 +692,18 @@ def tlp(startdate="1955-01-01", enddate="2021-01-01"):
         "cosd": "{}".format(startdate),
         "coed": "{}".format(enddate)
     }
-    r = requests.get(tmp_url, params = request_params, headers = request_header)
+    r = requests.get(tmp_url, params=request_params, headers=request_header)
     data_text = r.content
     df_annually = pd.read_csv(io.StringIO(data_text.decode('utf-8')))
-    df_annually["DATE"] = pd.to_datetime(df_annually["DATE"], format="%Y-%m-%d")
-    df = pd.merge_asof(df_quarterly, df_annually, on = "DATE", direction = "backward")
+    df_annually["DATE"] = pd.to_datetime(
+        df_annually["DATE"], format="%Y-%m-%d")
+    df = pd.merge_asof(
+        df_quarterly,
+        df_annually,
+        on="DATE",
+        direction="backward")
     df.columns = ["Date", "PFCE_Quarterly", "PFCE_Quarterly_YoY"]
+
 
 def rt(startdate="1955-01-01", enddate="2021-01-01"):
     """
@@ -637,7 +719,7 @@ def rt(startdate="1955-01-01", enddate="2021-01-01"):
         "cosd": "{}".format(startdate),
         "coed": "{}".format(enddate)
     }
-    r = requests.get(tmp_url, params = request_params, headers = request_header)
+    r = requests.get(tmp_url, params=request_params, headers=request_header)
     data_text = r.content
     df_monthly = pd.read_csv(io.StringIO(data_text.decode('utf-8')))
     df_monthly["DATE"] = pd.to_datetime(df_monthly["DATE"], format="%Y-%m-%d")
@@ -647,13 +729,19 @@ def rt(startdate="1955-01-01", enddate="2021-01-01"):
         "cosd": "{}".format(startdate),
         "coed": "{}".format(enddate)
     }
-    r = requests.get(tmp_url, params = request_params, headers = request_header)
+    r = requests.get(tmp_url, params=request_params, headers=request_header)
     data_text = r.content
     df_annually = pd.read_csv(io.StringIO(data_text.decode('utf-8')))
-    df_annually["DATE"] = pd.to_datetime(df_annually["DATE"], format="%Y-%m-%d")
-    df = pd.merge_asof(df_monthly, df_annually, on = "DATE", direction = "backward")
+    df_annually["DATE"] = pd.to_datetime(
+        df_annually["DATE"], format="%Y-%m-%d")
+    df = pd.merge_asof(
+        df_monthly,
+        df_annually,
+        on="DATE",
+        direction="backward")
     df.columns = ["Date", "RT_Quarterly", "RT_Annually"]
     return df
+
 
 def bir(startdate="2003-01-01", enddate="2021-01-01"):
     """
@@ -669,7 +757,7 @@ def bir(startdate="2003-01-01", enddate="2021-01-01"):
         "cosd": "{}".format(startdate),
         "coed": "{}".format(enddate)
     }
-    r = requests.get(tmp_url, params = request_params, headers = request_header)
+    r = requests.get(tmp_url, params=request_params, headers=request_header)
     data_text = r.content
     df_5y = pd.read_csv(io.StringIO(data_text.decode('utf-8')))
     df_5y["DATE"] = pd.to_datetime(df_5y["DATE"], format="%Y-%m-%d")
@@ -679,13 +767,14 @@ def bir(startdate="2003-01-01", enddate="2021-01-01"):
         "cosd": "{}".format(startdate),
         "coed": "{}".format(enddate)
     }
-    r = requests.get(tmp_url, params = request_params, headers = request_header)
+    r = requests.get(tmp_url, params=request_params, headers=request_header)
     data_text = r.content
     df_10y = pd.read_csv(io.StringIO(data_text.decode('utf-8')))
     df_10y["DATE"] = pd.to_datetime(df_10y["DATE"], format="%Y-%m-%d")
-    df = pd.merge_asof(df_5y, df_10y, on = "DATE", direction = "backward")
+    df = pd.merge_asof(df_5y, df_10y, on="DATE", direction="backward")
     df.columns = ["Date", "BIR_5y", "BIR_10y"]
     return df
+
 
 def adsbci():
     """
@@ -694,7 +783,7 @@ def adsbci():
     ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     tmp_url = url["philfed"] + "ads"
-    r = requests.get(tmp_url, headers = request_header)
+    r = requests.get(tmp_url, headers=request_header)
     file = open("ads_temp.xls", "wb")
     file.write(r.content)
     file.close()
@@ -704,40 +793,51 @@ def adsbci():
     os.remove("ads_temp.xls")
     return df
 
+
 def pci():
     """
     Tracks the degree of political disagreement among U.S. politicians at the federal level, Monthly
     """
-    df = pd.read_excel("https://www.philadelphiafed.org/-/media/frbp/assets/data-visualizations/partisan-conflict.xlsx")
+    df = pd.read_excel(
+        "https://www.philadelphiafed.org/-/media/frbp/assets/data-visualizations/partisan-conflict.xlsx")
     df["Date"] = df["Year"].astype(str) + df["Month"]
-    df["Date"] = pd.to_datetime(df["Date"], format = "%Y%B")
+    df["Date"] = pd.to_datetime(df["Date"], format="%Y%B")
     df = df.drop(["Year", "Month"], axis=1)
     df = df[["Date", "Partisan Conflict"]]
     return df
 
+
 def inflation_noewcasting():
     """
-    
+
     """
     ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     tmp_url = "https://www.clevelandfed.org/~/media/files/charting/%20nowcast_quarter.json"
 
-    r = requests.get(tmp_url, headers = request_header)
+    r = requests.get(tmp_url, headers=request_header)
     tmp_df = pd.DataFrame(demjson.decode(r.text))
     df = pd.DataFrame()
     for i in range(0, len(tmp_df)):
-        date = tmp_df['chart'][i]['subcaption'][:4] + "/"  + \
-            pd.DataFrame(tmp_df["dataset"][i][0]['data'])['tooltext'].str.extract(r"\b(0?[1-9]|1[0-2])/(0?[1-9]|[12][0-9]|3[01])\b")[0] + "/"  + \
+        date = tmp_df['chart'][i]['subcaption'][:4] + "/" + \
+            pd.DataFrame(tmp_df["dataset"][i][0]['data'])['tooltext'].str.extract(r"\b(0?[1-9]|1[0-2])/(0?[1-9]|[12][0-9]|3[01])\b")[0] + "/" + \
             pd.DataFrame(tmp_df["dataset"][i][0]['data'])['tooltext'].str.extract(r"\b(0?[1-9]|1[0-2])/(0?[1-9]|[12][0-9]|3[01])\b")[1]
-        CPI_I = pd.DataFrame((pd.DataFrame(tmp_df["dataset"][i])['data'])[0])["value"]
-        C_CPI_I = pd.DataFrame((pd.DataFrame(tmp_df["dataset"][i])['data'])[1])["value"]
-        PCE_I = pd.DataFrame((pd.DataFrame(tmp_df["dataset"][i])['data'])[2])["value"]
-        C_PCE_I = pd.DataFrame((pd.DataFrame(tmp_df["dataset"][i])['data'])[3])["value"]
-        A_CPI_I = pd.DataFrame((pd.DataFrame(tmp_df["dataset"][i])['data'])[4])["value"]
-        A_C_CPI_I = pd.DataFrame((pd.DataFrame(tmp_df["dataset"][i])['data'])[5])["value"]
-        A_PCE_I = pd.DataFrame((pd.DataFrame(tmp_df["dataset"][i])['data'])[6])["value"]
-        A_C_PCE_I = pd.DataFrame((pd.DataFrame(tmp_df["dataset"][i])['data'])[7])["value"]
+        CPI_I = pd.DataFrame(
+            (pd.DataFrame(tmp_df["dataset"][i])['data'])[0])["value"]
+        C_CPI_I = pd.DataFrame(
+            (pd.DataFrame(tmp_df["dataset"][i])['data'])[1])["value"]
+        PCE_I = pd.DataFrame(
+            (pd.DataFrame(tmp_df["dataset"][i])['data'])[2])["value"]
+        C_PCE_I = pd.DataFrame(
+            (pd.DataFrame(tmp_df["dataset"][i])['data'])[3])["value"]
+        A_CPI_I = pd.DataFrame(
+            (pd.DataFrame(tmp_df["dataset"][i])['data'])[4])["value"]
+        A_C_CPI_I = pd.DataFrame(
+            (pd.DataFrame(tmp_df["dataset"][i])['data'])[5])["value"]
+        A_PCE_I = pd.DataFrame(
+            (pd.DataFrame(tmp_df["dataset"][i])['data'])[6])["value"]
+        A_C_PCE_I = pd.DataFrame(
+            (pd.DataFrame(tmp_df["dataset"][i])['data'])[7])["value"]
         tmp_df2 = pd.DataFrame({"date": date,
                                 "CPI_I": CPI_I,
                                 "C_CPI_I": C_CPI_I,
@@ -747,31 +847,36 @@ def inflation_noewcasting():
                                 "A_C_CPI_I": A_C_CPI_I,
                                 "A_PCE_I": A_PCE_I,
                                 "A_C_PCE_I": A_C_PCE_I})
-        df = pd.concat([df,tmp_df2], axis=0)
+        df = pd.concat([df, tmp_df2], axis=0)
         df.reset_index(drop=True, inplace=True)
-    
-    df.replace('', np.nan, inplace = True)
+
+    df.replace('', np.nan, inplace=True)
     return df
+
 
 def bbki():
     tmp_url = url["chicagofed"] + "bbki/bbki-monthly-data-series-csv.csv"
     df = pd.read_csv(tmp_url)
     return df
 
+
 def cfnai():
     tmp_url = url["chicagofed"] + "cfnai/cfnai-data-series-csv.csv"
     df = pd.read_csv(tmp_url)
     return df
+
 
 def cfsbc():
     tmp_url = url["chicagofed"] + "cfsbc-activity-index-csv.csv"
     df = pd.read_csv(tmp_url)
     return df
 
+
 def nfci():
     tmp_url = url["chicagofed"] + "nfci/decomposition-nfci-csv.csv"
     df = pd.read_csv(tmp_url)
     return df
+
 
 def nfci():
     tmp_url = url["chicagofed"] + "nfci/decomposition-anfci-csv.csv"
