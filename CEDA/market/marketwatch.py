@@ -12,7 +12,6 @@ url = {
     "moneywatch": "https://www.marketwatch.com/investing/"
 }
 
-
 def forex(instrument="eurusd", startdate="2019-01-01", enddate="2021-01-01"):
     startdate = datetime.strptime(startdate, "%Y-%m-%d").strftime("%m/%d/%y")
     enddate = datetime.strptime(enddate, "%Y-%m-%d").strftime("%m/%d/%y")
