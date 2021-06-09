@@ -12,7 +12,6 @@ url = {
     "dukascopy": "http://data.uicstat.com/api_1.0"
 }
 
-
 def dukascopy(
         instrument: str,
         startdate: str,

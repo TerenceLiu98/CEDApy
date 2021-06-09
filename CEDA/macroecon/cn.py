@@ -11,7 +11,6 @@ url = {
     "eastmoney": "http://datainterface.eastmoney.com/EM_DataCenter/JS.aspx"
 }
 
-
 def gdp_quarterly():
     """
     ABS: absolute value (per 100 million CNY)

@@ -12,7 +12,6 @@ url = {
     "philfed": "https://www.philadelphiafed.org/surveys-and-data/real-time-data-research/",
     "chicagofed": "https://www.chicagofed.org/~/media/publications/"}
 
-
 def gdp_quarterly(startdate="1947-01-01", enddate="2021-01-01"):
     """
     Full Name:  Gross Domestic Product
