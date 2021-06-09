@@ -10,5 +10,6 @@ if sys.version_info < (3, 6):
     sys.exit(1)
 del sys
 
+from CEDA import * 
 from CEDA import macroecon
 from CEDA import market
