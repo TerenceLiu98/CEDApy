@@ -22,6 +22,9 @@ Via the `pypi`:
 python -m pip install CEDApy
 ```
 
+## How to use
+
+Please check [Wiki](https://github.com/TerenceLiu98/CEDApy/wiki)
 
 ## Acknowledgement
 
