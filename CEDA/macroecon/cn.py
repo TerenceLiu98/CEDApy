@@ -778,14 +778,12 @@ def fgr_monthly():  # Forex and Gold Reserve
     df.replace("", np.nan, inplace=True)
     df["Date"] = pd.to_datetime(df["Date"], format="%Y-%m-%d")
     df[["Forex", "Gold"]] = \
-        df["Forex", "Gold"].astype(float)
+        df[["Forex", "Gold"]].astype(float)
     df[["Forex_YoY_Rate", "Gold_YoY_Rate",
         "Forex_MoM_Rate", "Gold_MoM_Rate"]] = \
-        df["Forex_YoY_Rate", "Gold_YoY_Rate",
-           "Forex_MoM_Rate", "Gold_MoM_Rate"].astype(float) / 100
+        df[["Forex_YoY_Rate", "Gold_YoY_Rate",
+           "Forex_MoM_Rate", "Gold_MoM_Rate"]].astype(float) / 100
     return df
-# TODO: SPECIAL CASE
-
 
 def ctsf_monthly():  # Client Transaction Settlement Funds
     """
