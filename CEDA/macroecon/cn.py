@@ -925,8 +925,8 @@ def gr_monthly():  # Government Revenue
     df["Date"] = pd.to_datetime(df["Date"], format="%Y-%m-%d")
     df[["Current_Month", "Accumulation"]] = \
         df[["Current_Month", "Accumulation"]].astype(float)
-    df[["YoY_Rate", "MoM_rate", "Accum_YoY_Rate"]] = \
-        df[["YoY_Rate", "MoM_rate", "Accum_YoY_Rate"]].astype(float) / 100
+    df[["YoY_Rate", "MoM_Rate", "Accum_YoY_Rate"]] = \
+        df[["YoY_Rate", "MoM_Rate", "Accum_YoY_Rate"]].astype(float) / 100
     return df
 
 
