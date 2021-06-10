@@ -1,10 +1,10 @@
-import pandas as pd
-import numpy as np
 import re
+import io
 import demjson
 import requests
+import numpy as np
+import pandas as pd
 from fake_useragent import UserAgent
-
 # TODO need add comments
 
 url = {
@@ -959,10 +959,11 @@ def ti_monthly():  # Tax Income
         "MoM_Rate"
     ]
     df["Date"] = pd.to_datetime(df["Date"], format="%Y-%m-%d")
+    df = df.replace("", np.nan)
     df[["Current_Month"]] = \
         df[["Current_Month"]].astype(float)
-    df[["YoY_Rate", "MoM_rate"]] = \
-        df[["YoY_Rate", "MoM_rate"]].astype(float) / 100
+    df[["YoY_Rate", "MoM_Rate"]] = \
+        df[["YoY_Rate", "MoM_Rate"]].astype(float) / 100
     return df
 
 
@@ -1165,19 +1166,24 @@ def interest_monthly():  # Interest
         "SZIndex_Rate",
         "Effective Date"
     ]
-    df = df[[
-        "Announcement Date",
-        "Effective Date",
-        "Deposit_Benchmark_Interest_Rate_Before",
+    df["Announcement Date"] = pd.to_datetime(
+        df["Announcement Date"], format="%Y-%m-%d")
+    df["Date"] = df["Announcement Date"]
+    df["Effective Date"] = pd.to_datetime(
+        df["Effective Date"], format="%Y-%m-%d")
+    df["Date"] = df["Announcement Date"]
+    df = df.replace("", np.nan).astype(float)
+    df[["Deposit_Benchmark_Interest_Rate_Before",
         "Deposit_Benchmark_Interest_Rate_After",
         "Deposit_Benchmark_Interest_Rate_Adj_Rate",
         "Loan_Benchmark_Interest_Rate_Before",
         "Loan_Benchmark_Interest_Rate_After",
-        "Loan_Benchmark_Interest_Rate_Adj_Rate",
-        "SHIndex_Rate",
-        "SZIndex_Rate"
-    ]]
-    df[list(df.columns)] = df[list(df.columns)].astype(float) / 100
+        "Loan_Benchmark_Interest_Rate_Adj_Rate"]] = df[["Deposit_Benchmark_Interest_Rate_Before",
+                                                        "Deposit_Benchmark_Interest_Rate_After",
+                                                        "Deposit_Benchmark_Interest_Rate_Adj_Rate",
+                                                        "Loan_Benchmark_Interest_Rate_Before",
+                                                        "Loan_Benchmark_Interest_Rate_After",
+                                                        "Loan_Benchmark_Interest_Rate_Adj_Rate"]].astype(float) / 100
     return df
 
 def gdc_daily():  # gasoline, Diesel and Crude Oil

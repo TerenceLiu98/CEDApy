@@ -4,13 +4,23 @@ import requests
 from fake_useragent import UserAgent
 import io
 import os
+import time
+import json
 import demjson
+from datetime import datetime
 
 # Main Economic Indicators: https://alfred.stlouisfed.org/release?rid=205
 url = {
     "fred_econ": "https://fred.stlouisfed.org/graph/fredgraph.csv?",
     "philfed": "https://www.philadelphiafed.org/surveys-and-data/real-time-data-research/",
     "chicagofed": "https://www.chicagofed.org/~/media/publications/"}
+
+def date_transform(df, format_origin, format_after):
+    return_list = []
+    for i in range(0, len(df)):
+        return_list.append(datetime.strptime(df[i], format_origin).strftime(format_after))
+    
+    return return_list
 
 def gdp_quarterly(startdate="1947-01-01", enddate="2021-01-01"):
     """
@@ -29,6 +39,9 @@ def gdp_quarterly(startdate="1947-01-01", enddate="2021-01-01"):
     r = requests.get(tmp_url, params=request_params, headers=request_header)
     data_text = r.content
     df = pd.read_csv(io.StringIO(data_text.decode('utf-8')))
+    df.columns = ["Date", "GDP"]
+    df["Date"] = pd.to_datetime(df["Date"], format = "%Y-%m-%d")
+    df["GDP"] = df["GDP"].astype(float)
     return df
 
 
@@ -89,7 +102,136 @@ def payems_monthly(startdate="1939-01-01", enddate="2021-01-01"):
     r = requests.get(tmp_url, params=request_params, headers=request_header)
     data_text = r.content
     df = pd.read_csv(io.StringIO(data_text.decode('utf-8')))
+    df.columns = ["Date", "Payems"]
+    df["Date"] = pd.to_datetime(df["Date"], format = "%Y-%m-%d")
+    df["Payems"] = df["Payems"].astype(float)
     return df
+
+def ppi():
+    tmp_url = url["fred_econ"] + "bgcolor=%23e1e9f0&chart_type=line&drp=0&fo=open%20sans&graph_bgcolor=%23ffffff&height=450&mode=fred&recession_bars=on&txtcolor=%23444444&ts=12&tts=12&width=968&nt=0&thu=0&trc=0&show_legend=yes&show_axis_titles=yes&show_tooltip=yes&id=PPIACO,PCUOMFGOMFG&scale=left,left&cosd=1913-01-01,1984-12-01&coed=2021-04-01,2021-04-01&line_color=%234572a7,%23aa4643&link_values=false,false&line_style=solid,solid&mark_type=none,none&mw=3,3&lw=2,2&ost=-99999,-99999&oet=99999,99999&mma=0,0&fml=a,a&fq=Monthly,Monthly&fam=avg,avg&fgst=lin,lin&fgsnd=2020-02-01,2020-02-01&line_index=1,2&transformation=lin,lin&vintage_date=2021-06-10,2021-06-10&revision_date=2021-06-10,2021-06-10&nd=1913-01-01,1984-12-01"
+    ua = UserAgent(verify_ssl=False)
+    request_header = {"User-Agent": ua.random}
+    r = requests.get(tmp_url, headers=request_header)
+    data_text = r.content
+    df = pd.read_csv(io.StringIO(data_text.decode('utf-8')))
+    df["DATE"] = pd.to_datetime(df["DATE"], format="%Y-%m-%d")
+    #df = df[list(df.columns[1:])].replace(".", np.nan).astype(float)
+    name_list = {
+        "PPIACO": "Producer Price Index by Commodity: All Commodities",
+        "PCUOMFGOMFG": "Producer Price Index by Industry: Total Manufacturing Industries"
+    }
+    df.replace(".", np.nan, inplace = True)
+    df.columns = ["Date", "PPI_C", "PPI_I"]
+    df["Date"] = pd.to_datetime(df["Date"], format = "%Y-%m-%d")
+    df[["PPI_C", "PPI_I"]] = df[["PPI_C", "PPI_I"]].astype(float)
+    return df
+
+def pmi():
+    t = time.time()
+    res = requests.get(
+    f"https://cdn.jin10.com/dc/reports/dc_usa_ism_pmi_all.js?v={str(int(round(t * 1000))), str(int(round(t * 1000)) + 90)}"
+    )
+    json_data = json.loads(res.text[res.text.find("{"): res.text.rfind("}") + 1])
+    date_list = [item["date"] for item in json_data["list"]]
+    value_list = [item["datas"]["美国ISM制造业PMI报告"] for item in json_data["list"]]
+    value_df = pd.DataFrame(value_list)
+    value_df.columns = json_data["kinds"]
+    value_df.index = pd.to_datetime(date_list)
+    temp_df = value_df["今值"]
+    url = "https://datacenter-api.jin10.com/reports/list_v2"
+    params = {
+        "max_date": "",
+        "category": "ec",
+        "attr_id": "28",
+        "_": str(int(round(t * 1000))),
+    }
+    headers = {
+        "accept": "*/*",
+        "accept-encoding": "gzip, deflate, br",
+        "accept-language": "zh-CN,zh;q=0.9,en;q=0.8",
+        "cache-control": "no-cache",
+        "origin": "https://datacenter.jin10.com",
+        "pragma": "no-cache",
+        "referer": "https://datacenter.jin10.com/reportType/dc_usa_michigan_consumer_sentiment",
+        "sec-fetch-dest": "empty",
+        "sec-fetch-mode": "cors",
+        "sec-fetch-site": "same-site",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36",
+        "x-app-id": "rU6QIu7JHe2gOUeR",
+        "x-csrf-token": "",
+        "x-version": "1.0.0",
+    }
+    r = requests.get(url, params=params, headers=headers)
+    temp_se = pd.DataFrame(r.json()["data"]["values"]).iloc[:, :2]
+    temp_se.index = pd.to_datetime(temp_se.iloc[:, 0])
+    temp_se = temp_se.iloc[:, 1]
+    temp_df = temp_df.append(temp_se)
+    temp_df.dropna(inplace=True)
+    temp_df.sort_index(inplace=True)
+    temp_df = temp_df.reset_index()
+    temp_df.drop_duplicates(subset="index", inplace=True)
+    temp_df.set_index("index", inplace=True)
+    temp_df = temp_df.squeeze()
+    temp_df.index.name = None
+    temp_df.name = "usa_ism_pmi"
+    temp_df = temp_df.astype("float")
+    PMI_I = pd.DataFrame()
+    PMI_I["Date"] = pd.to_datetime(temp_df.index, format = "%Y-%m-%d")
+    PMI_I["ISM_PMI_I"] = np.array(temp_df).astype(float)
+
+    t = time.time()
+    res = requests.get(
+        f"https://cdn.jin10.com/dc/reports/dc_usa_ism_non_pmi_all.js?v={str(int(round(t * 1000))), str(int(round(t * 1000)) + 90)}"
+    )
+    json_data = json.loads(res.text[res.text.find("{"): res.text.rfind("}") + 1])
+    date_list = [item["date"] for item in json_data["list"]]
+    value_list = [item["datas"]["美国ISM非制造业PMI报告"] for item in json_data["list"]]
+    value_df = pd.DataFrame(value_list)
+    value_df.columns = json_data["kinds"]
+    value_df.index = pd.to_datetime(date_list)
+    temp_df = value_df["今值"]
+    url = "https://datacenter-api.jin10.com/reports/list_v2"
+    params = {
+        "max_date": "",
+        "category": "ec",
+        "attr_id": "29",
+        "_": str(int(round(t * 1000))),
+    }
+    headers = {
+        "accept": "*/*",
+        "accept-encoding": "gzip, deflate, br",
+        "accept-language": "zh-CN,zh;q=0.9,en;q=0.8",
+        "cache-control": "no-cache",
+        "origin": "https://datacenter.jin10.com",
+        "pragma": "no-cache",
+        "referer": "https://datacenter.jin10.com/reportType/dc_usa_michigan_consumer_sentiment",
+        "sec-fetch-dest": "empty",
+        "sec-fetch-mode": "cors",
+        "sec-fetch-site": "same-site",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36",
+        "x-app-id": "rU6QIu7JHe2gOUeR",
+        "x-csrf-token": "",
+        "x-version": "1.0.0",
+    }
+    r = requests.get(url, params=params, headers=headers)
+    temp_se = pd.DataFrame(r.json()["data"]["values"]).iloc[:, :2]
+    temp_se.index = pd.to_datetime(temp_se.iloc[:, 0])
+    temp_se = temp_se.iloc[:, 1]
+    temp_df = temp_df.append(temp_se)
+    temp_df.dropna(inplace=True)
+    temp_df.sort_index(inplace=True)
+    temp_df = temp_df.reset_index()
+    temp_df.drop_duplicates(subset="index", inplace=True)
+    temp_df.set_index("index", inplace=True)
+    temp_df = temp_df.squeeze()
+    temp_df.index.name = None
+    temp_df.name = "usa_ism_non_pmi"
+    temp_df = temp_df.astype("float")
+    PMI_NI = pd.DataFrame()
+    PMI_NI["Date"] = pd.to_datetime(temp_df.index, format = "%Y-%m-%d")
+    PMI_NI["ISM_PMI_NI"] = np.array(temp_df).astype(float)
+    PMI = pd.merge_asof(PMI_I, PMI_NI, on = "Date")
+    return PMI
 
 
 def unrate(startdate="1948-01-01", enddate="2021-01-01"):
@@ -264,6 +406,8 @@ def cpi(startdate="1960-01-01", enddate="2021-01-01"):
         direction="backward")
     df = pd.merge_asof(df, df_annually, on="DATE", direction="backward")
     df.columns = ["Date", "CPI_Monthly", "CPI_Quarterly", "CPI_Annually"]
+    df["Date"] = pd.to_datetime(df["Date"], format = "%Y-%m-%d")
+    df[["CPI_Monthly", "CPI_Quarterly", "CPI_Annually"]] = df[["CPI_Monthly", "CPI_Quarterly", "CPI_Annually"]].astype(float)
     return df
 
 
@@ -363,6 +507,7 @@ def m2(startdate="1960-01-01", enddate="2021-01-01"):
     df_monthly["DATE"] = pd.to_datetime(df_monthly["DATE"], format="%Y-%m-%d")
     df = pd.merge_asof(df_weekly, df_monthly, on="DATE", direction="backward")
     df.columns = ["Date", "M2_Weekly", "M2_Monthly"]
+    return df
 
 
 def m3(startdate="1960-01-01", enddate="2021-01-01"):
@@ -532,7 +677,7 @@ def cci(startdate="1955-01-01", enddate="2021-01-01"):
 
 def bci(startdate="1955-01-01", enddate="2021-01-01"):
     """
-    Full Name: Consumer Opinion Surveys: Confidence Indicators: Composite Indicators: OECD Indicator for the United States
+    Full Name: Business confidence index OECD Indicator for the United States
     Description: Normalised (Normal=100), Seasonally Adjusted, Monthly
     Return: pd.DataFrame
     """
@@ -624,13 +769,12 @@ def gfcf_3(startdate="1965-01-01", enddate="2021-01-01"):
         on="DATE",
         direction="backward")
     df.columns = ["Date", "ibr3_monthly", "ibr3_Annually"]
+    return df
 
 
 def pfce(startdate="1955-01-01", enddate="2021-01-01"):
     """
-    Full Name: Employment Rate: Aged 25-54: All Persons for the United States
-    Description: Percent,Seasonally Adjusted, Monthly, Quarterly and Annually
-    Return: pd.DataFrame
+    Full Name: Private Final Consumption Expenditure in United States
     """
     tmp_url = url["fred_econ"]
     ua = UserAgent(verify_ssl=False)
@@ -663,6 +807,7 @@ def pfce(startdate="1955-01-01", enddate="2021-01-01"):
         on="DATE",
         direction="backward")
     df.columns = ["Date", "PFCE_Quarterly", "PFCE_Annually"]
+    return df
 
 
 def tlp(startdate="1955-01-01", enddate="2021-01-01"):
@@ -702,6 +847,7 @@ def tlp(startdate="1955-01-01", enddate="2021-01-01"):
         on="DATE",
         direction="backward")
     df.columns = ["Date", "PFCE_Quarterly", "PFCE_Quarterly_YoY"]
+    return df
 
 
 def rt(startdate="1955-01-01", enddate="2021-01-01"):
@@ -837,7 +983,7 @@ def inflation_noewcasting():
             (pd.DataFrame(tmp_df["dataset"][i])['data'])[6])["value"]
         A_C_PCE_I = pd.DataFrame(
             (pd.DataFrame(tmp_df["dataset"][i])['data'])[7])["value"]
-        tmp_df2 = pd.DataFrame({"date": date,
+        tmp_df2 = pd.DataFrame({"Date": date,
                                 "CPI_I": CPI_I,
                                 "C_CPI_I": C_CPI_I,
                                 "PCE_I": PCE_I,
@@ -856,28 +1002,27 @@ def inflation_noewcasting():
 def bbki():
     tmp_url = url["chicagofed"] + "bbki/bbki-monthly-data-series-csv.csv"
     df = pd.read_csv(tmp_url)
+    df["Date"] = date_transform(df["Date"], "%m/%d/%Y", "%Y-%m-%d")
     return df
 
 
 def cfnai():
     tmp_url = url["chicagofed"] + "cfnai/cfnai-data-series-csv.csv"
     df = pd.read_csv(tmp_url)
+    df["Date"] = date_transform(df["Date"], "%Y/%m", "%Y-%m-%d")
     return df
 
 
 def cfsbc():
-    tmp_url = url["chicagofed"] + "cfsbc-activity-index-csv.csv"
-    df = pd.read_csv(tmp_url)
+    tmp_url = url["chicagofed"] + "cfsbc/cfsbc-data-xlsx.xlsx"
+    df = pd.read_excel(tmp_url)
+    df["Date"] = date_transform(df["Date"], "%Y-%m", "%Y-%m-%d")
     return df
 
 
 def nfci():
     tmp_url = url["chicagofed"] + "nfci/decomposition-nfci-csv.csv"
     df = pd.read_csv(tmp_url)
-    return df
-
-
-def nfci():
-    tmp_url = url["chicagofed"] + "nfci/decomposition-anfci-csv.csv"
-    df = pd.read_csv(tmp_url)
+    df.columns = ["Date", "NFCI", "Risk", "Credit", "Leverage"]
+    df["Date"] = date_transform(df["Date"], "%Y/%m/%d", "%Y-%m-%d")
     return df
