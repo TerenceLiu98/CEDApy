@@ -681,6 +681,7 @@ def ie_monthly():  # Import & Export
         "Accumulation_Import_YoY_Rate"
     ]
     df["Date"] = pd.to_datetime(df["Date"], format="%Y-%m-%d")
+    df.replace("", np.nan, inplace=True)
     df[["Current_Month_Export", "Current_Month_Import",
         "Accumulation_Export", "Accumulation_Import"]] = \
         df[["Current_Month_Export", "Current_Month_Import",
@@ -690,12 +691,13 @@ def ie_monthly():  # Import & Export
         "Current_Month_Import_YoY_Rate",
         "Current_Month_Import_MoM_Rate",
         "Accumulation_Export_YoY_Rate",
-        "Accumulation_Export_MoM_Rate"]] = df[["Current_Month_Export_YoY_Rate",
-                                               "Current_Month_Export_MoM_Rate",
-                                               "Current_Month_Import_YoY_Rate",
-                                               "Current_Month_Import_MoM_Rate",
-                                               "Accumulation_Export_YoY_Rate",
-                                               "Accumulation_Export_MoM_Rate"]].astype(float) / 100
+        "Accumulation_Import_YoY_Rate"]] = \
+        df[["Current_Month_Export_YoY_Rate",
+            "Current_Month_Export_MoM_Rate",
+            "Current_Month_Import_YoY_Rate",
+            "Current_Month_Import_MoM_Rate",
+            "Accumulation_Export_YoY_Rate",
+            "Accumulation_Import_YoY_Rate"]].astype(float)/100
     return df
 
 
