@@ -15,7 +15,6 @@ url = {
     "ecb": "https://sdw-wsrest.ecb.europa.eu/service/data/"
 }
 
-
 def merge_data(data_1: pd.DataFrame, data_2: pd.DataFrame, col_name: str):
     data = pd.merge_asof(data_1, data_2, on=col_name)
     return data
@@ -83,7 +82,7 @@ def Balance_of_Payments_BPM6():
     return df, name_list, description
 
 
-def Learning_Indicators_OECD():
+def Leading_Indicators_OECD():
     tmp_url = url["fred_econ"] + "bgcolor=%23e1e9f0&chart_type=line&drp=0&fo=open%20sans&graph_bgcolor=%23ffffff&height=450&mode=fred&recession_bars=off&txtcolor=%23444444&ts=12&tts=12&width=1168&nt=0&thu=0&trc=0&show_legend=yes&show_axis_titles=yes&show_tooltip=yes&id=EA19LORSGPNOSTSAM,EA19LOLITOTRGYSAM,EA19LOLITONOSTSAM,EA19LOLITOAASTSAM,EA19LORSGPORIXOBSAM,EA19LORSGPRTSTSAM,EA19LORSGPTDSTSAM&scale=left,left,left,left,left,left,left&cosd=1960-03-01,1966-12-01,1965-12-01,1965-12-01,1960-03-01,1960-03-01,1960-03-01&coed=2020-11-01,2020-11-01,2021-03-01,2021-03-01,2020-11-01,2020-11-01,2020-11-01&line_color=%234572a7,%23aa4643,%2389a54e,%2380699b,%233d96ae,%23db843d,%2392a8cd&link_values=false,false,false,false,false,false,false&line_style=solid,solid,solid,solid,solid,solid,solid&mark_type=none,none,none,none,none,none,none&mw=3,3,3,3,3,3,3&lw=2,2,2,2,2,2,2&ost=-99999,-99999,-99999,-99999,-99999,-99999,-99999&oet=99999,99999,99999,99999,99999,99999,99999&mma=0,0,0,0,0,0,0&fml=a,a,a,a,a,a,a&fq=Monthly,Monthly,Monthly,Monthly,Monthly,Monthly,Monthly&fam=avg,avg,avg,avg,avg,avg,avg&fgst=lin,lin,lin,lin,lin,lin,lin&fgsnd=2020-02-01,2020-02-01,2020-02-01,2020-02-01,2020-02-01,2020-02-01,2020-02-01&line_index=1,2,3,4,5,6,7&transformation=lin,lin,lin,lin,lin,lin,lin&vintage_date=2021-06-07,2021-06-07,2021-06-07,2021-06-07,2021-06-07,2021-06-07,2021-06-07&revision_date=2021-06-07,2021-06-07,2021-06-07,2021-06-07,2021-06-07,2021-06-07,2021-06-07&nd=1960-03-01,1966-12-01,1965-12-01,1965-12-01,1960-03-01,1960-03-01,1960-03-01"
     ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
@@ -434,7 +433,7 @@ def Business_Tendency_Surveys_Retail_Trade():
     return df, name_list, description
 
 
-def Labor_Compoenstiveion_Quarterly_Adj():
+def Labor_Compensation_Quarterly_Adj():
     tmp_url = url["fred_econ"] + "bgcolor=%23e1e9f0&chart_type=line&drp=0&fo=open%20sans&graph_bgcolor=%23ffffff&height=450&mode=fred&recession_bars=off&txtcolor=%23444444&ts=12&tts=12&width=748&nt=0&thu=0&trc=0&show_legend=yes&show_axis_titles=yes&show_tooltip=yes&id=LCEAMN01EZQ661S,LCEAPR01EZQ661S&scale=left,left&cosd=1971-01-01,1996-01-01&coed=2020-10-01,2020-10-01&line_color=%234572a7,%23aa4643&link_values=false,false&line_style=solid,solid&mark_type=none,none&mw=3,3&lw=2,2&ost=-99999,-99999&oet=99999,99999&mma=0,0&fml=a,a&fq=Quarterly,Quarterly&fam=avg,avg&fgst=lin,lin&fgsnd=2020-02-01,2020-02-01&line_index=1,2&transformation=lin,lin&vintage_date=2021-06-07,2021-06-07&revision_date=2021-06-07,2021-06-07&nd=1971-01-01,1996-01-01"
     ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
@@ -451,7 +450,7 @@ def Labor_Compoenstiveion_Quarterly_Adj():
     return df, name_list, description
 
 
-def Labor_Compoenstiveion_Quarterly_NAdj():
+def Labor_Compensation_Quarterly_NAdj():
     tmp_url = url["fred_econ"] + "bgcolor=%23e1e9f0&chart_type=line&drp=0&fo=open%20sans&graph_bgcolor=%23ffffff&height=450&mode=fred&recession_bars=off&txtcolor=%23444444&ts=12&tts=12&width=748&nt=0&thu=0&trc=0&show_legend=yes&show_axis_titles=yes&show_tooltip=yes&id=LCEAMN01EZQ661S,LCEAPR01EZQ661S&scale=left,left&cosd=1971-01-01,1996-01-01&coed=2020-10-01,2020-10-01&line_color=%234572a7,%23aa4643&link_values=false,false&line_style=solid,solid&mark_type=none,none&mw=3,3&lw=2,2&ost=-99999,-99999&oet=99999,99999&mma=0,0&fml=a,a&fq=Quarterly,Quarterly&fam=avg,avg&fgst=lin,lin&fgsnd=2020-02-01,2020-02-01&line_index=1,2&transformation=lin,lin&vintage_date=2021-06-07,2021-06-07&revision_date=2021-06-07,2021-06-07&nd=1971-01-01,1996-01-01"
     ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
@@ -816,7 +815,7 @@ def Sales_Quarterly_NAdj():
     return df, name_list, description
 
 
-def Cumsumer_Opinion_Survey():
+def Consumer_Opinion_Survey():
     tmp_url = url["fred_econ"] + "bgcolor=%23e1e9f0&chart_type=line&drp=0&fo=open%20sans&graph_bgcolor=%23ffffff&height=450&mode=fred&recession_bars=off&txtcolor=%23444444&ts=12&tts=12&width=748&nt=0&thu=0&trc=0&show_legend=yes&show_axis_titles=yes&show_tooltip=yes&id=CSCICP02EZM460S,CSESFT02EZM460S,CSINFT02EZM460S&scale=left,left,left&cosd=1973-01-01,1985-01-01,1985-01-01&coed=2021-04-01,2021-04-01,2021-04-01&line_color=%234572a7,%23aa4643,%2389a54e&link_values=false,false,false&line_style=solid,solid,solid&mark_type=none,none,none&mw=3,3,3&lw=2,2,2&ost=-99999,-99999,-99999&oet=99999,99999,99999&mma=0,0,0&fml=a,a,a&fq=Monthly,Monthly,Monthly&fam=avg,avg,avg&fgst=lin,lin,lin&fgsnd=2020-02-01,2020-02-01,2020-02-01&line_index=1,2,3&transformation=lin,lin,lin&vintage_date=2021-06-07,2021-06-07,2021-06-07&revision_date=2021-06-07,2021-06-07,2021-06-07&nd=1973-01-01,1985-01-01,1985-01-01"
     ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}

@@ -698,7 +698,7 @@ def ie_monthly():  # Import & Export
     return df
 
 
-def stock_monthly():  # Import & Export
+def stock_monthly():  # Stock Trading Statistics
     """
     Data Source: http://data.eastmoney.com/cjsj/gpjytj.html
     """
