@@ -8,9 +8,10 @@ from fake_useragent import UserAgent
 # TODO need add comments
 
 url = {
-    "eastmoney": "http://datainterface.eastmoney.com/EM_DataCenter/JS.aspx"
+    "eastmoney": "http://datainterface.eastmoney.com/EM_DataCenter/JS.aspx",
+    "fred_econ": "https://fred.stlouisfed.org/graph/fredgraph.csv?"
 }
-
+# https://fred.stlouisfed.org/release/tables?rid=205&eid=712378
 def gdp_quarterly():
     """
     ABS: absolute value (per 100 million CNY)
@@ -1179,9 +1180,6 @@ def interest_monthly():  # Interest
     df[list(df.columns)] = df[list(df.columns)].astype(float) / 100
     return df
 
-# TODO: SPECIAL CASE
-
-
 def gdc_daily():  # gasoline, Diesel and Crude Oil
     """
     http://data.eastmoney.com/cjsj/oil_default.html
@@ -1210,6 +1208,24 @@ def gdc_daily():  # gasoline, Diesel and Crude Oil
     df = pd.to_datetime(df["Date"], format="%Y-%m-%d")
     return df
 
+def Leading_Indicators_OECD():
+    tmp_url = url["fred_econ"] + "bgcolor=%23e1e9f0&chart_type=line&drp=0&fo=open%20sans&graph_bgcolor=%23ffffff&height=450&mode=fred&recession_bars=off&txtcolor=%23444444&ts=12&tts=12&width=1168&nt=0&thu=0&trc=0&show_legend=yes&show_axis_titles=yes&show_tooltip=yes&id=CHNLOLITOAASTSAM,CHNLOLITONOSTSAM,CHNLOLITOTRSTSAM,CHNLORSGPNOSTSAM,CHNLORSGPRTSTSAM&scale=left,left,left,left,left&cosd=1992-05-01,1992-05-01,1992-05-01,1978-01-01,1978-01-01&coed=2021-03-01,2021-03-01,2021-02-01,2021-02-01,2021-02-01&line_color=%234572a7,%23aa4643,%2389a54e,%2380699b,%233d96ae&link_values=false,false,false,false,false&line_style=solid,solid,solid,solid,solid&mark_type=none,none,none,none,none&mw=3,3,3,3,3&lw=2,2,2,2,2&ost=-99999,-99999,-99999,-99999,-99999&oet=99999,99999,99999,99999,99999&mma=0,0,0,0,0&fml=a,a,a,a,a&fq=Monthly,Monthly,Monthly,Monthly,Monthly&fam=avg,avg,avg,avg,avg&fgst=lin,lin,lin,lin,lin&fgsnd=2020-02-01,2020-02-01,2020-02-01,2020-02-01,2020-02-01&line_index=1,2,3,4,5&transformation=lin,lin,lin,lin,lin&vintage_date=2021-06-09,2021-06-09,2021-06-09,2021-06-09,2021-06-09&revision_date=2021-06-09,2021-06-09,2021-06-09,2021-06-09,2021-06-09&nd=1992-05-01,1992-05-01,1992-05-01,1978-01-01,1978-01-01"
+    ua = UserAgent(verify_ssl=False)
+    request_header = {"User-Agent": ua.random}
+    r = requests.get(tmp_url, headers=request_header)
+    data_text = r.content
+    df = pd.read_csv(io.StringIO(data_text.decode('utf-8')))
+    df["DATE"] = pd.to_datetime(df["DATE"], format="%Y-%m-%d")
+    #df = df[list(df.columns[1:])].replace(".", np.nan).astype(float)
+    name_list = {
+        'CHNLOLITOAASTSAM': "Leading Indicators OECD: Leading indicators: CLI: Amplitude adjusted for China",
+        'CHNLOLITONOSTSAM': "Leading Indicators OECD: Leading indicators: CLI: Normalised for China",
+        'CHNLOLITOTRSTSAM': "Leading Indicators OECD: Leading indicators: CLI: Trend restored for China",
+        'CHNLORSGPNOSTSAM': "Leading Indicators OECD: Reference series: Gross Domestic Product (GDP): Normalised for China",
+        'CHNLORSGPRTSTSAM': "Leading Indicators OECD: Reference series: Gross Domestic Product (GDP): Ratio to trend for China" 
+        }
+    description = "Leading Indicators OECD, Monthly, Seasonally Adjusted"
+    return df, name_list, description
 
 """
 if __name__ == "__main__":
