@@ -5,11 +5,13 @@ import requests
 import numpy as np
 import pandas as pd
 from fake_useragent import UserAgent
+
 # TODO need add comments
 
 url = {
     "eastmoney": "http://datainterface.eastmoney.com/EM_DataCenter/JS.aspx",
-    "fred_econ": "https://fred.stlouisfed.org/graph/fredgraph.csv?"
+    "fred_econ": "https://fred.stlouisfed.org/graph/fredgraph.csv?",
+    "OECD": "https://stats.oecd.org/sdmx-json/data/DP_LIVE/"
 }
 # https://fred.stlouisfed.org/release/tables?rid=205&eid=712378
 def gdp_quarterly():
@@ -1067,8 +1069,8 @@ def fl_monthly():  # Forex Loan
     df.columns = [
         "Date",
         "Current_Month",
-        "YoY",
-        "MoM",
+        "YoY_Rate",
+        "MoM_Rate",
         "Accumulation"
     ]
     df["Date"] = pd.to_datetime(df["Date"], format="%Y-%m-%d")
@@ -1116,8 +1118,10 @@ def drr_monthly():  # Deposit Reserve Ratio
     ]
     df["Announcement Date"] = pd.to_datetime(
         df["Announcement Date"], format="%Y-%m-%d")
+    df["Date"] = df["Announcement Date"]
     df["Effective Date"] = pd.to_datetime(
         df["Effective Date"], format="%Y-%m-%d")
+    df[["SHIndex_Rate", "SZIndex_Rate"]] = df[["SHIndex_Rate", "SZIndex_Rate"]].astype(float)
     df[["Large_Financial_institution_Before",
         "Large_Financial_institution_After",
         "Large_Financial_institution_Adj_Rate",
@@ -1172,7 +1176,7 @@ def interest_monthly():  # Interest
     df["Effective Date"] = pd.to_datetime(
         df["Effective Date"], format="%Y-%m-%d")
     df["Date"] = df["Announcement Date"]
-    df = df.replace("", np.nan).astype(float)
+    df = df.replace("", np.nan)
     df[["Deposit_Benchmark_Interest_Rate_Before",
         "Deposit_Benchmark_Interest_Rate_After",
         "Deposit_Benchmark_Interest_Rate_Adj_Rate",
@@ -1214,24 +1218,65 @@ def gdc_daily():  # gasoline, Diesel and Crude Oil
     df = pd.to_datetime(df["Date"], format="%Y-%m-%d")
     return df
 
-def Leading_Indicators_OECD():
-    tmp_url = url["fred_econ"] + "bgcolor=%23e1e9f0&chart_type=line&drp=0&fo=open%20sans&graph_bgcolor=%23ffffff&height=450&mode=fred&recession_bars=off&txtcolor=%23444444&ts=12&tts=12&width=1168&nt=0&thu=0&trc=0&show_legend=yes&show_axis_titles=yes&show_tooltip=yes&id=CHNLOLITOAASTSAM,CHNLOLITONOSTSAM,CHNLOLITOTRSTSAM,CHNLORSGPNOSTSAM,CHNLORSGPRTSTSAM&scale=left,left,left,left,left&cosd=1992-05-01,1992-05-01,1992-05-01,1978-01-01,1978-01-01&coed=2021-03-01,2021-03-01,2021-02-01,2021-02-01,2021-02-01&line_color=%234572a7,%23aa4643,%2389a54e,%2380699b,%233d96ae&link_values=false,false,false,false,false&line_style=solid,solid,solid,solid,solid&mark_type=none,none,none,none,none&mw=3,3,3,3,3&lw=2,2,2,2,2&ost=-99999,-99999,-99999,-99999,-99999&oet=99999,99999,99999,99999,99999&mma=0,0,0,0,0&fml=a,a,a,a,a&fq=Monthly,Monthly,Monthly,Monthly,Monthly&fam=avg,avg,avg,avg,avg&fgst=lin,lin,lin,lin,lin&fgsnd=2020-02-01,2020-02-01,2020-02-01,2020-02-01,2020-02-01&line_index=1,2,3,4,5&transformation=lin,lin,lin,lin,lin&vintage_date=2021-06-09,2021-06-09,2021-06-09,2021-06-09,2021-06-09&revision_date=2021-06-09,2021-06-09,2021-06-09,2021-06-09,2021-06-09&nd=1992-05-01,1992-05-01,1992-05-01,1978-01-01,1978-01-01"
+def Leading_Indicators_OECD(startdate = "1950-01", enddate = "2021-05"):
+    # CLI
+    tmp_url = url["OECD"] + "CHN.CLI.AMPLITUD.LTRENDIDX.M/OECD"
     ua = UserAgent(verify_ssl=False)
+    request_params = {
+        "contentType": "csv",
+        "detail": "code",
+        "separator": "comma",
+        "csv-lang": "en",
+        "startPeriod": "{}".format(startdate),
+        "endPeriod": "{}".format(enddate)
+    }
     request_header = {"User-Agent": ua.random}
-    r = requests.get(tmp_url, headers=request_header)
+    r = requests.get(tmp_url, params = request_params, headers=request_header)
     data_text = r.content
-    df = pd.read_csv(io.StringIO(data_text.decode('utf-8')))
-    df["DATE"] = pd.to_datetime(df["DATE"], format="%Y-%m-%d")
-    #df = df[list(df.columns[1:])].replace(".", np.nan).astype(float)
-    name_list = {
-        'CHNLOLITOAASTSAM': "Leading Indicators OECD: Leading indicators: CLI: Amplitude adjusted for China",
-        'CHNLOLITONOSTSAM': "Leading Indicators OECD: Leading indicators: CLI: Normalised for China",
-        'CHNLOLITOTRSTSAM': "Leading Indicators OECD: Leading indicators: CLI: Trend restored for China",
-        'CHNLORSGPNOSTSAM': "Leading Indicators OECD: Reference series: Gross Domestic Product (GDP): Normalised for China",
-        'CHNLORSGPRTSTSAM': "Leading Indicators OECD: Reference series: Gross Domestic Product (GDP): Ratio to trend for China" 
-        }
-    description = "Leading Indicators OECD, Monthly, Seasonally Adjusted"
-    return df, name_list, description
+    df_cli = pd.read_csv(io.StringIO(data_text.decode('utf-8')))[["TIME", "Value"]]
+    df_cli.columns = ["Date", "CN_OECD_CLI"]
+    df_cli["Date"] = pd.to_datetime(df_cli["Date"], format = "%Y-%m")
+    df_cli["CN_OECD_CLI"] = df_cli["CN_OECD_CLI"].astype(float)
+    #BCI
+    tmp_url = url["OECD"] + "CHN.BCI.AMPLITUD.LTRENDIDX.M/OECD"
+    ua = UserAgent(verify_ssl=False)
+    request_params = {
+        "contentType": "csv",
+        "detail": "code",
+        "separator": "comma",
+        "csv-lang": "en",
+        "startPeriod": "{}".format(startdate),
+        "endPeriod": "{}".format(enddate)
+    }
+    request_header = {"User-Agent": ua.random}
+    r = requests.get(tmp_url, params = request_params, headers=request_header)
+    data_text = r.content
+    df_bci = pd.read_csv(io.StringIO(data_text.decode('utf-8')))[["TIME", "Value"]]
+    df_bci.columns = ["Date", "CN_OECD_BCI"]
+    df_bci["Date"] = pd.to_datetime(df_cli["Date"], format = "%Y-%m")
+    df_bci["CN_OECD_BCI"] = df_bci["CN_OECD_BCI"].astype(float)
+    # CCI
+    tmp_url = url["OECD"] + "CHN.CCI.AMPLITUD.LTRENDIDX.M/OECD"
+    ua = UserAgent(verify_ssl=False)
+    request_params = {
+        "contentType": "csv",
+        "detail": "code",
+        "separator": "comma",
+        "csv-lang": "en",
+        "startPeriod": "{}".format(startdate),
+        "endPeriod": "{}".format(enddate)
+    }
+    request_header = {"User-Agent": ua.random}
+    r = requests.get(tmp_url, params = request_params, headers=request_header)
+    data_text = r.content
+    df_cci = pd.read_csv(io.StringIO(data_text.decode('utf-8')))[["TIME", "Value"]]
+    df_cci.columns = ["Date", "CN_OECD_CCI"]
+    df_cci["Date"] = pd.to_datetime(df_cci["Date"], format = "%Y-%m")
+    df_cci["CN_OECD_CCI"] = df_cci["CN_OECD_CCI"].astype(float)
+    df = pd.merge_asof(df_cli, df_bci, on = "Date")
+    df = pd.merge_asof(df, df_cci, on = "Date")
+    
+    return df
 
 """
 if __name__ == "__main__":

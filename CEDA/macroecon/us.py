@@ -13,7 +13,9 @@ from datetime import datetime
 url = {
     "fred_econ": "https://fred.stlouisfed.org/graph/fredgraph.csv?",
     "philfed": "https://www.philadelphiafed.org/surveys-and-data/real-time-data-research/",
-    "chicagofed": "https://www.chicagofed.org/~/media/publications/"}
+    "chicagofed": "https://www.chicagofed.org/~/media/publications/",
+    "OECD": "https://stats.oecd.org/sdmx-json/data/DP_LIVE/"
+}
 
 def date_transform(df, format_origin, format_after):
     return_list = []
@@ -469,7 +471,7 @@ def m1(startdate="1960-01-01", enddate="2021-01-01"):
     df = pd.merge_asof(df, df_annually, on="DATE", direction="backward")
     df.columns = [
         "Date",
-        "M1_weekly",
+        "M1_Weekly",
         "M1_Monthly",
         "M1_Quarterly",
         "M1_Annually"]
@@ -672,6 +674,7 @@ def cci(startdate="1955-01-01", enddate="2021-01-01"):
     data_text = r.content
     df = pd.read_csv(io.StringIO(data_text.decode('utf-8')))
     df.columns = ["Date", "CCI_Monthly"]
+    df["Date"] = pd.to_datetime(df["Date"], format = "%Y-%m-%d")
     return df
 
 
@@ -693,6 +696,7 @@ def bci(startdate="1955-01-01", enddate="2021-01-01"):
     data_text = r.content
     df = pd.read_csv(io.StringIO(data_text.decode('utf-8')))
     df.columns = ["Date", "BCI_Annually"]
+    df["Date"] = pd.to_datetime(df["Date"], format = "%Y-%m-%d")
     return df
 
 
@@ -730,7 +734,7 @@ def ibr_3(startdate="1965-01-01", enddate="2021-01-01"):
         df_quarterly,
         on="DATE",
         direction="backward")
-    df.columns = ["Date", "ibr3_monthly", "ibr3_Quarterly"]
+    df.columns = ["Date", "ibr3_Monthly", "ibr3_Quarterly"]
 
 
 def gfcf_3(startdate="1965-01-01", enddate="2021-01-01"):
@@ -768,7 +772,7 @@ def gfcf_3(startdate="1965-01-01", enddate="2021-01-01"):
         df_quarterly,
         on="DATE",
         direction="backward")
-    df.columns = ["Date", "ibr3_monthly", "ibr3_Annually"]
+    df.columns = ["Date", "ibr3_Monthly", "ibr3_Annually"]
     return df
 
 
@@ -952,10 +956,7 @@ def pci():
     return df
 
 
-def inflation_noewcasting():
-    """
-
-    """
+def inflation_nowcasting():
     ua = UserAgent(verify_ssl=False)
     request_header = {"User-Agent": ua.random}
     tmp_url = "https://www.clevelandfed.org/~/media/files/charting/%20nowcast_quarter.json"
@@ -1003,6 +1004,7 @@ def bbki():
     tmp_url = url["chicagofed"] + "bbki/bbki-monthly-data-series-csv.csv"
     df = pd.read_csv(tmp_url)
     df["Date"] = date_transform(df["Date"], "%m/%d/%Y", "%Y-%m-%d")
+    df["Date"] = pd.to_datetime(df["Date"], format = "%Y-%m-%d")
     return df
 
 
@@ -1010,6 +1012,7 @@ def cfnai():
     tmp_url = url["chicagofed"] + "cfnai/cfnai-data-series-csv.csv"
     df = pd.read_csv(tmp_url)
     df["Date"] = date_transform(df["Date"], "%Y/%m", "%Y-%m-%d")
+    df["Date"] = pd.to_datetime(df["Date"], format = "%Y-%m-%d")
     return df
 
 
@@ -1017,6 +1020,7 @@ def cfsbc():
     tmp_url = url["chicagofed"] + "cfsbc/cfsbc-data-xlsx.xlsx"
     df = pd.read_excel(tmp_url)
     df["Date"] = date_transform(df["Date"], "%Y-%m", "%Y-%m-%d")
+    df["Date"] = pd.to_datetime(df["Date"], format = "%Y-%m-%d")
     return df
 
 
@@ -1025,4 +1029,65 @@ def nfci():
     df = pd.read_csv(tmp_url)
     df.columns = ["Date", "NFCI", "Risk", "Credit", "Leverage"]
     df["Date"] = date_transform(df["Date"], "%Y/%m/%d", "%Y-%m-%d")
+    df["Date"] = pd.to_datetime(df["Date"], format = "%Y-%m-%d")
+    return df
+
+def Leading_Indicators_OECD(startdate = "1950-01", enddate = "2021-05"):
+    # CLI
+    tmp_url = url["OECD"] + "USA.CLI.AMPLITUD.LTRENDIDX.M/OECD"
+    ua = UserAgent(verify_ssl=False)
+    request_params = {
+        "contentType": "csv",
+        "detail": "code",
+        "separator": "comma",
+        "csv-lang": "en",
+        "startPeriod": "{}".format(startdate),
+        "endPeriod": "{}".format(enddate)
+    }
+    request_header = {"User-Agent": ua.random}
+    r = requests.get(tmp_url, params = request_params, headers=request_header)
+    data_text = r.content
+    df_cli = pd.read_csv(io.StringIO(data_text.decode('utf-8')))[["TIME", "Value"]]
+    df_cli.columns = ["Date", "US_OECD_CLI"]
+    df_cli["Date"] = pd.to_datetime(df_cli["Date"], format = "%Y-%m")
+    df_cli["US_OECD_CLI"] = df_cli["US_OECD_CLI"].astype(float)
+    #BCI
+    tmp_url = url["OECD"] + "USA.BCI.AMPLITUD.LTRENDIDX.M/OECD"
+    ua = UserAgent(verify_ssl=False)
+    request_params = {
+        "contentType": "csv",
+        "detail": "code",
+        "separator": "comma",
+        "csv-lang": "en",
+        "startPeriod": "{}".format(startdate),
+        "endPeriod": "{}".format(enddate)
+    }
+    request_header = {"User-Agent": ua.random}
+    r = requests.get(tmp_url, params = request_params, headers=request_header)
+    data_text = r.content
+    df_bci = pd.read_csv(io.StringIO(data_text.decode('utf-8')))[["TIME", "Value"]]
+    df_bci.columns = ["Date", "US_OECD_BCI"]
+    df_bci["Date"] = pd.to_datetime(df_bci["Date"], format = "%Y-%m")
+    df_bci["US_OECD_BCI"] = df_bci["US_OECD_BCI"].astype(float)
+    # CCI
+    tmp_url = url["OECD"] + "USA.CCI.AMPLITUD.LTRENDIDX.M/OECD"
+    ua = UserAgent(verify_ssl=False)
+    request_params = {
+        "contentType": "csv",
+        "detail": "code",
+        "separator": "comma",
+        "csv-lang": "en",
+        "startPeriod": "{}".format(startdate),
+        "endPeriod": "{}".format(enddate)
+    }
+    request_header = {"User-Agent": ua.random}
+    r = requests.get(tmp_url, params = request_params, headers=request_header)
+    data_text = r.content
+    df_cci = pd.read_csv(io.StringIO(data_text.decode('utf-8')))[["TIME", "Value"]]
+    df_cci.columns = ["Date", "US_OECD_CCI"]
+    df_cci["Date"] = pd.to_datetime(df_cci["Date"], format = "%Y-%m")
+    df_cci["US_OECD_CCI"] = df_cci["US_OECD_CCI"].astype(float)
+    df = pd.merge_asof(df_cli, df_bci, on = "Date")
+    df = pd.merge_asof(df, df_cci, on = "Date")
+    
     return df

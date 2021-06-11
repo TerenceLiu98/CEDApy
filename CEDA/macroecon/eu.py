@@ -12,7 +12,8 @@ from pandas.core.reshape.merge import merge
 url = {
     "fred_econ": "https://fred.stlouisfed.org/graph/fredgraph.csv?",
     "eurostat": "http://ec.europa.eu/eurostat/wdds/rest/data/v2.1/json/en/",
-    "ecb": "https://sdw-wsrest.ecb.europa.eu/service/data/"
+    "ecb": "https://sdw-wsrest.ecb.europa.eu/service/data/",
+    "OECD": "https://stats.oecd.org/sdmx-json/data/DP_LIVE/"
 }
 
 def merge_data(data_1: pd.DataFrame, data_2: pd.DataFrame, col_name: str):
@@ -82,25 +83,65 @@ def Balance_of_Payments_BPM6():
     return df, name_list, description
 
 
-def Leading_Indicators_OECD():
-    tmp_url = url["fred_econ"] + "bgcolor=%23e1e9f0&chart_type=line&drp=0&fo=open%20sans&graph_bgcolor=%23ffffff&height=450&mode=fred&recession_bars=off&txtcolor=%23444444&ts=12&tts=12&width=1168&nt=0&thu=0&trc=0&show_legend=yes&show_axis_titles=yes&show_tooltip=yes&id=EA19LORSGPNOSTSAM,EA19LOLITOTRGYSAM,EA19LOLITONOSTSAM,EA19LOLITOAASTSAM,EA19LORSGPORIXOBSAM,EA19LORSGPRTSTSAM,EA19LORSGPTDSTSAM&scale=left,left,left,left,left,left,left&cosd=1960-03-01,1966-12-01,1965-12-01,1965-12-01,1960-03-01,1960-03-01,1960-03-01&coed=2020-11-01,2020-11-01,2021-03-01,2021-03-01,2020-11-01,2020-11-01,2020-11-01&line_color=%234572a7,%23aa4643,%2389a54e,%2380699b,%233d96ae,%23db843d,%2392a8cd&link_values=false,false,false,false,false,false,false&line_style=solid,solid,solid,solid,solid,solid,solid&mark_type=none,none,none,none,none,none,none&mw=3,3,3,3,3,3,3&lw=2,2,2,2,2,2,2&ost=-99999,-99999,-99999,-99999,-99999,-99999,-99999&oet=99999,99999,99999,99999,99999,99999,99999&mma=0,0,0,0,0,0,0&fml=a,a,a,a,a,a,a&fq=Monthly,Monthly,Monthly,Monthly,Monthly,Monthly,Monthly&fam=avg,avg,avg,avg,avg,avg,avg&fgst=lin,lin,lin,lin,lin,lin,lin&fgsnd=2020-02-01,2020-02-01,2020-02-01,2020-02-01,2020-02-01,2020-02-01,2020-02-01&line_index=1,2,3,4,5,6,7&transformation=lin,lin,lin,lin,lin,lin,lin&vintage_date=2021-06-07,2021-06-07,2021-06-07,2021-06-07,2021-06-07,2021-06-07,2021-06-07&revision_date=2021-06-07,2021-06-07,2021-06-07,2021-06-07,2021-06-07,2021-06-07,2021-06-07&nd=1960-03-01,1966-12-01,1965-12-01,1965-12-01,1960-03-01,1960-03-01,1960-03-01"
+def Leading_Indicators_OECD(startdate = "1950-01", enddate = "2021-05"):
+    # CLI
+    tmp_url = url["OECD"] + "EA19.CLI.AMPLITUD.LTRENDIDX.M/OECD"
     ua = UserAgent(verify_ssl=False)
+    request_params = {
+        "contentType": "csv",
+        "detail": "code",
+        "separator": "comma",
+        "csv-lang": "en",
+        "startPeriod": "{}".format(startdate),
+        "endPeriod": "{}".format(enddate)
+    }
     request_header = {"User-Agent": ua.random}
-    r = requests.get(tmp_url, headers=request_header)
+    r = requests.get(tmp_url, params = request_params, headers=request_header)
     data_text = r.content
-    df = pd.read_csv(io.StringIO(data_text.decode('utf-8')))
-    df["DATE"] = pd.to_datetime(df["DATE"], format="%Y-%m-%d")
-    #df = df[list(df.columns[1:])].replace(".", np.nan).astype(float)
-    name_list = {
-        'EA19CPALTT01GYQ': "Leading Indicators OECD: Reference series: Gross Domestic Product (GDP): Normalised for the Euro Area",
-        'EA19LOLITOTRGYSAM': "Leading Indicators OECD: Leading indicators: CLI: Trend restored for the Euro Area",
-        'EA19LOLITONOSTSAM': "Leading Indicators OECD: Leading indicators: CLI: Normalised for the Euro Area",
-        'EA19LOLITOAASTSAM': "Leading Indicators OECD: Leading indicators: CLI: Amplitude adjusted for the Euro Area",
-        'EA19LORSGPORIXOBSAM': "Leading Indicators OECD: Reference series: Gross Domestic Product (GDP): Original series for the Euro Area",
-        'EA19LORSGPRTSTSAM': "Leading Indicators OECD: Reference series: Gross Domestic Product (GDP): Ratio to trend for the Euro Area",
-        'EA19LORSGPTDSTSAM': "Leading Indicators OECD: Reference series: Gross Domestic Product (GDP): Trend for the Euro Area"}
-    description = "Leading Indicators OECD, Monthly, Seasonally Adjusted"
-    return df, name_list, description
+    df_cli = pd.read_csv(io.StringIO(data_text.decode('utf-8')))[["TIME", "Value"]]
+    df_cli.columns = ["Date", "EU_OECD_CLI"]
+    df_cli["Date"] = pd.to_datetime(df_cli["Date"], format = "%Y-%m")
+    df_cli["EU_OECD_CLI"] = df_cli["EU_OECD_CLI"].astype(float)
+    #BCI
+    tmp_url = url["OECD"] + "EA19.BCI.AMPLITUD.LTRENDIDX.M/OECD"
+    ua = UserAgent(verify_ssl=False)
+    request_params = {
+        "contentType": "csv",
+        "detail": "code",
+        "separator": "comma",
+        "csv-lang": "en",
+        "startPeriod": "{}".format(startdate),
+        "endPeriod": "{}".format(enddate)
+    }
+    request_header = {"User-Agent": ua.random}
+    r = requests.get(tmp_url, params = request_params, headers=request_header)
+    data_text = r.content
+    df_bci = pd.read_csv(io.StringIO(data_text.decode('utf-8')))[["TIME", "Value"]]
+    df_bci.columns = ["Date", "EU_OECD_BCI"]
+    df_bci["Date"] = pd.to_datetime(df_bci["Date"], format = "%Y-%m")
+    df_bci["EU_OECD_BCI"] = df_bci["EU_OECD_BCI"].astype(float)
+    # CCI
+    tmp_url = url["OECD"] + "EA19.CCI.AMPLITUD.LTRENDIDX.M/OECD"
+    ua = UserAgent(verify_ssl=False)
+    request_params = {
+        "contentType": "csv",
+        "detail": "code",
+        "separator": "comma",
+        "csv-lang": "en",
+        "startPeriod": "{}".format(startdate),
+        "endPeriod": "{}".format(enddate)
+    }
+    request_header = {"User-Agent": ua.random}
+    r = requests.get(tmp_url, params = request_params, headers=request_header)
+    data_text = r.content
+    df_cci = pd.read_csv(io.StringIO(data_text.decode('utf-8')))[["TIME", "Value"]]
+    df_cci.columns = ["Date", "EU_OECD_CCI"]
+    df_cci["Date"] = pd.to_datetime(df_cci["Date"], format = "%Y-%m")
+    df_cci["EU_OECD_CCI"] = df_cci["EU_OECD_CCI"].astype(float)
+    df = pd.merge_asof(df_cli, df_bci, on = "Date")
+    df = pd.merge_asof(df, df_cci, on = "Date")
+    
+    return df
 
 
 def Monetary_Aggregates_Monthly_Adj():
