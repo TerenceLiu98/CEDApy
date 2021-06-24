@@ -67,12 +67,12 @@ def forex(instrument="eurusd", startdate="2019-01-01", enddate="2021-01-01"):
     return df
 
 
-def index(instrument="vix", startdate="2019-01-01", enddate="2021-01-01"):
+def index(instrument="vix", startdate="2019-01-01", enddate="2021-01-01", countrycode=None):
     startdate = datetime.strptime(startdate, "%Y-%m-%d").strftime("%m/%d/%y")
     enddate = datetime.strptime(enddate, "%Y-%m-%d").strftime("%m/%d/%y")
     df = pd.DataFrame()
 
-    def _index(instrument="vix", startdate="01/01/2020", enddate="01/01/2021"):
+    def _index(instrument="vix", startdate="01/01/2020", enddate="01/01/2021", countrycode=None):
         """
         https://www.marketwatch.com/investing/
         """
@@ -80,16 +80,28 @@ def index(instrument="vix", startdate="2019-01-01", enddate="2021-01-01"):
             "index/{}/downloaddatapartial".format(instrument)
         ua = UserAgent(verify_ssl=False)
         request_header = {"User-Agent": ua.random}
-        request_params = urlencode({
-            "startdate": r"{}".format(startdate),
-            "enddate": r"{}".format(enddate),
-            "daterange": "d30",
-            "frequency": "p1d",
-            "csvdownload": "true",
-            "downloadpartial": "false",
-            "newdates": "false"}, quote_via=quote)
-        r = requests.get(tmp_url, params=request_params.replace(
-            "%2F", "/").replace("%20", " ").replace("%3A", ":"), headers=request_header)
+        if countrycode == None:
+            request_params = urlencode({
+                "startdate": r"{}".format(startdate),
+                "enddate": r"{}".format(enddate),
+                "daterange": "d30",
+                "frequency": "p1d",
+                "csvdownload": "true",
+                "downloadpartial": "false",
+                "newdates": "false"}, quote_via=quote)
+        elif countrycode != None:
+            request_params = urlencode({
+                "startdate": r"{}".format(startdate),
+                "enddate": r"{}".format(enddate),
+                "daterange": "d30",
+                "frequency": "p1d",
+                "csvdownload": "true",
+                "downloadpartial": "false",
+                "newdates": "false",
+                "countrycode": "{}".format(countrycode)}, quote_via=quote)
+
+        r = requests.get(tmp_url, params=request_params.replace("%2F", "/").replace("%20", " ").replace("%3A", ":"), \
+            headers=request_header)
         data_text = r.content
         df = pd.read_csv(io.StringIO(data_text.decode('utf-8')))
         Date = []
@@ -112,7 +124,7 @@ def index(instrument="vix", startdate="2019-01-01", enddate="2021-01-01"):
         tmp_df = _index(
             instrument=instrument,
             startdate=tmp_startdate,
-            enddate=tmp_enddate)
+            enddate=tmp_enddate, countrycode=countrycode)
         if i == int(startdate[6:10]):
             df = tmp_df
         else:
