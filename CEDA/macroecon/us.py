@@ -8,6 +8,8 @@ import time
 import json
 import demjson
 from datetime import datetime
+import ssl
+ssl._create_default_https_context = ssl._create_unverified_context
 
 # Main Economic Indicators: https://alfred.stlouisfed.org/release?rid=205
 url = {

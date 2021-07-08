@@ -1278,6 +1278,22 @@ def Leading_Indicators_OECD(startdate = "1950-01", enddate = "2021-05"):
     
     return df
 
+def CN_EPU_Monthly():
+    df = pd.read_excel("https://economicpolicyuncertaintyinchina.weebly.com/uploads/1/2/2/7/122762465/cnepu_1_july_2021_updated.xlsx")[:-2]
+    df.Date = pd.to_datetime(df.Date, format="%Y-%m-%d %H:%M:%S")
+    return df
+
+def CN_EPU_Daily():
+    df = pd.read_excel("https://economicpolicyuncertaintyinchina.weebly.com/uploads/1/2/2/7/122762465/cnepu_daily_7_july_2021_updated.xlsx")[:-2]
+    df = df[["Date", "CNEPU_Daily"]]
+    df.Date = pd.to_datetime(df.Date, format="%Y-%m-%d %H:%M:%S")
+    return df
+
+def Policy_Specific_EPU():
+    df = pd.read_excel("https://economicpolicyuncertaintyinchina.weebly.com/uploads/1/2/2/7/122762465/cnepu_policy-specific_1_july_2021_updated.xlsx")[:-2]
+    df.Date = pd.to_datetime(df.Date, format="%Y-%m-%d %H:%M:%S")
+    return df
+
 """
 if __name__ == "__main__":
 """
