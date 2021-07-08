@@ -1,7 +1,7 @@
 import sys
 import os
 
-__version__ = "0.1.8"
+__version__ = "0.1.9"
 __author__ = "Terence Lau"
 
 
