@@ -1097,7 +1097,7 @@ def Leading_Indicators_OECD(startdate = "1950-01", enddate = "2021-05"):
 def US_EPU_Monthly():
     df = pd.read_excel("https://www.policyuncertainty.com/media/US_Policy_Uncertainty_Data.xlsx")[:-1]
     df['Date']=pd.to_datetime(df['Year'].apply(str).str.cat(df['Month'].apply(int).apply(str),sep='-'), format='%Y-%m')
-    df = df[["Date", "US_Three_Component_Index", "US_EPU"]]
+    df = df[["Date", "Three_Component_Index", "News_Based_Policy_Uncert_Index"]]
     return df
 
 def US_EPU_Daily():
