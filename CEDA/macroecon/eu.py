@@ -872,6 +872,11 @@ def Consumer_Opinion_Survey():
     description = "Consumer opinion surveys, Monthly, Seasonally Adjusted"
     return df, name_list, description
 
+def EU_EPU_Monthly():
+    df = pd.read_excel("https://www.policyuncertainty.com/media/Europe_Policy_Uncertainty_Data.xlsx")[:-1]
+    df['Date']=pd.to_datetime(df['Year'].apply(str).str.cat(df['Month'].apply(int).apply(str),sep='-'), format='%Y-%m')
+    df = df[["Date", "European_News_Index", "Germany_News_Index", "Italy_News_Index", "UK_News_Index", "France_News_Index"]]
+    return df
 
 class ecb_data(object):
     def __init__(self, url=url["ecb"]):

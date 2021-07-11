@@ -1093,3 +1093,15 @@ def Leading_Indicators_OECD(startdate = "1950-01", enddate = "2021-05"):
     df = pd.merge_asof(df, df_cci, on = "Date")
     
     return df
+
+def US_EPU_Monthly():
+    df = pd.read_excel("https://www.policyuncertainty.com/media/US_Policy_Uncertainty_Data.xlsx")[:-1]
+    df['Date']=pd.to_datetime(df['Year'].apply(str).str.cat(df['Month'].apply(int).apply(str),sep='-'), format='%Y-%m')
+    df = df[["Date", "US_Three_Component_Index", "US_EPU"]]
+    return df
+
+def US_EPU_Daily():
+    df = pd.read_csv("https://www.policyuncertainty.com/media/All_Daily_Policy_Data.csv")[:-1]
+    df['Date']=pd.to_datetime(df['year'].apply(str).str.cat(df['month'].apply(str),sep='-').apply(str).str.cat(df['day'].apply(str),sep='-'), format='%Y-%m-%d')
+    df = df.drop(["year", "month", "day"], axis=1)
+    return df
