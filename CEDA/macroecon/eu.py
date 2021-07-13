@@ -948,6 +948,1122 @@ class eurostat_data(object):
             {"Geo": geo, "{}".format(na_item): list(value.values())})
         return df
 
+def QtoM(data:pd.Series):
+    date = pd.PeriodIndex(data.str.replace(r'(Q\d)_(\d+)', r'20\2-\1'), freq='Q').strftime('%Y-%m-%d')
+    return date
+
+# EU - Main Economic Indicator
+ecb = ecb_data()
+eurostat = eurostat_data()
+eu_columns_list = {
+    "Gross Domestic Product", "Private Finance Consumption", "Government final consumption",
+    "Gross fixed capital formation", "Changes in inventories and acquisition less disposals of valuables",
+    "Exports of goods and services", "Imports of goods and services"
+    }
+
+# https://www.ecb.europa.eu/stats/ecb_statistics/key_euro_area_indicators/html/index.en.html
+
+startdate, enddate = "2010-01-01", "2021-01-01"
+daterange = pd.DataFrame({"Date": pd.date_range(start=startdate, end=enddate, freq="MS")})
+
+class real_sector():
+    def __init__(self, startdate=startdate, enddate=enddate, daterange=daterange):
+        self.startdate = startdate
+        self.enddate = enddate
+        self.daterange = daterange
+        
+class current_price_gdp_by_expenditure_category(real_sector):
+    ## National Account (current price)
+    def __init__(self):
+        super(current_price_gdp_by_expenditure_category, self).__init__()
+        pass
+
+    def gdp(self):
+        """
+        * Title: Gross domestic product at market prices
+        * URL: https://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=MNA.Q.Y.I8.W2.S1.S1.B.B1GQ._Z._Z._Z.EUR.V.N
+        * Reference area: Euro area 19 (fixed composition) as of 1 January 2015 (I8)
+        * Frequency: Quarterly
+        """
+        eu_gdp = ecb.get_data(datacode="MNA", key="Q.Y.I8.W2.S1.S1.B.B1GQ._Z._Z._Z.EUR.V.N", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_gdp.columns = ["Date", "EU_GDP"]
+        eu_gdp["Date"] = pd.to_datetime(QtoM(eu_gdp["Date"]), format="%Y-%m-%d")
+        eu_gdp = pd.merge_asof(self.daterange, eu_gdp, on="Date", direction="nearest")
+        return eu_gdp
+
+    def pfc(self):
+        """
+        * Title: Private final consumption 
+        * URL: http://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=MNA.Q.Y.I8.W0.S1M.S1.D.P31._Z._Z._T.EUR.V.N
+        * Reference area: Euro area 19 (fixed composition) as of 1 January 2015 (I8)
+        * Frequency: Quarterly
+        """
+        eu_pfc = ecb.get_data(datacode="MNA", key="Q.Y.I8.W0.S1M.S1.D.P31._Z._Z._T.EUR.V.N", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_pfc.columns = ["Date", "EU_PFC"]
+        eu_pfc["Date"] = pd.to_datetime(QtoM(eu_pfc["Date"]), format="%Y-%m-%d")
+        eu_pfc = pd.merge_asof(self.daterange, eu_pfc, on="Date", direction="nearest")
+        return eu_pfc
+
+    def gfc(self):
+        """
+        * Title: Government final consumption
+        * URL: https://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=MNA.Q.Y.I8.W0.S13.S1.D.P3._Z._Z._T.EUR.V.N
+        * Reference area: Euro area 19 (fixed composition) as of 1 January 2015 (I8)
+        * Frequency: Quarterly
+        """
+        eu_gfc = ecb.get_data(datacode="MNA", key="Q.Y.I8.W0.S13.S1.D.P3._Z._Z._T.EUR.V.N", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_gfc.columns = ["Date", "EU_GFC"]
+        eu_gfc["Date"] = pd.to_datetime(QtoM(eu_gfc["Date"]), format="%Y-%m-%d")
+        eu_gfc = pd.merge_asof(daterange, self.eu_gfc, on="Date", direction="nearest")
+        return eu_gfc
+
+    def gfcf(self):
+        """
+        * Title: Gross fixed capital formation
+        * URL: https://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=MNA.Q.Y.I8.W0.S1.S1.D.P51G.N11G._T._Z.EUR.V.N
+        * Reference area: Euro area 19 (fixed composition) as of 1 January 2015 (I8)
+        * Frequency: Quarterly
+        """
+        eu_gfcf = ecb.get_data(datacode="MNA", key="Q.Y.I8.W0.S1.S1.D.P51G.N11G._T._Z.EUR.V.N", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_gfcf.columns = ["Date", "EU_GFCF"]
+        eu_gfcf["Date"] = pd.to_datetime(QtoM(eu_gfcf["Date"]), format="%Y-%m-%d")
+        eu_gfcf = pd.merge_asof(self.daterange, eu_gfcf, on="Date", direction="nearest")
+        return eu_gfcf
+
+    def cia(self):
+        """
+        * Title: Changes in inventories and acquisition less disposals of valuables
+        * URL: https://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=MNA.Q.Y.I8.W0.S1.S1.D.P5M.N1MG._T._Z.EUR.V.N
+        * Reference area: Euro area 19 (fixed composition) as of 1 January 2015 (I8)
+        * Frequency: Quarterly
+        """
+        eu_cia = ecb.get_data(datacode="MNA", key="Q.Y.I8.W0.S1.S1.D.P5M.N1MG._T._Z.EUR.V.N", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_cia.columns = ["Date", "EU_CIA"]
+        eu_cia["Date"] = pd.to_datetime(QtoM(eu_cia["Date"]), format="%Y-%m-%d")
+        eu_cia = pd.merge_asof(self.daterange, eu_cia, on="Date", direction="nearest")
+        return eu_cia
+
+    def export(self):
+        """
+        * Title: Exports of goods and services
+        * URL: https://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=Q.Y.I8.W1.S1.S1.D.P6._Z._Z._Z.EUR.V.NN
+        * Reference area: Euro area 19 (fixed composition) as of 1 January 2015 (I8)
+        * Frequency: Quarterly
+        """
+        eu_export = ecb.get_data(datacode="MNA", key="Q.Y.I8.W1.S1.S1.D.P6._Z._Z._Z.EUR.V.N", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_export.columns = ["Date", "EU_EXPORT"]
+        eu_export["Date"] = pd.to_datetime(QtoM(eu_export["Date"]), format="%Y-%m-%d")
+        eu_export = pd.merge_asof(self.daterange, eu_export, on="Date", direction="nearest")
+
+    def import_(self):
+        """
+        * Title: Imports of goods and services
+        * URL: https://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=Q.Y.I8.W1.S1.S1.C.P7._Z._Z._Z.EUR.V.N
+        * Reference area: Euro area 19 (fixed composition) as of 1 January 2015 (I8)
+        * Frequency: Quarterly
+        """
+        eu_import = ecb.get_data(datacode="MNA", key="Q.Y.I8.W1.S1.S1.C.P7._Z._Z._Z.EUR.V.N", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_import.columns = ["Date", "EU_IMPORT"]
+        eu_import["Date"] = pd.to_datetime(QtoM(eu_import["Date"]), format="%Y-%m-%d")
+        eu_import = pd.merge_asof(self.daterange, eu_import, on="Date", direction="nearest")
+        return eu_import
+
+class volume_gdp_by_expenditure_category_in_previous_year_price(real_sector):
+    ## National Account (volume in previous year price)
+    ## National Account (current price)
+    def __init__(self):
+        super(volume_gdp_by_expenditure_category_in_previous_year_price, self).__init__()
+        pass
+    
+    def gdp(self):
+        """
+        * Title: Gross domestic product at market prices
+        * URL: https://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=MNA.Q.Y.I8.W2.S1.S1.B.B1GQ._Z._Z._Z.IX.LR.N
+        * Reference area: Euro area 19 (fixed composition) as of 1 January 2015 (I8)
+        * Frequency: Quarterly
+        """
+        eu_gdp = ecb.get_data(datacode="MNA", key="Q.Y.I8.W2.S1.S1.B.B1GQ._Z._Z._Z.IX.LR.N", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_gdp.columns = ["Date", "EU_GDP"]
+        eu_gdp["Date"] = pd.to_datetime(QtoM(eu_gdp["Date"]), format="%Y-%m") + pd.tseries.offsets.MonthBegin(-1)
+        eu_gdp = pd.merge_asof(self.daterange, eu_gdp, on="Date", direction="nearest")
+        return eu_gdp
+
+    def pfc(self):
+        """
+        * Title: Private final consumption 
+        * URL: http://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=MNA.Q.Y.I8.W0.S1M.S1.D.P31._Z._Z._T.IX.LR.N
+        * Reference area: Euro area 19 (fixed composition) as of 1 January 2015 (I8)
+        * Frequency: Quarterly
+        """
+        eu_pfc = ecb.get_data(datacode="MNA", key="Q.Y.I8.W0.S1M.S1.D.P31._Z._Z._T.IX.LR.N", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_pfc.columns = ["Date", "EU_PFC"]
+        eu_pfc["Date"] = pd.to_datetime(QtoM(eu_pfc["Date"]), format="%Y-%m") + pd.tseries.offsets.MonthBegin(-1)
+        eu_pfc = pd.merge_asof(self.daterange, eu_pfc, on="Date", direction="nearest")
+        return eu_pfc
+
+    def gfc(self):
+        """
+        * Title: Government final consumption
+        * URL: https://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=MNA.Q.Y.I8.W0.S13.S1.D.P3._Z._Z._T.IX.LR.N
+        * Reference area: Euro area 19 (fixed composition) as of 1 January 2015 (I8)
+        * Frequency: Quarterly
+        """
+        eu_gfc = ecb.get_data(datacode="MNA", key="Q.Y.I8.W0.S13.S1.D.P3._Z._Z._T.IX.LR.N", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_gfc.columns = ["Date", "EU_GFC"]
+        eu_gfc["Date"] = pd.to_datetime(QtoM(eu_gfc["Date"]), format="%Y-%m") + pd.tseries.offsets.MonthBegin(-1)
+        eu_gfc = pd.merge_asof(self.daterange, eu_gfc, on="Date", direction="nearest")
+        return eu_gfc
+
+    def gfcf(self):
+        """
+        * Title: Gross fixed capital formation
+        * URL: https://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=MNA.Q.Y.I8.W0.S1.S1.D.P51G.N11G._T._Z.IX.LR.N
+        * Reference area: Euro area 19 (fixed composition) as of 1 January 2015 (I8)
+        * Frequency: Quarterly
+        """
+        eu_gfcf = ecb.get_data(datacode="MNA", key="Q.Y.I8.W0.S1.S1.D.P51G.N11G._T._Z.IX.LR.N", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_gfcf.columns = ["Date", "EU_GFCF"]
+        eu_gfcf["Date"] = pd.to_datetime(QtoM(eu_gfcf["Date"]), format="%Y-%m") + pd.tseries.offsets.MonthBegin(-1)
+        eu_gfcf = pd.merge_asof(self.daterange, eu_gfcf, on="Date", direction="nearest")
+        return eu_gfcf
+
+    def export(self):
+        """
+        * Title: Exports of goods and services
+        * URL: https://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=Q.Y.I8.W1.S1.S1.D.P6._Z._Z._Z.IX.LR.N
+        * Reference area: Euro area 19 (fixed composition) as of 1 January 2015 (I8)
+        * Frequency: Quarterly
+        """
+        eu_export = ecb.get_data(datacode="MNA", key="Q.Y.I8.W1.S1.S1.D.P6._Z._Z._Z.IX.LR.N", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_export.columns = ["Date", "EU_EXPORT"]
+        eu_export["Date"] = pd.to_datetime(QtoM(eu_export["Date"]), format="%Y-%m") + pd.tseries.offsets.MonthBegin(-1)
+        eu_export = pd.merge_asof(self.daterange, eu_export, on="Date", direction="nearest")
+        return eu_gfcf
+
+    def import_(self):
+        """
+        * Title: Imports of goods and services
+        * URL: https://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=Q.Y.I8.W1.S1.S1.C.P7._Z._Z._Z.IX.LR.N
+        * Reference area: Euro area 19 (fixed composition) as of 1 January 2015 (I8)
+        * Frequency: Quarterly
+        """
+        eu_import = ecb.get_data(datacode="MNA", key="Q.Y.I8.W1.S1.S1.C.P7._Z._Z._Z.IX.LR.N", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_import.columns = ["Date", "EU_IMPORT"]
+        eu_import["Date"] = pd.to_datetime(QtoM(eu_import["Date"]), format="%Y-%m") + pd.tseries.offsets.MonthBegin(-1)
+        eu_import = pd.merge_asof(self.daterange, eu_import, on="Date", direction="nearest")
+        return eu_import
+
+    def industrial_production(self):
+        """
+        * Title: Industrial production for the euro area
+        * URL: https://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=132.STS.M.I8.Y.PROD.NS0020.4.000
+        * Reference area: Euro area 19 (fixed composition) as of 1 January 2015 (I8)
+        * Frequency: Quarterly
+        """
+        eu_industrial_production = ecb.get_data(datacode="STS", key="M.I8.Y.PROD.NS0020.4.000", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_industrial_production.columns = ["Date", "EU_INDUSTRIAL_PRODUCTION"]
+        eu_industrial_production["Date"] = pd.to_datetime(QtoM(eu_industrial_production["Date"]), format="%Y-%m") + pd.tseries.offsets.MonthBegin(-1)
+        eu_industrial_production = pd.merge_asof(self.daterange, eu_industrial_production, on="Date", direction="nearest")
+        return eu_industrial_production
+
+    def employment(self):
+        """
+        * Title: Employment (in thousands of persons)
+        * URL: https://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=ENA.Q.Y.I8.W2.S1.S1._Z.EMP._Z._T._Z.PS._Z.N
+        * Reference area: Euro area 19 (fixed composition) as of 1 January 2015 (I8)
+        * Frequency: Quarterly
+        """
+        eu_employment = ecb.get_data(datacode="ENA", key="Q.Y.I8.W2.S1.S1._Z.EMP._Z._T._Z.PS._Z.N", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_employment.columns = ["Date", "EU_EMPLOYMENT"]
+        eu_employment["Date"] = pd.to_datetime(QtoM(eu_employment["Date"]), format="%Y-%m") + pd.tseries.offsets.MonthBegin(-1)
+        eu_employment = pd.merge_asof(self.daterange, eu_employment, on="Date", direction="nearest")
+        return eu_employment
+
+    def unemployment(self):
+        """
+        * Title: Unemployment (in thousands of persons)
+        * URL: https://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=LFSI.M.I8.S.UNEMPL.TOTAL0.15_74.T
+        * Reference area: Euro area 19 (fixed composition) as of 1 January 2015 (I8)
+        * Frequency: Monthly
+        """
+        eu_unemployment = ecb.get_data(datacode="LFSI", key="M.I8.S.UNEMPL.TOTAL0.15_74.T", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_unemployment.columns = ["Date", "EU_UNEMPLOYMENT"]
+        eu_unemployment["Date"] = pd.to_datetime(eu_unemployment["Date"], format="%Y-%m") + pd.tseries.offsets.MonthBegin(-1)
+        return eu_unemployment
+
+    def unemployment_rate(self):
+        """
+        * Title: Unemployment Rate
+        * URL: https://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=LFSI.M.I8.S.UNEHRT.TOTAL0.15_74.T
+        * Reference area: Euro area 19 (fixed composition) as of 1 January 2015 (I8)
+        * Frequency: Monthly
+        """
+        eu_unemployment_rate = ecb.get_data(datacode="LFSI", key="M.I8.S.UNEHRT.TOTAL0.15_74.T", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_unemployment_rate.columns = ["Date", "EU_UNEMPLOYMENT_RATE"]
+        eu_unemployment_rate["Date"] = pd.to_datetime(eu_unemployment_rate["Date"], format="%Y-%m-%d")
+        return eu_unemployment_rate
+
+    def labour_cost_index(self):
+        """
+        * Title: Labour cost index
+        * URL: https://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=LCI.Q.I8.Y.LCI_T.BTN
+        * Reference area: Euro area 19 (fixed composition) as of 1 January 2015 (I8)
+        * Frequency: Quarterly
+        """
+        eu_labour_cost_index = ecb.get_data(datacode="LCI", key="Q.I8.Y.LCI_T.BTN", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_labour_cost_index.columns = ["Date", "EU_LABOUR_COST_INDEX"]
+        eu_labour_cost_index["Date"] = pd.to_datetime(QtoM(eu_labour_cost_index["Date"]), format="%Y-%m") + pd.tseries.offsets.MonthBegin(-1)
+        eu_labour_cost_index = pd.merge_asof(self.daterange, eu_labour_cost_index, on="Date", direction="nearest")
+        return eu_labour_cost_index
+
+    def hicp(self):
+        """
+        * Title: HICP - Overall index
+        * URL: https://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=ICP.M.U2.N.000000.4.INX
+        * Reference area: Euro area 19 (fixed composition) as of 1 January 2015 (I8)
+        * Frequency: Monthly
+        """
+        eu_hicp = ecb.get_data(datacode="ICP", key="M.U2.N.000000.4.INX", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_hicp.columns = ["Date", "EU_HICP"]
+        eu_hicp["Date"] = pd.to_datetime(eu_hicp["Date"], format="%Y-%m-%d")
+        return eu_hicp
+
+    def ppi(self):
+        """
+        * Title:Industrial producer prices (excl. construction) for the euro area [PPI]
+        * URL: https://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=STS.M.I8.N.PRIN.NS0020.4.000
+        * Reference area: Euro area 19 (fixed composition) as of 1 January 2015 (I8)
+        * Frequency: Monthly
+        """
+        eu_ppi = ecb.get_data(datacode="STS", key="M.I8.N.PRIN.NS0020.4.000", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_ppi.columns = ["Date", "EU_PPI"]
+        eu_ppi["Date"] = pd.to_datetime(eu_ppi["Date"], format="%Y-%m-%d")
+        return eu_ppi
+
+class fiscal_sector():
+    def __init__(self, startdate=startdate, enddate=enddate, daterange=daterange):
+        self.startdate = startdate
+        self.enddate = enddate
+        self.daterange = daterange
+        
+class general_government_operation(fiscal_sector):
+    ## National Account (current price)
+    def __init__(self):
+        super(general_government_operation, self).__init__()
+        pass
+
+    def revenue(self):
+        """
+        * Title: Government total revenue (as % of GDP)
+        * URL: https://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=325.GFS.Q.N.I8.W0.S13.S1.P.C.OTR._Z._Z._Z.XDC_R_B1GQ_CY._Z.S.V.CY._T
+        * Reference area: Euro area 19 (fixed composition) as of 1 January 2015 (I8)
+        * Frequency: Quarterly
+        """
+        eu_gtr = ecb.get_data(datacode="GFS", key="Q.N.I8.W0.S13.S1.P.C.OTR._Z._Z._Z.XDC_R_B1GQ_CY._Z.S.V.CY._T", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_gtr.columns = ["Date", "EU_GOVERNMENT_TOTAL_REVENUE"]
+        eu_gtr["Date"] = pd.to_datetime(QtoM(eu_gtr["Date"]), format="%Y-%m") + pd.tseries.offsets.MonthBegin(-1)
+        eu_gtr = pd.merge_asof(self.daterange, eu_gtr, on="Date", direction="nearest")
+        return eu_gtr
+
+    def expenditure(self):
+        """
+        * Title: Government total expenditure (as % of GDP)
+        * URL: https://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=325.GFS.Q.N.I8.W0.S13.S1.P.D.OTE._Z._Z._T.XDC_R_B1GQ_CY._Z.S.V.CY._T
+        * Reference area: Euro area 19 (fixed composition) as of 1 January 2015 (I8)
+        * Frequency: Quarterly
+        """
+        eu_gte = ecb.get_data(datacode="GFS", key="Q.N.I8.W0.S13.S1.P.D.OTE._Z._Z._T.XDC_R_B1GQ_CY._Z.S.V.CY._T", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_gte.columns = ["Date", "EU_GOVERNMENT_TOTAL_EXPENDITURE"]
+        eu_gte["Date"] = pd.to_datetime(QtoM(eu_gte["Date"]), format="%Y-%m") + pd.tseries.offsets.MonthBegin(-1)
+        eu_gte = pd.merge_asof(self.daterange, eu_gte, on="Date", direction="nearest")
+        return eu_gte
+
+    def interest_expenditure(self):
+        """
+        * Title: Government interest expenditure (as % of GDP)
+        * URL: https://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=325.GFS.Q.N.I8.W0.S13.S1.C.D.D41._Z._Z._T.XDC_R_B1GQ_CY._Z.S.V.CY._T
+        * Reference area: Euro area 19 (fixed composition) as of 1 January 2015 (I8)
+        * Frequency: Quarterly
+        """
+        eu_gie = ecb.get_data(datacode="GFS", key="Q.N.I8.W0.S13.S1.C.D.D41._Z._Z._T.XDC_R_B1GQ_CY._Z.S.V.CY._T", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_gie.columns = ["Date", "EU_GOVERNMENT_INTEREST_EXPENDITURE"]
+        eu_gie["Date"] = pd.to_datetime(QtoM(eu_gie["Date"]), format="%Y-%m") + pd.tseries.offsets.MonthBegin(-1)
+        eu_gie = pd.merge_asof(self.daterange, eu_gie, on="Date", direction="nearest")
+        return eu_gie
+
+    def investment_expenditure(self):
+        """
+        * Title: Government investment expenditure (as % of GDP)
+        * URL: https://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=325.GFS.Q.N.I8.W0.S13.S1.N.D.P51G._Z._Z._T.XDC_R_B1GQ_CY._Z.S.V.CY._T
+        * Reference area: Euro area 19 (fixed composition) as of 1 January 2015 (I8)
+        * Frequency: Quarterly
+        """
+        eu_gie = ecb.get_data(datacode="GFS", key="Q.N.I8.W0.S13.S1.N.D.P51G._Z._Z._T.XDC_R_B1GQ_CY._Z.S.V.CY._T", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_gie.columns = ["Date", "EU_GOVERNMENT_INVESTMENT_EXPENDITURE"]
+        eu_gie["Date"] = pd.to_datetime(QtoM(eu_gie["Date"]), format="%Y-%m") + pd.tseries.offsets.MonthBegin(-1)
+        eu_gie = pd.merge_asof(self.daterange, eu_gie, on="Date", direction="nearest")
+        return eu_gie
+
+    def balance(self):
+        """
+        * Title: Government deficit(-) or surplus(+) (as % of GDP)
+        * URL: https://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=325.GFS.Q.N.I8.W0.S13.S1._Z.B.B9._Z._Z._Z.XDC_R_B1GQ_CY._Z.S.V.CY._T
+        * Reference area: Euro area 19 (fixed composition) as of 1 January 2015 (I8)
+        * Frequency: Quarterly
+        """
+        eu_balance = ecb.get_data(datacode="GFS", key="Q.N.I8.W0.S13.S1._Z.B.B9._Z._Z._Z.XDC_R_B1GQ_CY._Z.S.V.CY._T", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_balance.columns = ["Date", "EU_GOVERNMENT_BALANCE"]
+        eu_balance["Date"] = pd.to_datetime(QtoM(eu_balance["Date"]), format="%Y-%m") + pd.tseries.offsets.MonthBegin(-1)
+        eu_balance = pd.merge_asof(self.daterange, eu_balance, on="Date", direction="nearest")
+        return eu_balance
+
+class general_government_debt(fiscal_sector):
+    ## National Account (current price)
+    def __init__(self):
+        super(general_government_debt, self).__init__()
+        pass
+
+    def gross_outstanding_debt_total(self):
+        """
+        * Title: Government debt (consolidated) (as % of GDP)
+        * URL: https://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=325.GFS.A.N.I8.W0.S13.S1.C.L.LE.GD.T._Z.XDC_R_B1GQ._T.F.V.N._T
+        * Reference area: Euro area 19 (fixed composition) as of 1 January 2015 (I8)
+        * Frequency: Yearly
+        """
+        eu_od = ecb.get_data(datacode="GFS", key="A.N.I8.W0.S13.S1.C.L.LE.GD.T._Z.XDC_R_B1GQ._T.F.V.N._T", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_od.columns = ["Date", "EU_GOVERNMENT_OUT_STANDING_DEBT_TOTAL"]
+        eu_od["Date"] = pd.to_datetime(eu_od["Date"], format="%Y") + pd.tseries.offsets.MonthBegin(-1)
+        eu_od = pd.merge_asof(self.daterange, eu_od, on="Date", direction="nearest")
+        return eu_od
+
+    def gross_outstanding_debt_in_euro(self):
+        """
+        * Title: Government debt denominated in national currency and euro (as % of GDP)
+        * URL: https://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=325.GFS.A.N.I8.W0.S13.S1.C.L.LE.GD.T._Z.XDC_R_B1GQ.EUR.F.V.N._T
+        * Reference area: Euro area 19 (fixed composition) as of 1 January 2015 (I8)
+        * Frequency: Yearly
+        """
+        eu_od = ecb.get_data(datacode="GFS", key="A.N.I8.W0.S13.S1.C.L.LE.GD.T._Z.XDC_R_B1GQ.EUR.F.V.N._T", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_od.columns = ["Date", "EU_GOVERNMENT_OUT_STANDING_DEBT_IN_EURO"]
+        eu_od["Date"] = pd.to_datetime(eu_od["Date"], format="%Y") + pd.tseries.offsets.MonthBegin(-1)
+        eu_od = pd.merge_asof(self.daterange, eu_od, on="Date", direction="nearest")
+        return eu_od
+
+    def gross_outstanding_debt_no_euro(self):
+        """
+        * Title: Government debt denominated in currencies other than national currency and euro (as % of GDP)
+        * URL: https://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=325.GFS.A.N.I8.W0.S13.S1.C.L.LE.GD.T._Z.XDC_R_B1GQ.XNC.F.V.N._T
+        * Reference area: Euro area 19 (fixed composition) as of 1 January 2015 (I8)
+        * Frequency: Yearly
+        """
+        eu_od = ecb.get_data(datacode="GFS", key="A.N.I8.W0.S13.S1.C.L.LE.GD.T._Z.XDC_R_B1GQ.XNC.F.V.N._T", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_od.columns = ["Date", "EU_GOVERNMENT_OUT_STANDING_DEBT_NO_EURO"]
+        eu_od["Date"] = pd.to_datetime(eu_od["Date"], format="%Y") + pd.tseries.offsets.MonthBegin(-1)
+        eu_od = pd.merge_asof(self.daterange, eu_od, on="Date", direction="nearest")
+        return eu_od
+
+    def gross_outstanding_debt_resident(self):
+        """
+        * Title: Government debt held by residents (as % of GDP)
+        * URL: https://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=325.GFS.A.N.I8.W2.S13.S1.C.L.LE.GD.T._Z.XDC_R_B1GQ._T.F.V.N._T
+        * Reference area: Euro area 19 (fixed composition) as of 1 January 2015 (I8)
+        * Frequency: Yearly
+        """
+        eu_od = ecb.get_data(datacode="GFS", key="A.N.I8.W2.S13.S1.C.L.LE.GD.T._Z.XDC_R_B1GQ._T.F.V.N._T", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_od.columns = ["Date", "EU_GOVERNMENT_OUT_STANDING_DEBT_RESIDENTS"]
+        eu_od["Date"] = pd.to_datetime(eu_od["Date"], format="%Y") + pd.tseries.offsets.MonthBegin(-1)
+        eu_od = pd.merge_asof(self.daterange, eu_od, on="Date", direction="nearest")
+        return eu_od
+
+    def gross_outstanding_debt_mfi(self):
+        """
+        * Title: Government debt held by monetary financial institutions (as % of GDP)
+        * URL: https://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=325.GFS.A.N.I8.W2.S13.S12K.C.L.LE.GD.T._Z.XDC_R_B1GQ._T.F.V.N._T
+        * Reference area: Euro area 19 (fixed composition) as of 1 January 2015 (I8)
+        * Frequency: Yearly
+        """
+        eu_od = ecb.get_data(datacode="GFS", key="A.N.I8.W2.S13.S12K.C.L.LE.GD.T._Z.XDC_R_B1GQ._T.F.V.N._T", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_od.columns = ["Date", "EU_GOVERNMENT_OUT_STANDING_DEBT_MFI"]
+        eu_od["Date"] = pd.to_datetime(eu_od["Date"], format="%Y") + pd.tseries.offsets.MonthBegin(-1)
+        eu_od = pd.merge_asof(self.daterange, eu_od, on="Date", direction="nearest")
+        return eu_od
+
+    def gross_outstanding_debt_non_mfi(self):
+        """
+        * Title: Government debt held by financial institutions other than monetary financial institutions (as % of GDP)
+        * URL: https://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=325.GFS.A.N.I8.W2.S13.S12P.C.L.LE.GD.T._Z.XDC_R_B1GQ._T.F.V.N._T
+        * Reference area: Euro area 19 (fixed composition) as of 1 January 2015 (I8)
+        * Frequency: Yearly
+        """
+        eu_od = ecb.get_data(datacode="GFS", key="A.N.I8.W2.S13.S12P.C.L.LE.GD.T._Z.XDC_R_B1GQ._T.F.V.N._T", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_od.columns = ["Date", "EU_GOVERNMENT_OUT_STANDING_DEBT_NON_MFI"]
+        eu_od["Date"] = pd.to_datetime(eu_od["Date"], format="%Y") + pd.tseries.offsets.MonthBegin(-1)
+        eu_od = pd.merge_asof(self.daterange, eu_od, on="Date", direction="nearest")
+        return eu_od
+
+    def gross_outstanding_debt_non_fin_sector(self):
+        """
+        * Title: Government debt held by the non-financial sectors (as % of GDP)
+        * URL: https://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=325.GFS.A.N.I8.W2.S13.S1U.C.L.LE.GD.T._Z.XDC_R_B1GQ._T.F.V.N._T
+        * Reference area: Euro area 19 (fixed composition) as of 1 January 2015 (I8)
+        * Frequency: Yearly
+        """
+        eu_od = ecb.get_data(datacode="GFS", key="A.N.I8.W2.S13.S1U.C.L.LE.GD.T._Z.XDC_R_B1GQ._T.F.V.N._T", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_od.columns = ["Date", "EU_GOVERNMENT_OUT_STANDING_DEBT_NON_FIN_SECTOR"]
+        eu_od["Date"] = pd.to_datetime(eu_od["Date"], format="%Y") + pd.tseries.offsets.MonthBegin(-1)
+        eu_od = pd.merge_asof(self.daterange, eu_od, on="Date", direction="nearest")
+        return eu_od
+
+    def gross_outstanding_debt_non_resident(self):
+        """
+        * Title: Government debt held by non-residents (as % of GDP)
+        * URL: https://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=325.GFS.A.N.I8.W1.S13.S1.C.L.LE.GD.T._Z.XDC_R_B1GQ._T.F.V.N._T
+        * Reference area: Euro area 19 (fixed composition) as of 1 January 2015 (I8)
+        * Frequency: Yearly
+        """
+        eu_od = ecb.get_data(datacode="GFS", key="A.N.I8.W1.S13.S1.C.L.LE.GD.T._Z.XDC_R_B1GQ._T.F.V.N._T", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_od.columns = ["Date", "EU_GOVERNMENT_OUT_STANDING_DEBT_NON_RESIDENT"]
+        eu_od["Date"] = pd.to_datetime(eu_od["Date"], format="%Y") + pd.tseries.offsets.MonthBegin(-1)
+        eu_od = pd.merge_asof(self.daterange, eu_od, on="Date", direction="nearest")
+        return eu_od
+
+class financial_sector():
+    def __init__(self, startdate=startdate, enddate=enddate, daterange=daterange):
+        self.startdate = startdate
+        self.enddate = enddate
+        self.daterange = daterange
+        
+class analytical_accounts_of_the_banking_sector(financial_sector):
+    ## National Account (current price)
+    def __init__(self):
+        super(analytical_accounts_of_the_banking_sector, self).__init__()
+        pass
+
+    def monetary_aggrate_m1(self):
+        """
+        * Title: Monetary aggregate M1 vis-a-vis euro area non-MFI excl. central gov. reported by MFI & central gov. & post office giro Inst. in the euro area (stock)
+        * URL: https://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=BSI.M.U2.Y.V.M10.X.1.U2.2300.Z01.E
+        * Reference area: Euro area 19 (fixed composition) as of 1 January 2015 (I8)
+        * Frequency: Monthly
+        """
+        eu_m1 = ecb.get_data(datacode="BSI", key="M.U2.Y.V.M30.X.1.U2.2300.Z01.E", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_m1.columns = ["Date", "EU_MONETARY_AGGRATE_M3"]
+        eu_m1["Date"] = pd.to_datetime(eu_m1["Date"], format="%Y-%m-%d")
+        return eu_m1
+
+    def monetary_aggrate_m2(self):
+        """
+        * Title: Monetary aggregate M2 vis-a-vis euro area non-MFI excl. central gov. reported by MFI & central gov. & post office giro Inst. in the euro area (stock)
+        * URL: https://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=BSI.M.U2.Y.V.M10.X.1.U2.2300.Z01.E
+        * Reference area: Euro area 19 (fixed composition) as of 1 January 2015 (I8)
+        * Frequency: Monthly
+        """
+        eu_m2 = ecb.get_data(datacode="BSI", key="M.U2.Y.V.M20.X.1.U2.2300.Z01.E", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_m2.columns = ["Date", "EU_MONETARY_AGGRATE_M3"]
+        eu_m2["Date"] = pd.to_datetime(eu_m2["Date"], format="%Y-%m-%d")
+        return eu_m2
+
+    def monetary_aggrate_m3(self):
+        """
+        * Title: Monetary aggregate M3 vis-a-vis euro area non-MFI excl. central gov. reported by MFI & central gov. & post office giro Inst. in the euro area (stock)
+        * URL: https://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=BSI.M.U2.Y.V.M30.X.1.U2.2300.Z01.E
+        * Reference area: Euro area 19 (fixed composition) as of 1 January 2015 (I8)
+        * Frequency: Monthly
+        """
+        eu_m3 = ecb.get_data(datacode="BSI", key="M.U2.Y.V.M30.X.1.U2.2300.Z01.E", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_m3.columns = ["Date", "EU_MONETARY_AGGRATE_M3"]
+        eu_m3["Date"] = pd.to_datetime(eu_m3["Date"], format="%Y-%m-%d")
+        return eu_m3
+
+    def domestic_credit(self):
+        """
+        * Title: Total loans and securities vis-a-vis euro area non-MFI reported by MFI in the euro area (stock)
+        * URL: https://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=BSI.M.U2.Y.U.AT2.A.1.U2.2000.Z01.E
+        * Reference area: Euro area 19 (fixed composition) as of 1 January 2015 (I8)
+        * Frequency: Monthly
+        """
+        eu_dc = ecb.get_data(datacode="BSI", key="M.U2.Y.U.AT2.A.1.U2.2000.Z01.E", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_dc.columns = ["Date", "EU_DOMESTIC_CREDIT"]
+        eu_dc["Date"] = pd.to_datetime(eu_dc["Date"], format="%Y-%m-%d")
+        return eu_dc
+
+    def credit_general_government(self):
+        """
+        * Title: Total loans and securities vis-a-vis euro area General Government reported by MFI in the euro area (stock)
+        * URL: https://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=BSI.M.U2.Y.U.AT2.A.1.U2.2100.Z01.E
+        * Reference area: Euro area 19 (fixed composition) as of 1 January 2015 (I8)
+        * Frequency: Monthly
+        """
+        eu_dc = ecb.get_data(datacode="BSI", key="M.U2.Y.U.AT2.A.1.U2.2100.Z01.E", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_dc.columns = ["Date", "EU_GOVERNMENT_CREDIT"]
+        eu_dc["Date"] = pd.to_datetime(eu_dc["Date"], format="%Y-%m-%d")
+        return eu_dc
+
+    def credit_general_other_resident(self):
+        """
+        * Title: Total loans and securities vis-a-vis euro area non-MFI excl. general gov. reported by MFI in the euro area (stock)
+        * URL: https://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=BSI.M.U2.Y.U.AT2.A.1.U2.2200.Z01.E
+        * Reference area: Euro area 19 (fixed composition) as of 1 January 2015 (I8)
+        * Frequency: Monthly
+        """
+        eu_dc = ecb.get_data(datacode="BSI", key="M.U2.Y.U.AT2.A.1.U2.2200.Z01.E", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_dc.columns = ["Date", "EU_OTHER_RESIDENT_CREDIT"]
+        eu_dc["Date"] = pd.to_datetime(eu_dc["Date"], format="%Y-%m-%d")
+        return eu_dc
+
+    def external_assets(self):
+        """
+        * Title: External assets reported by MFI in the euro area (stock)
+        * URL: https://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=BSI.M.U2.Y.U.AXG.A.1.U4.0000.Z01.E
+        * Reference area: Euro area 19 (fixed composition) as of 1 January 2015 (I8)
+        * Frequency: Monthly
+        """
+        eu_ea = ecb.get_data(datacode="BSI", key="M.U2.Y.U.AXG.A.1.U4.0000.Z01.E", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_ea.columns = ["Date", "EU_EXTERNAL_ASSETS"]
+        eu_ea["Date"] = pd.to_datetime(eu_ea["Date"], format="%Y-%m-%d")
+        return eu_ea
+
+    def external_liabilities(self):
+        """
+        * Title: External liabilities reported by MFI in the euro area (stock)
+        * URL: https://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=BSI.M.U2.Y.U.LXG.A.1.U4.0000.Z01.E
+        * Reference area: Euro area 19 (fixed composition) as of 1 January 2015 (I8)
+        * Frequency: Monthly
+        """
+        eu_el = ecb.get_data(datacode="BSI", key="M.U2.Y.U.LXG.A.1.U4.0000.Z01.E", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_el.columns = ["Date", "EU_EXTERNAL_LIABILITIES"]
+        eu_el["Date"] = pd.to_datetime(eu_el["Date"], format="%Y-%m-%d")
+        return eu_el
+
+class analytical_accounts_of_the_central_banks(financial_sector):
+    ## National Account (current price)
+    def __init__(self):
+        super(analytical_accounts_of_the_banking_sector, self).__init__()
+        pass
+
+    def currency_in_circulation(self):
+        """
+        * Title: Currency in circulation reported by Eurosystem in the euro area (stock)
+        * URL:https://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=117.BSI.M.U2.N.C.L10.X.1.Z5.0000.Z01.E
+        * Reference area: Euro area 19 (fixed composition) as of 1 January 2015 (I8)
+        * Frequency: Monthly
+        """
+        eu_cc = ecb.get_data(datacode="BSI", key="M.U2.N.C.L10.X.1.Z5.0000.Z01.E", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_cc.columns = ["Date", "EU_CURRENCY_IN_CIRCULATION"]
+        eu_cc["Date"] = pd.to_datetime(eu_cc["Date"], format="%Y-%m-%d")
+        return eu_cc
+
+    def deposits_at_eurosystem_mfi(self):
+        """
+        * Title: Deposit liabilities vis-a-vis euro area MFI reported by Eurosystem in the euro area (stock)
+        * URL:https://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=117.BSI.M.U2.N.C.L20.A.1.U2.1000.Z01.E
+        * Reference area: Euro area 19 (fixed composition) as of 1 January 2015 (I8)
+        * Frequency: Monthly
+        """
+        eu_cc = ecb.get_data(datacode="BSI", key="M.U2.N.C.L20.A.1.U2.1000.Z01.E", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_cc.columns = ["Date", "EU_DEPOSITS_AT_EUROSYSTEM_MFI"]
+        eu_cc["Date"] = pd.to_datetime(eu_cc["Date"], format="%Y-%m-%d")
+        return eu_cc
+
+    def credit(self):
+        """
+        * Title: Total loans and securities vis-a-vis euro area non-MFI reported by Eurosystem in the euro area (stock)
+        * URL:https://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=117.BSI.M.U2.N.C.AT2.A.1.U2.2000.Z01.E
+        * Reference area: Euro area 19 (fixed composition) as of 1 January 2015 (I8)
+        * Frequency: Monthly
+        """
+        eu_cc = ecb.get_data(datacode="BSI", key="M.U2.N.C.AT2.A.1.U2.2000.Z01.E", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_cc.columns = ["Date", "EU_CREDIT"]
+        eu_cc["Date"] = pd.to_datetime(eu_cc["Date"], format="%Y-%m-%d")
+        return eu_cc
+
+    def credit_to_general_governemnt(self):
+        """
+        * Title: Total loans and securities vis-a-vis euro area non-MFI reported by Eurosystem in the euro area (stock)
+        * URL:https://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=117.BSI.M.U2.N.C.AT2.A.1.U2.2100.Z01.E
+        * Reference area: Euro area 19 (fixed composition) as of 1 January 2015 (I8)
+        * Frequency: Monthly
+        """
+        eu_cc = ecb.get_data(datacode="BSI", key="M.U2.N.C.AT2.A.1.U2.2100.Z01.E", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_cc.columns = ["Date", "EU_CREDIT_TO_GENERAL_GOVERNMENT"]
+        eu_cc["Date"] = pd.to_datetime(eu_cc["Date"], format="%Y-%m-%d")
+        return eu_cc
+
+    def credit_to_other_resident_sector(self):
+        """
+        * Title: Total loans and securities vis-a-vis euro area non-MFI reported by Eurosystem in the euro area (stock)
+        * URL:https://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=117.BSI.M.U2.N.C.AT2.A.1.U2.2200.Z01.E
+        * Reference area: Euro area 19 (fixed composition) as of 1 January 2015 (I8)
+        * Frequency: Monthly
+        """
+        eu_cc = ecb.get_data(datacode="BSI", key="M.U2.N.C.AT2.A.1.U2.2200.Z01.E", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_cc.columns = ["Date", "EU_CREDIT_TO_OTHER_RESIDENT"]
+        eu_cc["Date"] = pd.to_datetime(eu_cc["Date"], format="%Y-%m-%d")
+        return eu_cc
+
+    def external_assets(self):
+        """
+        * Title: External assets reported by Eurosystem in the euro area (stock)
+        * URL: https://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=BSI.M.U2.N.C.AXG.A.1.U4.0000.Z01.E
+        * Reference area: Euro area 19 (fixed composition) as of 1 January 2015 (I8)
+        * Frequency: Monthly
+        """
+        eu_ea = ecb.get_data(datacode="BSI", key="M.U2.N.C.AXG.A.1.U4.0000.Z01.E", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_ea.columns = ["Date", "EU_EXTERNAL_ASSETS"]
+        eu_ea["Date"] = pd.to_datetime(eu_ea["Date"], format="%Y-%m-%d")
+        return eu_ea
+
+    def external_liabilities(self):
+        """
+        * Title: External liabilities reported by Eurosystem in the euro area (stock)
+        * URL: https://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=BSI.M.U2.N.C.LXG.A.1.U4.0000.Z01.E
+        * Reference area: Euro area 19 (fixed composition) as of 1 January 2015 (I8)
+        * Frequency: Monthly
+        """
+        eu_el = ecb.get_data(datacode="BSI", key="M.U2.N.C.LXG.A.1.U4.0000.Z01.E", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_el.columns = ["Date", "EU_EXTERNAL_LIABILITIES"]
+        eu_el["Date"] = pd.to_datetime(eu_el["Date"], format="%Y-%m-%d")
+        return eu_el
+
+class interest_rate(financial_sector):
+    ## National Account (current price)
+    def __init__(self):
+        super(interest_rate, self).__init__()
+        pass
+
+    def one_year_interbank(self):
+        """
+        * Title: Euribor 1-year - Historical close, average of observations through period
+        * URL: https://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=143.FM.M.U2.EUR.RT.MM.EURIBOR1YD_.HSTA
+        * Reference area: Euro area 19 (fixed composition) as of 1 January 2015 (I8)
+        * Frequency: Monthly
+        """
+        eu_el = ecb.get_data(datacode="FM", key="M.U2.EUR.RT.MM.EURIBOR1YD_.HSTA", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_el.columns = ["Date", "EU_ONE_YEAR_INTERBANK_RATE"]
+        eu_el["Date"] = pd.to_datetime(eu_el["Date"], format="%Y-%m-%d")
+        return eu_el
+
+    def ten_year_government_banchmar_bond_yild(self):
+        """
+        * Title: Euro area 10-year Government Benchmark bond yield - Yield
+        * URL: https://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=143.FM.M.U2.EUR.4F.BB.U2_10Y.YLD
+        * Reference area: Euro area 19 (fixed composition) as of 1 January 2015 (I8)
+        * Frequency: Monthly
+        """
+        eu_el = ecb.get_data(datacode="FM", key="M.U2.EUR.4F.BB.U2_10Y.YLD", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_el.columns = ["Date", "EU_TEN_YEART_BOND_RATE"]
+        eu_el["Date"] = pd.to_datetime(eu_el["Date"], format="%Y-%m-%d")
+        return eu_el
+
+class external_sector():
+    def __init__(self, startdate=startdate, enddate=enddate, daterange=daterange):
+        self.startdate = startdate
+        self.enddate = enddate
+        self.daterange = daterange
+        
+class balance_of_payments(external_sector):
+    ## National Account (current price)
+    def __init__(self):
+        super(balance_of_payments, self).__init__()
+        pass
+
+    def net_current_account(self):
+        """
+        * Title: Current account
+        * URL: https://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=338.BP6.M.Y.I8.W1.S1.S1.T.B.CA._Z._Z._Z.EUR._T._X.N
+        * Reference area: Euro area 19 (fixed composition) as of 1 January 2015 (I8)
+        * Frequency: Monthly
+        """
+        eu_ca = ecb.get_data(datacode="BP6", key="M.Y.I8.W1.S1.S1.T.B.CA._Z._Z._Z.EUR._T._X.N", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_ca.columns = ["Date", "EU_CURRENT_ACCOUNT"]
+        eu_ca["Date"] = pd.to_datetime(eu_ca["Date"], format="%Y-%m-%d")
+        return eu_ca
+
+    def exports_goods(self):
+        """
+        * Title: Goods
+        * URL: https://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=338.BP6.M.Y.I8.W1.S1.S1.T.C.G._Z._Z._Z.EUR._T._X.N
+        * Reference area: Euro area 19 (fixed composition) as of 1 January 2015 (I8)
+        * Frequency: Monthly
+        """
+        eu_eg = ecb.get_data(datacode="BP6", key="M.Y.I8.W1.S1.S1.T.C.G._Z._Z._Z.EUR._T._X.N", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_eg.columns = ["Date", "EU_EXPORT_GOODS"]
+        eu_eg["Date"] = pd.to_datetime(eu_eg["Date"], format="%Y-%m-%d")
+        return eu_ca
+
+    def exports_services(self):
+        """
+        * Title: Services
+        * URL: https://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=338.BP6.M.Y.I8.W1.S1.S1.T.C.S._Z._Z._Z.EUR._T._X.N
+        * Reference area: Euro area 19 (fixed composition) as of 1 January 2015 (I8)
+        * Frequency: Monthly
+        """
+        eu_eg = ecb.get_data(datacode="BP6", key="M.Y.I8.W1.S1.S1.T.C.S._Z._Z._Z.EUR._T._X.N", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_es.columns = ["Date", "EU_EXPORT_SERVICES"]
+        eu_es["Date"] = pd.to_datetime(eu_es["Date"], format="%Y-%m-%d")
+        return eu_es
+
+    def imports_goods(self):
+        """
+        * Title: Goods
+        * URL: https://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=338.BP6.M.Y.I8.W1.S1.S1.T.D.G._Z._Z._Z.EUR._T._X.N
+        * Reference area: Euro area 19 (fixed composition) as of 1 January 2015 (I8)
+        * Frequency: Monthly
+        """
+        eu_ig = ecb.get_data(datacode="BP6", key="M.Y.I8.W1.S1.S1.T.D.G._Z._Z._Z.EUR._T._X.N", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_ig.columns = ["Date", "EU_IMPORT_GOODS"]
+        eu_ig["Date"] = pd.to_datetime(eu_ig["Date"], format="%Y-%m-%d")
+        return eu_ca
+
+    def import_services(self):
+        """
+        * Title: Services
+        * URL: https://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=338.BP6.M.Y.I8.W1.S1.S1.T.D.S._Z._Z._Z.EUR._T._X.N
+        * Reference area: Euro area 19 (fixed composition) as of 1 January 2015 (I8)
+        * Frequency: Monthly
+        """
+        eu_is = ecb.get_data(datacode="BP6", key="M.Y.I8.W1.S1.S1.T.D.S._Z._Z._Z.EUR._T._X.N", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_is.columns = ["Date", "EU_IMPORT_SERVICES"]
+        eu_is["Date"] = pd.to_datetime(eu_is["Date"], format="%Y-%m-%d")
+        return eu_is
+
+    def net_primary_income(self):
+        """
+        * Title: Primary income
+        * URL: https://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=338.BP6.M.Y.I8.W1.S1.S1.T.B.IN1._Z._Z._Z.EUR._T._X.N
+        * Reference area: Euro area 19 (fixed composition) as of 1 January 2015 (I8)
+        * Frequency: Monthly
+        """
+        eu_npi = ecb.get_data(datacode="BP6", key="M.Y.I8.W1.S1.S1.T.B.IN1._Z._Z._Z.EUR._T._X.N", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_npi.columns = ["Date", "EU_NET_PRIMARY_INCOME"]
+        eu_npi["Date"] = pd.to_datetime(eu_npi["Date"], format="%Y-%m-%d")
+        return eu_npi
+
+    def net_secondary_income(self):
+        """
+        * Title: Secondary income
+        * URL: https://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=338.BP6.M.Y.I8.W1.S1.S1.T.B.IN2._Z._Z._Z.EUR._T._X.N
+        * Reference area: Euro area 19 (fixed composition) as of 1 January 2015 (I8)
+        * Frequency: Monthly
+        """
+        eu_nsi = ecb.get_data(datacode="BP6", key="M.Y.I8.W1.S1.S1.T.B.IN2._Z._Z._Z.EUR._T._X.N", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_nsi.columns = ["Date", "EU_NET_SECONDARY_INCOME"]
+        eu_nsi["Date"] = pd.to_datetime(eu_nsi["Date"], format="%Y-%m-%d")
+        return eu_nsi
+
+    def net_capital_account(self):
+        """
+        * Title: Capitial account
+        * URL: https://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=338.BP6.M.N.I8.W1.S1.S1.T.B.KA._Z._Z._Z.EUR._T._X.N
+        * Reference area: Euro area 19 (fixed composition) as of 1 January 2015 (I8)
+        * Frequency: Monthly
+        """
+        eu_nca = ecb.get_data(datacode="BP6", key="M.N.I8.W1.S1.S1.T.B.KA._Z._Z._Z.EUR._T._X.N", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_nca.columns = ["Date", "EU_NET_CAPTIAL_ACCOUNT"]
+        eu_nca["Date"] = pd.to_datetime(eu_nca["Date"], format="%Y-%m-%d")
+        return eu_nca
+
+    def net_financial_account(self):
+        """
+        * Title: Total financial assets/liabilities
+        * URL: https://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=338.BP6.M.N.I8.W1.S1.S1.T.N.FA._T.F._Z.EUR._T._X.N
+        * Reference area: Euro area 19 (fixed composition) as of 1 January 2015 (I8)
+        * Frequency: Monthly
+        """
+        eu_nfa = ecb.get_data(datacode="BP6", key="M.N.I8.W1.S1.S1.T.N.FA._T.F._Z.EUR._T._X.N", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_nfa.columns = ["Date", "EU_NET_FINANCIAL_ACCOUNT"]
+        eu_nfa["Date"] = pd.to_datetime(eu_nfa["Date"], format="%Y-%m-%d")
+        return eu_nfa
+
+    def direct_investment(self):
+        """
+        * Title: Direct Investment, Total financial assets/liabilities
+        * URL: https://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=338.BP6.M.N.I8.W1.S1.S1.T.N.FA.D.F._Z.EUR._T._X.N
+        * Reference area: Euro area 19 (fixed composition) as of 1 January 2015 (I8)
+        * Frequency: Monthly
+        """
+        eu_di = ecb.get_data(datacode="BP6", key="M.N.I8.W1.S1.S1.T.N.FA.D.F._Z.EUR._T._X.N", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_dia = ecb.get_data(datacode="BP6", key="M.N.I8.W1.S1.S1.T.A.FA.D.F._Z.EUR._T._X.N", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_dil = ecb.get_data(datacode="BP6", key="M.N.I8.W1.S1.S1.T.L.FA.D.F._Z.EUR._T._X.N", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_di.columns = ["Date", "EU_DIRECT_INVESTMENT"]
+        eu_di["Date"] = pd.to_datetime(eu_di["Date"], format="%Y-%m-%d")
+        eu_di["EU_DIRECT_INVESTMENT_ASSETS"],  eu_di["EU_DIRECT_INVESTMENT_LIABILITIES"] = eu_dia["OBS_VALUE"], eu_dil["OBS_VALUE"]
+        return eu_di
+
+    def porfolio_investment(self):
+        """
+        * Title: Portfolio Investment, Total financial assets/liabilities
+        * URL: https://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=338.BP6.M.N.I8.W1.S1.S1.T.N.FA.P.F._Z.EUR._T.M.N
+        * Reference area: Euro area 19 (fixed composition) as of 1 January 2015 (I8)
+        * Frequency: Monthly
+        """
+        eu_pi = ecb.get_data(datacode="BP6", key="M.N.I8.W1.S1.S1.T.N.FA.P.F._Z.EUR._T.M.N", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_pia = ecb.get_data(datacode="BP6", key="M.N.I8.W1.S1.S1.T.A.FA.P.F._Z.EUR._T.M.N", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_pil = ecb.get_data(datacode="BP6", key="M.N.I8.W1.S1.S1.T.L.FA.P.F._Z.EUR._T._X.N", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_pi.columns = ["Date", "EU_PORFOLIO_INVESTMENT"]
+        eu_pi["Date"] = pd.to_datetime(eu_pi["Date"], format="%Y-%m-%d")
+        eu_pi["EU_PORFOLIO_INVESTMENT_ASSETS"],  eu_pi["EU_PORFOLIO_INVESTMENT_LIABILITIES"] = eu_pia["OBS_VALUE"], eu_pil["OBS_VALUE"]
+        return eu_pi
+
+    def other_investment(self):
+        """
+        * Title: Other Investment, Total financial assets/liabilities
+        * URL: https://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=338.BP6.M.N.I8.W1.S1.S1.T.N.FA.O.F._Z.EUR._T._X.N
+        * Reference area: Euro area 19 (fixed composition) as of 1 January 2015 (I8)
+        * Frequency: Monthly
+        """
+        eu_pi = ecb.get_data(datacode="BP6", key="M.N.I8.W1.S1.S1.T.N.FA.O.F._Z.EUR._T._X.N", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_pia = ecb.get_data(datacode="BP6", key="M.N.I8.W1.S1.S1.T.A.FA.O.F._Z.EUR._T._X.N", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_pil = ecb.get_data(datacode="BP6", key="M.N.I8.W1.S1.S1.T.L.FA.O.F._Z.EUR._T._X.N", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_pi.columns = ["Date", "EU_OTHER_INVESTMENT"]
+        eu_pi["Date"] = pd.to_datetime(eu_pi["Date"], format="%Y-%m-%d")
+        eu_pi["EU_OTHER_INVESTMENT_ASSETS"],  eu_pi["EU_OTHER_INVESTMENT_LIABILITIES"] = eu_pia["OBS_VALUE"], eu_pil["OBS_VALUE"]
+        return eu_pi
+
+    def financial_derivatives(self):
+        """
+        * Title: Financial Derivatives and Employee Stock Options, Financial derivatives and employee stock options
+        * URL: https://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=338.BP6.M.N.I8.W1.S1.S1.T.N.FA.F.F7.T.EUR._T.T.N
+        * Reference area: Euro area 19 (fixed composition) as of 1 January 2015 (I8)
+        * Frequency: Monthly
+        """
+        eu_nfa = ecb.get_data(datacode="BP6", key="M.N.I8.W1.S1.S1.T.N.FA.F.F7.T.EUR._T.T.N", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_nfa.columns = ["Date", "EU_FINANCIAL_DERIVATIVES"]
+        eu_nfa["Date"] = pd.to_datetime(eu_nfa["Date"], format="%Y-%m-%d")
+        return eu_nfa
+
+    def reserve_assets(self):
+        """
+        * Title: Reserve Assets, Total financial assets/liabilities
+        * URL: https://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=338.BP6.M.N.I8.W1.S121.S1.T.A.FA.R.F._Z.EUR.X1._X.N
+        * Reference area: Euro area 19 (fixed composition) as of 1 January 2015 (I8)
+        * Frequency: Monthly
+        """
+        eu_nfa = ecb.get_data(datacode="BP6", key="M.N.I8.W1.S121.S1.T.A.FA.R.F._Z.EUR.X1._X.N", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_nfa.columns = ["Date", "EU_RESERVE_ASSETS"]
+        eu_nfa["Date"] = pd.to_datetime(eu_nfa["Date"], format="%Y-%m-%d")
+        return eu_nfa
+
+class international_reserves_and_foreign_currency_liquidity(external_sector):
+    ## National Account (current price)
+    def __init__(self):
+        super(balance_of_payments, self).__init__()
+        pass
+
+    def official_reserve_assets(self):
+        """
+        * Title: Official reserve assets
+        * URL: https://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=340.RA6.M.N.U2.W1.S121.S1.LE.A.FA.R.F._Z.EUR.X1._X.N
+        * Reference area: Euro area 19 (fixed composition) as of 1 January 2015 (I8)
+        * Frequency: Monthly
+        """
+        eu_ora = ecb.get_data(datacode="RA6", key="M.N.U2.W1.S121.S1.LE.A.FA.R.F._Z.EUR.X1._X.N", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_ora.columns = ["Date", "EU_OFFICIAL_RESERVE_ASSETS"]
+        eu_ora["Date"] = pd.to_datetime(eu_ora["Date"], format="%Y-%m-%d")
+        return eu_ora
+
+    def monetary_gold(self):
+        """
+        * Title: Monetary gold
+        * URL: https://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=340.RA6.M.N.U2.W1.S121.S1.LE.A.FA.R.F11._Z.EUR.XAU.M.N
+        * Reference area: Euro area 19 (fixed composition) as of 1 January 2015 (I8)
+        * Frequency: Monthly
+        """
+        eu_mg = ecb.get_data(datacode="RA6", key="M.N.U2.W1.S121.S1.LE.A.FA.R.F11._Z.EUR.XAU.M.N", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_mg.columns = ["Date", "EU_MONETARY_GOLD"]
+        eu_mg["Date"] = pd.to_datetime(eu_mg["Date"], format="%Y-%m-%d")
+        return eu_mg
+
+    def imf_reserve_position(self):
+        """
+        * Title: Reserve position in the IMF
+        * URL: https://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=340.RA6.M.N.U2.1C.S121.S121.LE.A.FA.R.FK._Z.EUR.XDR.M.N
+        * Reference area: Euro area 19 (fixed composition) as of 1 January 2015 (I8)
+        * Frequency: Monthly
+        """
+        eu_img_rp = ecb.get_data(datacode="RA6", key="M.N.U2.1C.S121.S121.LE.A.FA.R.FK._Z.EUR.XDR.M.N", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_img_rp.columns = ["Date", "EU_IMF_RESERVE_POSITION"]
+        eu_img_rp["Date"] = pd.to_datetime(eu_img_rp["Date"], format="%Y-%m-%d")
+        return eu_img_rp
+
+    def sdr(self):
+        """
+        * Title: Reserve position in the IMF
+        * URL: https://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=340.RA6.M.N.U2.W1.S121.S1N.LE.A.FA.R.F12.T.EUR.XDR.M.N
+        * Reference area: Euro area 19 (fixed composition) as of 1 January 2015 (I8)
+        * Frequency: Monthly
+        """
+        eu_img_rp = ecb.get_data(datacode="RA6", key="M.N.U2.W1.S121.S1N.LE.A.FA.R.F12.T.EUR.XDR.M.N", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_img_rp.columns = ["Date", "EU_SDR"]
+        eu_img_rp["Date"] = pd.to_datetime(eu_img_rp["Date"], format="%Y-%m-%d")
+        return eu_img_rp
+
+    def other_reserve_assets(self):
+        """
+        * Title: Other reserve assets
+        * URL: https://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=340.RA6.M.N.U2.W1.S121.S1.LE.A.FA.R.FR2._Z.EUR.X1._X.N
+        * Reference area: Euro area 19 (fixed composition) as of 1 January 2015 (I8)
+        * Frequency: Monthly
+        """
+        eu_img_rp = ecb.get_data(datacode="RA6", key="M.N.U2.W1.S121.S1.LE.A.FA.R.FR2._Z.EUR.X1._X.N", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_img_rp.columns = ["Date", "EU_OTHER_RESERVE_ASSETS"]
+        eu_img_rp["Date"] = pd.to_datetime(eu_img_rp["Date"], format="%Y-%m-%d")
+        return eu_img_rp
+
+    def other_foreign_currency_assets(self):
+        """
+        * Title: Other foreign currency assets (not included in reserve assets)
+        * URL: http://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=340.RA6.M.N.U2.W0.S121.S1.LE.A.FA.RT.F._Z.EUR.X1._X.N
+        * Reference area: Euro area 19 (fixed composition) as of 1 January 2015 (I8)
+        * Frequency: Monthly
+        """
+        eu_img_rp = ecb.get_data(datacode="RA6", key="M.N.U2.W0.S121.S1.LE.A.FA.RT.F._Z.EUR.X1._X.N", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_img_rp.columns = ["Date", "EU_FOREIGN_CURRENCY_ASSETS"]
+        eu_img_rp["Date"] = pd.to_datetime(eu_img_rp["Date"], format="%Y-%m-%d")
+        return eu_img_rp
+
+    def predeterminated_short_term_net_drains_on_foreign_currency_assets(self):
+        """
+        * Title: Not applicable, Total financial assets/liabilities
+        * URL: http://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=340.RA6.M.N.U2.W0.S121.S1.FP.FN._Z.RT.F.TS.EUR.X1.N.N
+        * Reference area: Euro area 19 (fixed composition) as of 1 January 2015 (I8)
+        * Frequency: Monthly
+        """
+        eu_img_rp = ecb.get_data(datacode="RA6", key="M.N.U2.W0.S121.S1.FP.FN._Z.RT.F.TS.EUR.X1.N.N", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_img_rp.columns = ["Date", "EU_TOTAL_FINANCIAL_ASSETS"]
+        eu_img_rp["Date"] = pd.to_datetime(eu_img_rp["Date"], format="%Y-%m-%d")
+        return eu_img_rp
+
+class merchandise_trade(external_sector):
+    ## National Account (current price)
+    def __init__(self):
+        super(merchandise_trade, self).__init__()
+        pass
+
+    def merchandise_trade(self):
+        """
+        * Title: Total trade, Value (Community concept) (Export/Import)
+        * URL1: https://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=133.TRD.M.I8.Y.X.TTT.J8.4.VAL
+        * URL2: https://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=133.TRD.M.I8.Y.M.TTT.J8.4.VAL
+        * Reference area: Euro area 19 (fixed composition) as of 1 January 2015 (I8)
+        * Frequency: Monthly
+        """
+        eu_mte = ecb.get_data(datacode="TRD", key="M.I8.Y.X.TTT.J8.4.VAL", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_mti = ecb.get_data(datacode="TRD", key="M.I8.Y.M.TTT.J8.4.VAL", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_mte.columns = ["Date", "EU_MERCHANDISE_TRADE_EXPORT"]
+        eu_mte["Date"] = pd.to_datetime(eu_mte["Date"], format="%Y-%m-%d")
+        eu_mte["EU_MERCHANDISE_TRADE_IMPORT"] = eu_mti["OBS_VALUE"]
+        return eu_mte
+
+class international_investment_position(external_sector):
+    ## National Account (current price)
+    def __init__(self):
+        super(international_investment_position, self).__init__()
+        pass
+
+    def total_net_international_investment_position(self):
+        """
+        * Title: Total financial assets/liabilities
+        * URL: https://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=338.BP6.Q.N.I8.W1.S1.S1.LE.N.FA._T.F._Z.EUR._T._X.N
+        * Reference area: Euro area 19 (fixed composition) as of 1 January 2015 (I8)
+        * Frequency: Quarterly
+        """
+        eu_tniip = ecb.get_data(datacode="BP6", key="Q.N.I8.W1.S1.S1.LE.N.FA._T.F._Z.EUR._T._X.N", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_tniip.columns = ["Date", "EU_TOTAL_FINANCIAL_ASSETS"]
+        eu_tniip["Date"] = pd.to_datetime(QtoM(eu_tniip["Date"]), format="%Y-%m") + pd.tseries.offsets.MonthBegin(-1)
+        return eu_tniip
+
+    def direct_investment(self):
+        """
+        * Title: Direct Investment, Total financial assets/liabilities
+        * URL: https://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=338.BP6.Q.N.I8.W1.S1.S1.LE.N.FA.D.F._Z.EUR._T._X.N
+        * Reference area: Euro area 19 (fixed composition) as of 1 January 2015 (I8)
+        * Frequency: Quarterly
+        """
+        eu_di = ecb.get_data(datacode="BP6", key="Q.N.I8.W1.S1.S1.LE.N.FA.D.F._Z.EUR._T._X.N", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_dia = ecb.get_data(datacode="BP6", key="Q.N.I8.W1.S1.S1.LE.A.FA.D.F._Z.EUR._T._X.N", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_dil = ecb.get_data(datacode="BP6", key="Q.N.I8.W1.S1.S1.LE.L.FA.D.F._Z.EUR._T._X.N", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_di.columns = ["Date", "EU_DIRECT_INVESTMENT"]
+        eu_dia.columns = ["Date", "EU_DIRECT_INVESTMENT_ASSETS"]
+        eu_dil.columns = ["Date", "EU_DIRECT_INVESTMENT_LIABILITIES"]
+        eu_di["Date"] = pd.to_datetime(QtoM(eu_di["Date"]), format="%Y-%m") + pd.tseries.offsets.MonthBegin(-1)
+        eu_dia["Date"] = pd.to_datetime(QtoM(eu_dia["Date"]), format="%Y-%m") + pd.tseries.offsets.MonthBegin(-1)
+        eu_dil["Date"] = pd.to_datetime(QtoM(eu_dil["Date"]), format="%Y-%m") + pd.tseries.offsets.MonthBegin(-1)
+        eu_di = pd.merge_asof(eu_di, eu_dia, on="Date")
+        eu_di = pd.merge_asof(eu_di, eu_dil, on="Date")
+        return eu_di
+
+    def portfolio_investment(self):
+        """
+        * Title: Direct Investment, Total financial assets/liabilities
+        * URL: https://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=338.BP6.Q.N.I8.W1.S1.S1.LE.N.FA.P.F._Z.EUR._T.M.N
+        * Reference area: Euro area 19 (fixed composition) as of 1 January 2015 (I8)
+        * Frequency: Quarterly
+        """
+        eu_pi = ecb.get_data(datacode="BP6", key="Q.N.I8.W1.S1.S1.LE.N.FA.P.F._Z.EUR._T.M.N", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_pia = ecb.get_data(datacode="BP6", key="Q.N.I8.W1.S1.S1.LE.A.FA.P.F5._Z.EUR._T.M.N", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_pil = ecb.get_data(datacode="BP6", key="Q.N.I8.W1.S1.S1.LE.L.FA.P.F5._Z.EUR._T.M.N", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_pida = ecb.get_data(datacode="BP6", key="Q.N.I8.W1.S1.S1.LE.A.FA.P.F3.T.EUR._T.M.N", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_pidl = ecb.get_data(datacode="BP6", key="Q.N.I8.W1.S1.S1.LE.L.FA.P.F3.T.EUR._T.M.N", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_pi.columns = ["Date", "EU_PORTFOLIO_INVESTMENT"]
+        eu_pia.columns = ["Date", "EU_EQUITY_AND_INVESTMENT_FUND_ASSETS"]
+        eu_pil.columns = ["Date", "EU_EQUITY_AND_INVESTMENT_FUND_LIABILITIES"]
+        eu_pida.columns = ["Date", "EU_DEBT_SECURITIES_aSSETS"]
+        eu_pidl.columns = ["Date", "EU_DEBT_SECURITIES_LIABILITIES"]
+        eu_pi["Date"] = pd.to_datetime(QtoM(eu_pi["Date"]), format="%Y-%m") + pd.tseries.offsets.MonthBegin(-1)
+        eu_pia["Date"] = pd.to_datetime(QtoM(eu_pia["Date"]), format="%Y-%m") + pd.tseries.offsets.MonthBegin(-1)
+        eu_pil["Date"] = pd.to_datetime(QtoM(eu_pil["Date"]), format="%Y-%m") + pd.tseries.offsets.MonthBegin(-1)
+        eu_pida["Date"] = pd.to_datetime(QtoM(eu_pil["Date"]), format="%Y-%m") + pd.tseries.offsets.MonthBegin(-1)
+        eu_pidl["Date"] = pd.to_datetime(QtoM(eu_pil["Date"]), format="%Y-%m") + pd.tseries.offsets.MonthBegin(-1)
+        eu_pi = pd.merge_asof(eu_pi, eu_pia, on="Date")
+        eu_pi = pd.merge_asof(eu_pi, eu_pil, on="Date")
+        eu_pi = pd.merge_asof(eu_pi, eu_pida, on="Date")
+        eu_pi = pd.merge_asof(eu_pi, eu_pidl, on="Date")
+        return eu_pi
+
+    def other_investment(self):
+        """
+        * Title: Other Investment, Total financial assets/liabilities
+        * URL: https://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=338.BP6.Q.N.I8.W1.S1.S1.LE.N.FA.O.F._Z.EUR._T._X.N
+        * Reference area: Euro area 19 (fixed composition) as of 1 January 2015 (I8)
+        * Frequency: Quarterly
+        """
+        eu_oi = ecb.get_data(datacode="BP6", key="Q.N.I8.W1.S1.S1.LE.N.FA.O.F._Z.EUR._T._X.N", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_oia = ecb.get_data(datacode="BP6", key="Q.N.I8.W1.S1.S1.LE.A.FA.O.F._Z.EUR._T._X.N", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_oil = ecb.get_data(datacode="BP6", key="Q.N.I8.W1.S1.S1.LE.L.FA.O.F._Z.EUR._T._X.N", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_oi.columns = ["Date", "EU_DIRECT_INVESTMENT"]
+        eu_oia.columns = ["Date", "EU_DIRECT_INVESTMENT_ASSETS"]
+        eu_oil.columns = ["Date", "EU_DIRECT_INVESTMENT_LIABILITIES"]
+        eu_oi["Date"] = pd.to_datetime(QtoM(eu_oi["Date"]), format="%Y-%m") + pd.tseries.offsets.MonthBegin(-1)
+        eu_oia["Date"] = pd.to_datetime(QtoM(eu_oia["Date"]), format="%Y-%m") + pd.tseries.offsets.MonthBegin(-1)
+        eu_oil["Date"] = pd.to_datetime(QtoM(eu_oil["Date"]), format="%Y-%m") + pd.tseries.offsets.MonthBegin(-1)
+        eu_oi = pd.merge_asof(eu_oi, eu_oia, on="Date")
+        eu_oi = pd.merge_asof(eu_oi, eu_oil, on="Date")
+        return eu_di
+
+    def reserve_assetsc(self):
+        """
+        * Title: Reserve Assets, Total financial assets/liabilities
+        * URL: https://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=338.BP6.Q.N.I8.W1.S121.S1.LE.A.FA.R.F._Z.EUR.X1._X.N
+        * Reference area: Euro area 19 (fixed composition) as of 1 January 2015 (I8)
+        * Frequency: Quarterly
+        """
+        eu_ra = ecb.get_data(datacode="BP6", key="Q.N.I8.W1.S121.S1.LE.A.FA.R.F._Z.EUR.X1._X.N", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_ra.columns = ["Date", "EU_OTHER_INVESTMENT_ASSETS"]
+        eu_ra["Date"] = pd.to_datetime(QtoM(eu_ra["Date"]), format="%Y-%m") + pd.tseries.offsets.MonthBegin(-1)
+        return eu_ra
+
+    def gross_external_debt(self):
+        """
+        * Title: Gross external debt
+        * URL: https://sdw.ecb.europa.eu/quickview.do?SERIES_KEY=338.BP6.Q.N.I8.W1.S121.S1.LE.A.FA.R.F._Z.EUR.X1._X.N
+        * Reference area: Euro area 19 (fixed composition) as of 1 January 2015 (I8)
+        * Frequency: Quarterly
+        """
+        eu_ged = ecb.get_data(datacode="BP6", key="Q.N.I8.W1.S1.S1.LE.L.FA._T.FGED._Z.EUR._T._X.N", startdate=self.startdate, enddate=self.enddate)[["TIME_PERIOD", "OBS_VALUE"]]
+        eu_ged.columns = ["Date", "EU_GROSS_EXTERNAL_DEBT"]
+        eu_ged["Date"] = pd.to_datetime(QtoM(eu_ged["Date"]), format="%Y-%m") + pd.tseries.offsets.MonthBegin(-1)
+        return eu_ged
 
 if __name__ == "__main__":
     data, name_list = CPI_monthly()
