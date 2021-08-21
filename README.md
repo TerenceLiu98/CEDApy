@@ -1,5 +1,8 @@
 # Centralized Economic Data API
 
+![py_version](https://img.shields.io/badge/python-v3.6+-brightgreen)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5229506.svg)](https://doi.org/10.5281/zenodo.5229506)
+
 ## Introduction
 
 This is a economic data collecting library, with both `python` and `R`
@@ -40,14 +43,14 @@ Please check [Wiki](https://github.com/TerenceLiu98/CEDApy/wiki)
 ## If you want to cite...
 
 ```txt
-@misc{LIU2021,
-  author = {Terence,Junjie-LIU},
-  title = {CEDApy: A centralized macro-economic data library},
-  year = {2021},
-  publisher = {GitHub},
-  journal = {GitHub repository},
-  howpublished = {\url{https://github.com/TerenceLiu98/CEDApy}},
-  url = "https://pypi.org/project/CEDApy/",
-  commit = {117e6e61d05af48576a8734c6b87248a380e6114}
+@software{terencelau_2021_5229506,
+  author       = {TerenceLau},
+  title        = {TerenceLiu98/CEDApy: V0.2.1},
+  month        = aug,
+  year         = 2021,
+  publisher    = {Zenodo},
+  version      = {V0.2.1},
+  doi          = {10.5281/zenodo.5229506},
+  url          = {https://doi.org/10.5281/zenodo.5229506}
 }
 ```
