@@ -45,11 +45,11 @@ Please check [Wiki](https://github.com/TerenceLiu98/CEDApy/wiki)
 ```txt
 @software{terencelau_2021_5229506,
   author       = {TerenceLau},
-  title        = {TerenceLiu98/CEDApy: V0.2.1},
+  title        = {TerenceLiu98/CEDApy: V0.2.2},
   month        = aug,
   year         = 2021,
   publisher    = {Zenodo},
-  version      = {V0.2.1},
+  version      = {V0.2.2},
   doi          = {10.5281/zenodo.5229506},
   url          = {https://doi.org/10.5281/zenodo.5229506}
 }

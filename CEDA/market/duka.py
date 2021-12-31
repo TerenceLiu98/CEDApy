@@ -9,8 +9,10 @@ from urllib.parse import quote, urlencode
 from fake_useragent import UserAgent
 
 url = {
-    "dukascopy": "http://data.uicstat.com/api_1.0"
+    "dukascopy": "http://data.deluxelau.com/forex/api/v1.0/getdata?"
 }
+
+#?instrument=usdcnh&startdate=2014-01-01&enddate=2014-12-31&timeframe=d1&pricetype=ask&utc=0&volume=false&flat=false
 
 def dukascopy(
         instrument: str,
@@ -18,6 +20,7 @@ def dukascopy(
         enddate: str,
         timeframe: str,
         pricetype: str,
+        utc: int,
         volume: bool,
         flat: bool):
     tmp_url = url["dukascopy"]
@@ -28,22 +31,25 @@ def dukascopy(
         "startdate": "{}".format(startdate),
         "enddate": "{}".format(enddate),
         "timeframe": "{}".format(timeframe),
+        "utc": "{}".format(utc),
         "pricetype": "{}".format(pricetype),
-        "volume": "{}".format(volume),
-        "flat": "{}".format(flat)
+        "volume": "{}".format(str(volume).lower()),
+        "flat": "{}".format(str(flat).lower())
 
     }
     r = requests.get(tmp_url, params=request_params, headers=request_header)
     data_text = r.text
-    data_json = demjson.decode(data_text)
-    df = pd.DataFrame(data_json['result'])
-    df['timestamp'] = pd.to_datetime(df['timestamp'], unit='ms')
-    df.columns = [
-        "Date",
-        "Open",
-        "High",
-        "Low",
-        "Close",
-        "Volume"
-    ]
-    return df
+    output_file = demjson.decode(data_text)
+    return pd.json_normalize(output_file)
+
+# example:
+""" 
+df = dukascopy(instrument = "btcusd", 
+               startdate = "2020-01-01",
+               enddate = "2021-01-01",
+               timeframe = "d1",
+               pricetype = "bid",
+               utc = 0,
+               volume = True,
+               flat = True)
+"""
