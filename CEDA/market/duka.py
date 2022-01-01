@@ -44,12 +44,12 @@ def dukascopy(
 
 # example:
 """ 
-df = dukascopy(instrument = "btcusd", 
-               startdate = "2020-01-01",
-               enddate = "2021-01-01",
-               timeframe = "d1",
+df = dukascopy(instrument = "usdcnh", 
+               startdate = "2014-01-01",
+               enddate = "2020-01-01",
+               timeframe = "h1",
                pricetype = "bid",
                utc = 0,
-               volume = True,
-               flat = True)
+               volume = False,
+               flat = False)
 """
