@@ -39,6 +39,7 @@ Please check [Wiki](https://github.com/TerenceLiu98/CEDApy/wiki)
 * Thanks [eurostat Economic Indicators](https://ec.europa.eu/eurostat/cache/infographs/economy/desktop/index.html)
 * Thanks [Europen Central Bank](https://www.ecb.europa.eu)
 * Thanks [MarketWatch](https://www.marketwatch.com/)
+* Thansk [Dukascopy](https://www.dukascopy.bank/swiss)
 
 ## If you want to cite...
 
