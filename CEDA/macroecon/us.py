@@ -1,14 +1,17 @@
-import pandas as pd
-import numpy as np
-import requests
-from fake_useragent import UserAgent
 import io
 import os
+import ssl
 import time
 import json
-import demjson
+import requests
+import numpy as np
+import pandas as pd
 from datetime import datetime
-import ssl
+from bs4 import BeautifulSoup
+from multiprocessing import Pool
+import dateutil.parser as dparser
+from fake_useragent import UserAgent
+
 ssl._create_default_https_context = ssl._create_unverified_context
 
 # Main Economic Indicators: https://alfred.stlouisfed.org/release?rid=205
@@ -19,12 +22,15 @@ url = {
     "OECD": "https://stats.oecd.org/sdmx-json/data/DP_LIVE/"
 }
 
+
 def date_transform(df, format_origin, format_after):
     return_list = []
     for i in range(0, len(df)):
-        return_list.append(datetime.strptime(df[i], format_origin).strftime(format_after))
-    
+        return_list.append(datetime.strptime(
+            df[i], format_origin).strftime(format_after))
+
     return return_list
+
 
 def gdp_quarterly(startdate="1947-01-01", enddate="2021-01-01"):
     """
@@ -44,7 +50,7 @@ def gdp_quarterly(startdate="1947-01-01", enddate="2021-01-01"):
     data_text = r.content
     df = pd.read_csv(io.StringIO(data_text.decode('utf-8')))
     df.columns = ["Date", "GDP"]
-    df["Date"] = pd.to_datetime(df["Date"], format = "%Y-%m-%d")
+    df["Date"] = pd.to_datetime(df["Date"], format="%Y-%m-%d")
     df["GDP"] = df["GDP"].astype(float)
     return df
 
@@ -107,9 +113,10 @@ def payems_monthly(startdate="1939-01-01", enddate="2021-01-01"):
     data_text = r.content
     df = pd.read_csv(io.StringIO(data_text.decode('utf-8')))
     df.columns = ["Date", "Payems"]
-    df["Date"] = pd.to_datetime(df["Date"], format = "%Y-%m-%d")
+    df["Date"] = pd.to_datetime(df["Date"], format="%Y-%m-%d")
     df["Payems"] = df["Payems"].astype(float)
     return df
+
 
 def ppi():
     tmp_url = url["fred_econ"] + "bgcolor=%23e1e9f0&chart_type=line&drp=0&fo=open%20sans&graph_bgcolor=%23ffffff&height=450&mode=fred&recession_bars=on&txtcolor=%23444444&ts=12&tts=12&width=968&nt=0&thu=0&trc=0&show_legend=yes&show_axis_titles=yes&show_tooltip=yes&id=PPIACO,PCUOMFGOMFG&scale=left,left&cosd=1913-01-01,1984-12-01&coed=2021-04-01,2021-04-01&line_color=%234572a7,%23aa4643&link_values=false,false&line_style=solid,solid&mark_type=none,none&mw=3,3&lw=2,2&ost=-99999,-99999&oet=99999,99999&mma=0,0&fml=a,a&fq=Monthly,Monthly&fam=avg,avg&fgst=lin,lin&fgsnd=2020-02-01,2020-02-01&line_index=1,2&transformation=lin,lin&vintage_date=2021-06-10,2021-06-10&revision_date=2021-06-10,2021-06-10&nd=1913-01-01,1984-12-01"
@@ -124,18 +131,20 @@ def ppi():
         "PPIACO": "Producer Price Index by Commodity: All Commodities",
         "PCUOMFGOMFG": "Producer Price Index by Industry: Total Manufacturing Industries"
     }
-    df.replace(".", np.nan, inplace = True)
+    df.replace(".", np.nan, inplace=True)
     df.columns = ["Date", "PPI_C", "PPI_I"]
-    df["Date"] = pd.to_datetime(df["Date"], format = "%Y-%m-%d")
+    df["Date"] = pd.to_datetime(df["Date"], format="%Y-%m-%d")
     df[["PPI_C", "PPI_I"]] = df[["PPI_C", "PPI_I"]].astype(float)
     return df
+
 
 def pmi():
     t = time.time()
     res = requests.get(
-    f"https://cdn.jin10.com/dc/reports/dc_usa_ism_pmi_all.js?v={str(int(round(t * 1000))), str(int(round(t * 1000)) + 90)}"
+        f"https://cdn.jin10.com/dc/reports/dc_usa_ism_pmi_all.js?v={str(int(round(t * 1000))), str(int(round(t * 1000)) + 90)}"
     )
-    json_data = json.loads(res.text[res.text.find("{"): res.text.rfind("}") + 1])
+    json_data = json.loads(
+        res.text[res.text.find("{"): res.text.rfind("}") + 1])
     date_list = [item["date"] for item in json_data["list"]]
     value_list = [item["datas"]["美国ISM制造业PMI报告"] for item in json_data["list"]]
     value_df = pd.DataFrame(value_list)
@@ -180,16 +189,18 @@ def pmi():
     temp_df.name = "usa_ism_pmi"
     temp_df = temp_df.astype("float")
     PMI_I = pd.DataFrame()
-    PMI_I["Date"] = pd.to_datetime(temp_df.index, format = "%Y-%m-%d")
+    PMI_I["Date"] = pd.to_datetime(temp_df.index, format="%Y-%m-%d")
     PMI_I["ISM_PMI_I"] = np.array(temp_df).astype(float)
 
     t = time.time()
     res = requests.get(
         f"https://cdn.jin10.com/dc/reports/dc_usa_ism_non_pmi_all.js?v={str(int(round(t * 1000))), str(int(round(t * 1000)) + 90)}"
     )
-    json_data = json.loads(res.text[res.text.find("{"): res.text.rfind("}") + 1])
+    json_data = json.loads(
+        res.text[res.text.find("{"): res.text.rfind("}") + 1])
     date_list = [item["date"] for item in json_data["list"]]
-    value_list = [item["datas"]["美国ISM非制造业PMI报告"] for item in json_data["list"]]
+    value_list = [item["datas"]["美国ISM非制造业PMI报告"]
+                  for item in json_data["list"]]
     value_df = pd.DataFrame(value_list)
     value_df.columns = json_data["kinds"]
     value_df.index = pd.to_datetime(date_list)
@@ -232,9 +243,9 @@ def pmi():
     temp_df.name = "usa_ism_non_pmi"
     temp_df = temp_df.astype("float")
     PMI_NI = pd.DataFrame()
-    PMI_NI["Date"] = pd.to_datetime(temp_df.index, format = "%Y-%m-%d")
+    PMI_NI["Date"] = pd.to_datetime(temp_df.index, format="%Y-%m-%d")
     PMI_NI["ISM_PMI_NI"] = np.array(temp_df).astype(float)
-    PMI = pd.merge_asof(PMI_I, PMI_NI, on = "Date")
+    PMI = pd.merge_asof(PMI_I, PMI_NI, on="Date")
     return PMI
 
 
@@ -410,8 +421,9 @@ def cpi(startdate="1960-01-01", enddate="2021-01-01"):
         direction="backward")
     df = pd.merge_asof(df, df_annually, on="DATE", direction="backward")
     df.columns = ["Date", "CPI_Monthly", "CPI_Quarterly", "CPI_Annually"]
-    df["Date"] = pd.to_datetime(df["Date"], format = "%Y-%m-%d")
-    df[["CPI_Monthly", "CPI_Quarterly", "CPI_Annually"]] = df[["CPI_Monthly", "CPI_Quarterly", "CPI_Annually"]].astype(float)
+    df["Date"] = pd.to_datetime(df["Date"], format="%Y-%m-%d")
+    df[["CPI_Monthly", "CPI_Quarterly", "CPI_Annually"]] = df[[
+        "CPI_Monthly", "CPI_Quarterly", "CPI_Annually"]].astype(float)
     return df
 
 
@@ -676,7 +688,7 @@ def cci(startdate="1955-01-01", enddate="2021-01-01"):
     data_text = r.content
     df = pd.read_csv(io.StringIO(data_text.decode('utf-8')))
     df.columns = ["Date", "CCI_Monthly"]
-    df["Date"] = pd.to_datetime(df["Date"], format = "%Y-%m-%d")
+    df["Date"] = pd.to_datetime(df["Date"], format="%Y-%m-%d")
     return df
 
 
@@ -698,7 +710,7 @@ def bci(startdate="1955-01-01", enddate="2021-01-01"):
     data_text = r.content
     df = pd.read_csv(io.StringIO(data_text.decode('utf-8')))
     df.columns = ["Date", "BCI_Annually"]
-    df["Date"] = pd.to_datetime(df["Date"], format = "%Y-%m-%d")
+    df["Date"] = pd.to_datetime(df["Date"], format="%Y-%m-%d")
     return df
 
 
@@ -969,7 +981,8 @@ def inflation_nowcasting():
     for i in range(0, len(tmp_df)):
         date = tmp_df['chart'][i]['subcaption'][:4] + "/" + \
             pd.DataFrame(tmp_df["dataset"][i][0]['data'])['tooltext'].str.extract(r"\b(0?[1-9]|1[0-2])/(0?[1-9]|[12][0-9]|3[01])\b")[0] + "/" + \
-            pd.DataFrame(tmp_df["dataset"][i][0]['data'])['tooltext'].str.extract(r"\b(0?[1-9]|1[0-2])/(0?[1-9]|[12][0-9]|3[01])\b")[1]
+            pd.DataFrame(tmp_df["dataset"][i][0]['data'])['tooltext'].str.extract(
+                r"\b(0?[1-9]|1[0-2])/(0?[1-9]|[12][0-9]|3[01])\b")[1]
         CPI_I = pd.DataFrame(
             (pd.DataFrame(tmp_df["dataset"][i])['data'])[0])["value"]
         C_CPI_I = pd.DataFrame(
@@ -1006,7 +1019,7 @@ def bbki():
     tmp_url = url["chicagofed"] + "bbki/bbki-monthly-data-series-csv.csv"
     df = pd.read_csv(tmp_url)
     df["Date"] = date_transform(df["Date"], "%m/%d/%Y", "%Y-%m-%d")
-    df["Date"] = pd.to_datetime(df["Date"], format = "%Y-%m-%d")
+    df["Date"] = pd.to_datetime(df["Date"], format="%Y-%m-%d")
     return df
 
 
@@ -1014,7 +1027,7 @@ def cfnai():
     tmp_url = url["chicagofed"] + "cfnai/cfnai-data-series-csv.csv"
     df = pd.read_csv(tmp_url)
     df["Date"] = date_transform(df["Date"], "%Y/%m", "%Y-%m-%d")
-    df["Date"] = pd.to_datetime(df["Date"], format = "%Y-%m-%d")
+    df["Date"] = pd.to_datetime(df["Date"], format="%Y-%m-%d")
     return df
 
 
@@ -1022,7 +1035,7 @@ def cfsbc():
     tmp_url = url["chicagofed"] + "cfsbc/cfsbc-data-xlsx.xlsx"
     df = pd.read_excel(tmp_url)
     df["Date"] = date_transform(df["Date"], "%Y-%m", "%Y-%m-%d")
-    df["Date"] = pd.to_datetime(df["Date"], format = "%Y-%m-%d")
+    df["Date"] = pd.to_datetime(df["Date"], format="%Y-%m-%d")
     return df
 
 
@@ -1031,10 +1044,11 @@ def nfci():
     df = pd.read_csv(tmp_url)
     df.columns = ["Date", "NFCI", "Risk", "Credit", "Leverage"]
     df["Date"] = date_transform(df["Date"], "%Y/%m/%d", "%Y-%m-%d")
-    df["Date"] = pd.to_datetime(df["Date"], format = "%Y-%m-%d")
+    df["Date"] = pd.to_datetime(df["Date"], format="%Y-%m-%d")
     return df
 
-def Leading_Indicators_OECD(startdate = "1950-01", enddate = "2021-05"):
+
+def Leading_Indicators_OECD(startdate="1950-01", enddate="2021-05"):
     # CLI
     tmp_url = url["OECD"] + "USA.CLI.AMPLITUD.LTRENDIDX.M/OECD"
     ua = UserAgent(verify_ssl=False)
@@ -1047,13 +1061,14 @@ def Leading_Indicators_OECD(startdate = "1950-01", enddate = "2021-05"):
         "endPeriod": "{}".format(enddate)
     }
     request_header = {"User-Agent": ua.random}
-    r = requests.get(tmp_url, params = request_params, headers=request_header)
+    r = requests.get(tmp_url, params=request_params, headers=request_header)
     data_text = r.content
-    df_cli = pd.read_csv(io.StringIO(data_text.decode('utf-8')))[["TIME", "Value"]]
+    df_cli = pd.read_csv(io.StringIO(
+        data_text.decode('utf-8')))[["TIME", "Value"]]
     df_cli.columns = ["Date", "US_OECD_CLI"]
-    df_cli["Date"] = pd.to_datetime(df_cli["Date"], format = "%Y-%m")
+    df_cli["Date"] = pd.to_datetime(df_cli["Date"], format="%Y-%m")
     df_cli["US_OECD_CLI"] = df_cli["US_OECD_CLI"].astype(float)
-    #BCI
+    # BCI
     tmp_url = url["OECD"] + "USA.BCI.AMPLITUD.LTRENDIDX.M/OECD"
     ua = UserAgent(verify_ssl=False)
     request_params = {
@@ -1065,11 +1080,12 @@ def Leading_Indicators_OECD(startdate = "1950-01", enddate = "2021-05"):
         "endPeriod": "{}".format(enddate)
     }
     request_header = {"User-Agent": ua.random}
-    r = requests.get(tmp_url, params = request_params, headers=request_header)
+    r = requests.get(tmp_url, params=request_params, headers=request_header)
     data_text = r.content
-    df_bci = pd.read_csv(io.StringIO(data_text.decode('utf-8')))[["TIME", "Value"]]
+    df_bci = pd.read_csv(io.StringIO(
+        data_text.decode('utf-8')))[["TIME", "Value"]]
     df_bci.columns = ["Date", "US_OECD_BCI"]
-    df_bci["Date"] = pd.to_datetime(df_bci["Date"], format = "%Y-%m")
+    df_bci["Date"] = pd.to_datetime(df_bci["Date"], format="%Y-%m")
     df_bci["US_OECD_BCI"] = df_bci["US_OECD_BCI"].astype(float)
     # CCI
     tmp_url = url["OECD"] + "USA.CCI.AMPLITUD.LTRENDIDX.M/OECD"
@@ -1083,25 +1099,32 @@ def Leading_Indicators_OECD(startdate = "1950-01", enddate = "2021-05"):
         "endPeriod": "{}".format(enddate)
     }
     request_header = {"User-Agent": ua.random}
-    r = requests.get(tmp_url, params = request_params, headers=request_header)
+    r = requests.get(tmp_url, params=request_params, headers=request_header)
     data_text = r.content
-    df_cci = pd.read_csv(io.StringIO(data_text.decode('utf-8')))[["TIME", "Value"]]
+    df_cci = pd.read_csv(io.StringIO(
+        data_text.decode('utf-8')))[["TIME", "Value"]]
     df_cci.columns = ["Date", "US_OECD_CCI"]
-    df_cci["Date"] = pd.to_datetime(df_cci["Date"], format = "%Y-%m")
+    df_cci["Date"] = pd.to_datetime(df_cci["Date"], format="%Y-%m")
     df_cci["US_OECD_CCI"] = df_cci["US_OECD_CCI"].astype(float)
-    df = pd.merge_asof(df_cli, df_bci, on = "Date")
-    df = pd.merge_asof(df, df_cci, on = "Date")
-    
+    df = pd.merge_asof(df_cli, df_bci, on="Date")
+    df = pd.merge_asof(df, df_cci, on="Date")
+
     return df
 
+
 def US_EPU_Monthly():
-    df = pd.read_excel("https://www.policyuncertainty.com/media/US_Policy_Uncertainty_Data.xlsx")[:-1]
-    df['Date']=pd.to_datetime(df['Year'].apply(str).str.cat(df['Month'].apply(int).apply(str),sep='-'), format='%Y-%m')
+    df = pd.read_excel(
+        "https://www.policyuncertainty.com/media/US_Policy_Uncertainty_Data.xlsx")[:-1]
+    df['Date'] = pd.to_datetime(df['Year'].apply(str).str.cat(
+        df['Month'].apply(int).apply(str), sep='-'), format='%Y-%m')
     df = df[["Date", "Three_Component_Index", "News_Based_Policy_Uncert_Index"]]
     return df
 
+
 def US_EPU_Daily():
-    df = pd.read_csv("https://www.policyuncertainty.com/media/All_Daily_Policy_Data.csv")[:-1]
-    df['Date']=pd.to_datetime(df['year'].apply(str).str.cat(df['month'].apply(str),sep='-').apply(str).str.cat(df['day'].apply(str),sep='-'), format='%Y-%m-%d')
+    df = pd.read_csv(
+        "https://www.policyuncertainty.com/media/All_Daily_Policy_Data.csv")[:-1]
+    df['Date'] = pd.to_datetime(df['year'].apply(str).str.cat(df['month'].apply(
+        str), sep='-').apply(str).str.cat(df['day'].apply(str), sep='-'), format='%Y-%m-%d')
     df = df.drop(["year", "month", "day"], axis=1)
     return df
