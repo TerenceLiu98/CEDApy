@@ -14,6 +14,9 @@ class EurostatData(object):
         self.language = language
         self.url = "https://ec.europa.eu/eurostat/estat-navtree-portlet-prod/"
         self.toc_url = "https://ec.europa.eu/eurostat/estat-navtree-portlet-prod/BulkDownloadListing?sort=1&file=table_of_contents_{}.txt".format(language)
+
+    __annotations__ = {"name": "eurostat",
+                       "url": "https://ec.europa.eu/eurostat"}
     
     def toc(self) -> pd.DataFrame:
         """
