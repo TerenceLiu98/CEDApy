@@ -1,8 +1,4 @@
-import re
-import requests
 import pandas as pd
-from datetime import datetime
-from fake_useragent import UserAgent
 
 class EurostatData(object):
 
