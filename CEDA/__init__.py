@@ -11,5 +11,5 @@ if sys.version_info < (3, 6):
 del sys
 
 from CEDA import * 
-from CEDA import macroecon
+from CEDA import economic
 from CEDA import market
