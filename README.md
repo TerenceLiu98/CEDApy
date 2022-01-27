@@ -1,7 +1,10 @@
 # Centralized Economic Data API
 
 ![py_version](https://img.shields.io/badge/python-3.6+-brightgreen)
+[![PyPI Version](https://img.shields.io/pypi/v/CEDApy.svg)](https://pypi.org/project/CEDApy)
+[![Package Status](https://img.shields.io/pypi/status/CEDApy.svg)](https://pypi.org/project/CEDApy/)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5229506.svg)](https://doi.org/10.5281/zenodo.5229506)
+
 
 ## Introduction
 
