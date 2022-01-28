@@ -6,7 +6,8 @@
 
 ## Introduction
 
-This is a economic data collecting library, with both `python`
+* "Centralized" means all-in-one, "all data" you need in one library
+* "Economic data" means economic data :)
 
 * `python` version: [https://github.com/TerenceLiu98/CEDApy](https://github.com/TerenceLiu98/CEDApy)
 
@@ -61,10 +62,11 @@ Please check [Wiki](https://github.com/TerenceLiu98/CEDApy/wiki)
 
 ## Acknowledgement
 
-* [akshare](https://github.com/jindaxiang/akshare/)
-* [EastMoney](https://www.eastmoney.com)
-* [St.Louis Federal Reserve Bank](https://fred.stlouisfed.org/), [Chicago Federal Reserve Bank](https://www.chicagofed.org/), [Philadelphia Federal Reserve Bank](https://www.philadelphiafed.org/), [eurostat Economic Indicators](https://ec.europa.eu/eurostat/cache/infographs/economy/desktop/index.html)
+* [St.Louis Federal Reserve Bank](https://fred.stlouisfed.org/), [Chicago Federal Reserve Bank](https://www.chicagofed.org/), [Philadelphia Federal Reserve Bank](https://www.philadelphiafed.org/) 
+* [eurostat Economic Indicators](https://ec.europa.eu/eurostat/cache/infographs/economy/desktop/index.html)
 * [Europen Central Bank](https://www.ecb.europa.eu)
+* [National bureau of Statistics China](http://www.stats.gov.cn/english/)
+* [Bank of Japan](https://www.boj.or.jp/en/index.htm/)
 * [MarketWatch](https://www.marketwatch.com/)
 * [Dukascopy](https://www.dukascopy.bank/swiss)
 
