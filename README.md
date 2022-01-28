@@ -2,7 +2,6 @@
 
 ![py_version](https://img.shields.io/badge/python-3.6+-brightgreen)
 [![PyPI Version](https://img.shields.io/pypi/v/CEDApy.svg)](https://pypi.org/project/CEDApy)
-[![Package Status](https://img.shields.io/pypi/status/CEDApy.svg)](https://pypi.org/project/CEDApy/)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5229506.svg)](https://doi.org/10.5281/zenodo.5229506)
 
 ## Introduction
@@ -23,7 +22,7 @@ We have included multiple API for banks or statistics deparment of countries/reg
   - [x] `EurostatData` for [European Statistics](https://ec.europa.eu/eurostat)
 
 * Asia:
-  - [ ] `NBSCData` for [National Bureau of Statistics of China](http://www.stats.gov.cn/english/)
+  - [x] `NBSCData` for [National Bureau of Statistics of China](http://www.stats.gov.cn/english/)
   - [x] `XHData` for [Xinhua](https://www.cnfin.com/data/macro-data/index.html)
   - [x] `BOJData` for [Bank of Japan](https://www.boj.or.jp/en/index.htm/)
 
@@ -34,6 +33,7 @@ We have two api for approaching the market data:
 - [x] `marketwatch` for [MarketWatch](https://www.marketwatch.com/)
 - [x] `dukascopy` for [Dukascopy Historial Data](https://www.dukascopy.com/swiss/english/marketwatch/historical/)
 
+*Recommandation is welcome! Tell us what data you need and we may put it into the to-do list :)*
 
 ### Other 
 
