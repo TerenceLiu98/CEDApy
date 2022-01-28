@@ -24,7 +24,7 @@ We have included multiple API for banks or statistics deparment of countries/reg
 
 * Asia:
   - [ ] `NBSCData` for [National Bureau of Statistics of China](http://www.stats.gov.cn/english/)
-  - [ ] `XHData` for [Xinhua](https://www.cnfin.com/data/macro-data/index.html)
+  - [x] `XHData` for [Xinhua](https://www.cnfin.com/data/macro-data/index.html)
   - [x] `BOJData` for [Bank of Japan](https://www.boj.or.jp/en/index.htm/)
 
 ### Market Data
