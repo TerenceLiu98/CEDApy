@@ -18,7 +18,8 @@ ssl._create_default_https_context = ssl._create_unverified_context
 url = {
     "fred_econ": "https://fred.stlouisfed.org/graph/fredgraph.csv?",
     "fred_series": "https://fred.stlouisfed.org/series/",
-    "philfed": "https://www.philadelphiafed.org/surveys-and-data/real-time-data-research/",
+    "philfed":
+    "https://www.philadelphiafed.org/surveys-and-data/real-time-data-research/",
     "chicagofed": "https://www.chicagofed.org/~/media/publications/",
     "OECD": "https://stats.oecd.org/sdmx-json/data/DP_LIVE/"
 }
@@ -41,12 +42,29 @@ def get_metadata(id: str = None) -> dict:
     tmp_url = url["fred_series"] + id
     r = requests.get(tmp_url)
     metadata = {
-        "name": (" ".join(BeautifulSoup(r.text, "html.parser").find_all('div', {"class": "page-title"})[0].span.text.split())),
-        "id": id,
-        "update_time": datetime.strftime(dparser.parse(BeautifulSoup(r.text, "html.parser").find_all('div', {"class": "pull-left meta-col"})[0].find_all('span')[3].text, fuzzy=True), format="%Y-%m-%d"),
-        "units": BeautifulSoup(r.text, "html.parser").find_all('div', {"class": "pull-left meta-col"})[1].find_all('span')[0].text.split("        ")[0],
-        "frequency": BeautifulSoup(r.text, "html.parser").find_all('div', {"class": "pull-left meta-col"})[2].find_all('span')[0].text.split("            ")[1].split("    ")[1],
-        "tags": get_tag(id)
+        "name": (" ".join(
+            BeautifulSoup(r.text, "html.parser").find_all(
+                'div', {"class": "page-title"})[0].span.text.split())),
+        "id":
+        id,
+        "update_time":
+        datetime.strftime(dparser.parse(
+            BeautifulSoup(r.text, "html.parser").find_all(
+                'div',
+                {"class": "pull-left meta-col"})[0].find_all('span')[3].text,
+            fuzzy=True),
+                          format="%Y-%m-%d"),
+        "units":
+        BeautifulSoup(r.text, "html.parser").find_all(
+            'div', {"class": "pull-left meta-col"
+                    })[1].find_all('span')[0].text.split("        ")[0],
+        "frequency":
+        BeautifulSoup(r.text,
+                      "html.parser").find_all('div',
+                                              {"class": "pull-left meta-col"})
+        [2].find_all('span')[0].text.split("            ")[1].split("    ")[1],
+        "tags":
+        get_tag(id)
     }
     return metadata
 
@@ -54,17 +72,20 @@ def get_metadata(id: str = None) -> dict:
 def date_transform(df, format_origin, format_after):
     return_list = []
     for i in range(0, len(df)):
-        return_list.append(datetime.strptime(
-            df[i], format_origin).strftime(format_after))
+        return_list.append(
+            datetime.strptime(df[i], format_origin).strftime(format_after))
     return return_list
 
 
 class FredData(object):
+
     def __init__(self, country: str = "usa"):
         self.country = country
 
-    __annotations__ = {"name": "Main Economic Indicators",
-                       "url": "https://fred.stlouisfed.org/tags/series?t=mei"}
+    __annotations__ = {
+        "name": "Main Economic Indicators",
+        "url": "https://fred.stlouisfed.org/tags/series?t=mei"
+    }
 
     def get_id(self, url: str) -> list:
         id_list = []
@@ -92,6 +113,20 @@ class FredData(object):
         id_list = [item for sublist in id_list for item in sublist]
         id_list = list(set(id_list))
         return id_list
+
+    def toc(self):
+        sid = self.extract_id()
+        name = []
+        for i in range(0, len(sid)):
+            name.append(get_metadata(id=sid[i])["name"])
+            time.sleep(2)
+            
+        toc = pd.DataFrame({"name": name, "id": sid})
+        return toc
+
+    def download_data(self, sid: str = None):
+        data = pd.read_csv(url["fred_econ"] + "id={}".format(sid))
+        return data
 
 
 if __name__ == "__main__":

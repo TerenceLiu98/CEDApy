@@ -9,21 +9,20 @@ url = {
     "EPU": "https://www.policyuncertainty.com/"
 }
 
+def country_list():
+    country_list = ["Global", "USA", "Australia", "Belgium", 
+            "Brazil", "Canada", "Chile", "China", 
+            "Colombia", "Croatia", "Denmark", "France", 
+            "Germany", "Greece", "HKSAR", "MACAUSAR", 
+            "India", "Ireland", "Italy", "Japan", 
+            "Korea", "Mexico", "Netherlands", "Pakistan", 
+            "Russia", "Singapore", "Spain", "Sweden", "UK"]
+    annotations = "Disambiguation: the word 'Korea' in here stands for 'South Korea'"
+    return country_list, annotations
 
 class EPUData(object):
     def __init__(self, country:str=None):
         self.country = country
-
-    def country_list(self):
-        country_list = ["Global", "USA", "Australia", "Belgium", 
-                "Brazil", "Canada", "Chile", "China", 
-                "Colombia", "Croatia", "Denmark", "France", 
-                "Germany", "Greece", "HKSAR", "MACAUSAR", 
-                "India", "Ireland", "Italy", "Japan", 
-                "Korea", "Mexico", "Netherlands", "Pakistan", 
-                "Russia", "Singapore", "Spain", "Sweden", "UK"]
-        annotations = "Disambiguation: the word 'Korea' in here stands for 'South Korea'"
-        return country_list, annotations
     
     def download(self):
         if self.country == "China":

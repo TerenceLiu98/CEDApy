@@ -50,24 +50,24 @@ class EurostatData(object):
         if geo != None and unit != None:
             data = data.loc[(data["geo"] == geo) & (data["unit"] == unit)]
             for i in range(4, len(list(data.columns))):
-                data[data.columns[i]] = data[data.columns[i]].str.extract(r'(\d+.\d+)').astype("float")
+                data[data.columns[i]] = data[data.columns[i]].astype(str).str.extract(r'(\d+.\d+)').astype("float")
             return data
 
         elif geo != None and unit == None:
             data = data.loc[(data["geo"] == geo)]
             for i in range(4, len(list(data.columns))):
-                data[data.columns[i]] = data[data.columns[i]].str.extract(r'(\d+.\d+)').astype("float")
+                data[data.columns[i]] = data[data.columns[i]].astype(str).str.extract(r'(\d+.\d+)').astype("float")
             return data
 
         elif geo == None and unit != None:
             data = data.loc[(data["geo"] == geo)]
             for i in range(4, len(list(data.columns))):
-                data[data.columns[i]] = data[data.columns[i]].str.extract(r'(\d+.\d+)').astype("float")
+                data[data.columns[i]] = data[data.columns[i]].astype(str).str.extract(r'(\d+.\d+)').astype("float")
             return data
         
         elif geo == None and unit == None:
             for i in range(4, len(list(data.columns))):
-                data[data.columns[i]] = data[data.columns[i]].str.extract(r'(\d+.\d+)').astype("float")
+                data[data.columns[i]] = data[data.columns[i]].astype(str).str.extract(r'(\d+.\d+)').astype("float")
             return data
 
     def download_dic(self, category:str=None):
@@ -77,7 +77,7 @@ class EurostatData(object):
 
 
 if __name__ == "__main__":
-    eu = EurostatData(language="en", version=2.1)
+    eu = EurostatData(language="en")
     
     
         
