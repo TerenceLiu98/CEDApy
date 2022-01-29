@@ -79,14 +79,14 @@ Here is a list for some related packages or tools that may help you finding the 
 ## If you want to cite...
 
 ```txt
-@software{terencelau_2021_5229506,
+@software{terencelau_2022_5915339,
   author       = {TerenceLau},
-  title        = {TerenceLiu98/CEDApy: V0.2.2},
-  month        = aug,
-  year         = 2021,
+  title        = {TerenceLiu98/CEDApy: V0.3.0},
+  month        = jan,
+  year         = 2022,
   publisher    = {Zenodo},
-  version      = {V0.2.2},
-  doi          = {10.5281/zenodo.5229506},
-  url          = {https://doi.org/10.5281/zenodo.5229506}
+  version      = {v0.3.0},
+  doi          = {10.5281/zenodo.5915339},
+  url          = {https://doi.org/10.5281/zenodo.5915339}
 }
 ```
