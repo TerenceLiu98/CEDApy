@@ -9,7 +9,7 @@ from urllib.parse import quote, urlencode
 from fake_useragent import UserAgent
 
 url = {
-    "dukascopy": "http://data.deluxelau.com/forex/api/v1.0/getdata?"
+    "dukascopy": "https://data.deluxelau.com/api/v1.0/finance/getdata?"
 }
 
 #?instrument=usdcnh&startdate=2014-01-01&enddate=2014-12-31&timeframe=d1&pricetype=ask&utc=0&volume=false&flat=false
@@ -34,12 +34,12 @@ def dukascopy(
         "utc": "{}".format(utc),
         "pricetype": "{}".format(pricetype),
         "volume": "{}".format(str(volume).lower()),
-        "flat": "{}".format(str(flat).lower())
+        "flat": "{}".format(str(flat).lower()),
+        "token": "token=6dc8797f-aa4b-4b8c-b137-cfe9a9ace5a1"
 
     }
     r = requests.get(tmp_url, params=request_params, headers=request_header)
-    data_text = r.text
-    output_file = demjson.decode(data_text)
+    output_file = r.json()
     return pd.json_normalize(output_file)
 
 # example:
@@ -47,7 +47,7 @@ def dukascopy(
 df = dukascopy(instrument = "usdcnh", 
                startdate = "2014-01-01",
                enddate = "2020-01-01",
-               timeframe = "h1",
+               timeframe = "m1",
                pricetype = "bid",
                utc = 0,
                volume = False,
