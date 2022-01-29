@@ -9,8 +9,6 @@
 * "Centralized" means all-in-one, "all data" you need in one library
 * "Economic data" means economic data :)
 
-* `python` version: [https://github.com/TerenceLiu98/CEDApy](https://github.com/TerenceLiu98/CEDApy)
-
 ### Economic Data
 
 We have included multiple API for banks or statistics deparment of countries/region:
