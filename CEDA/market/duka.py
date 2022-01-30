@@ -1,11 +1,5 @@
-import re
-import io
 import requests
-import demjson
 import pandas as pd
-from bs4 import BeautifulSoup
-from datetime import datetime
-from urllib.parse import quote, urlencode
 from fake_useragent import UserAgent
 
 url = {
