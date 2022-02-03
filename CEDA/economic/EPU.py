@@ -77,6 +77,10 @@ class EPUData(object):
             urls_cite = [url["EPU"] + i for i in urls_cite]
             output_data = []
             for i in range(0, len(urls_data)):
-                output_data.append(pd.read_excel(urls_data[i]))
+                try:
+                    tmp_data = pd.read_excel(urls_data[i])
+                    output_data.append(tmp_data)
+                except Exception as e:
+                    pass
             
             return {"data":output_data, "reference":urls_cite}

@@ -50,6 +50,35 @@ class XHData(object):
                         title = json.loads(data["data"]["list"][0]["modelCode"])["title"]["text"]
                         titles.append(title)
                         titles_en.append(translate(text=title))
+        elif self.country == "UK":
+            for i in tqdm(range(6539, 6566)):
+                url = "https://api.cnfin.com/roll/charts/getContent?ids={}".format(i)
+                r = requests.get(url)
+                if r.ok:
+                    data = r.json()
+                    if data["data"] == "图表数据不存在":
+                        pass
+                    else:
+                        urls.append(url)
+                        tid.append(i)
+                        title = json.loads(data["data"]["list"][0]["modelCode"])["title"]["text"]
+                        titles.append(title)
+                        titles_en.append(translate(text=title))
+
+        elif self.country == "Japan":
+            for i in tqdm(range(6394, 6425)):
+                url = "https://api.cnfin.com/roll/charts/getContent?ids={}".format(i)
+                r = requests.get(url)
+                if r.ok:
+                    data = r.json()
+                    if data["data"] == "图表数据不存在":
+                        pass
+                    else:
+                        urls.append(url)
+                        tid.append(i)
+                        title = json.loads(data["data"]["list"][0]["modelCode"])["title"]["text"]
+                        titles.append(title)
+                        titles_en.append(translate(text=title))
 
         return pd.DataFrame({"urls":urls, "id":tid, "title_zh":titles, "title_en":titles_en})
     

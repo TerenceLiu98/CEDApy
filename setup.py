@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 import os
 setup(
     name = "CEDApy",
-    version = "0.3.2",
+    version = "0.3.5",
     keywords = "quantitative economic data",
     long_description = open(
     os.path.join(
