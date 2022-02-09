@@ -13,7 +13,7 @@ setup(
     author = "TerenceCKLau",
     author_email = "terenceliu1012@outlook.com",
     url = "https://github.com/TerenceLiu98/CEDApy",
-    packages = find_packages(),
+    packages = (exclude=["test", "example"]),
     install_requires=[
         "matplotlib>=3.1.1",
         "numpy>=1.15.4",
@@ -23,7 +23,11 @@ setup(
         "xlrd==1.2.0",
         "bs4",
         "urllib3>=1.26.5",
-        "fake-useragent"
+        "fake-useragent",
+        "xmltodict",
+        "tqdm",
+        "pygtrans",
+        "lxml"
     ],
     license = "MIT",
     classifiers=[
