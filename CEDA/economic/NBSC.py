@@ -85,18 +85,28 @@ class NBSCData(object):
                                 "name":self.name, "pid":self.pid, "wdcode":self.wdcode})
         return data
     
-    def download_data(self, nid:str=None, sj="1978-"):
+
+    
+    def download_data(self, nid:str=None, sj="1978-", period:str="monthly"):
+
+        if period == "monthly":
+            dbcode="hgyd"
+        elif period == "quarterly":
+            dbcode="hgjd"
+        elif period == "annual":
+            dbcode="hgnd"
+
         params = {
-        "dbcode": "hgnd",
-        "rowcode": "zb",
         "m": "QueryData",
+        "dbcode": dbcode,
+        "rowcode": "zb",
         "colcode": "sj",
         "wds": "[]",
         "dfwds": '[{"wdcode":"zb","valuecode":"'
         + nid
         + '"},{"wdcode":"sj","valuecode":"'
-        + sj
         + '"}]',
+        "sj": sj
         }
         r = requests.get(self.url, params=params, verify=False, headers=self.generate_header())
         if r.ok:
