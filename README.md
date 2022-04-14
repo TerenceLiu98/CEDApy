@@ -2,7 +2,7 @@
 
 ![py_version](https://img.shields.io/badge/python-3.6+-brightgreen)
 [![PyPI Version](https://img.shields.io/pypi/v/CEDApy.svg)](https://pypi.org/project/CEDApy)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5229506.svg)](https://doi.org/10.5281/zenodo.5229506)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6459976.svg)](https://zenodo.org/record/6459976)
 
 ## Introduction
 
@@ -79,14 +79,14 @@ Here is a list for some related packages or tools that may help you finding the 
 ## If you want to cite...
 
 ```txt
-@software{terencelau_2022_5915339,
+@software{terencelau_2022_6459976,
   author       = {TerenceLau},
-  title        = {TerenceLiu98/CEDApy: V0.3.0},
-  month        = jan,
+  title        = {TerenceLiu98/CEDApy: V0.3.6},
+  month        = apr,
   year         = 2022,
   publisher    = {Zenodo},
-  version      = {v0.3.0},
-  doi          = {10.5281/zenodo.5915339},
-  url          = {https://doi.org/10.5281/zenodo.5915339}
+  version      = {v0.3.6},
+  doi          = {10.5281/zenodo.6459976},
+  url          = {https://doi.org/10.5281/zenodo.6459976}
 }
 ```
