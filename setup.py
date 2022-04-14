@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 import os
 setup(
     name = "CEDApy",
-    version = "0.3.5",
+    version = "0.3.6",
     keywords = "quantitative economic data",
     long_description = open(
     os.path.join(
@@ -13,7 +13,7 @@ setup(
     author = "TerenceCKLau",
     author_email = "terenceliu1012@outlook.com",
     url = "https://github.com/TerenceLiu98/CEDApy",
-    packages = (exclude=["test", "example"]),
+    packages = find_packages(exclude=["test", "example"]),
     install_requires=[
         "matplotlib>=3.1.1",
         "numpy>=1.15.4",

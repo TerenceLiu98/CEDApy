@@ -43,11 +43,10 @@ data = oecd.download_data(dataset="QNA", query="QNA/CAN.B1_GE.CQRSA.Q")
 
 ```python
 from CEDA.economic.NBSC import *
-nbsc = NBSCData(language="en")
+nbsc = NBSCData(language="en", period="monthly")
 nbsc_nodes = nbsc.tree_generation()
 nbsc_toc = nbsc.toc(nodes=nbsc_nodes)
-nbsc_toc[nbsc_toc["name"].str.contains("GDP")]
-A0203 = nbsc.download_data(nid="A0203")
+A010301 = nbsc.download_data(nid="A010301")
 ```
 
 ## Xinhua

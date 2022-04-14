@@ -18,13 +18,14 @@ requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 
 class NBSCData(object):
-    def __init__(self, language:str="en"):
+    def __init__(self, language:str="en", period:str="monthly"):
 
         self.dbcode = []
         self.nid = []
         self.pid = []
         self.name = []
         self.wdcode= []
+
 
         if language == "cn":
             self.url = "https://data.stats.gov.cn/easyquery.htm"
@@ -34,6 +35,13 @@ class NBSCData(object):
             self.url = "https://data.stats.gov.cn/english/easyquery.htm"
             self.BASE_DIR = os.path.dirname(__file__)
             self.__TREE_PATH__ = os.path.join(self.BASE_DIR, "NBSCTree", "data_en.pkl")
+        
+        if period == "monthly":
+            self.dbcode_query = "hgyd"
+        elif period == "quarterly":
+            self.dbcode = "hgjd"
+        elif period == "annual":
+            self.dbcode = "hgnd"
 
     def generate_header(self):
         ua = UserAgent()
@@ -46,7 +54,7 @@ class NBSCData(object):
         inspired by a blog: https://www.cnblogs.com/wang_yb/p/14636575.html
         """
         parent = []
-        r = requests.post("{}?id={}&dbcode=hgnd&wdcode=zb&m=getTree".format(self.url, rid), headers=self.generate_header(), verify=False)
+        r = requests.post("{}?id={}&dbcode={}&wdcode=zb&m=getTree".format(self.url, rid, self.dbcode_query), headers=self.generate_header(), verify=False)
         data = r.json()
 
         for i in range(0, len(data)):
@@ -70,7 +78,7 @@ class NBSCData(object):
         """
         inspired by a blog: https://www.cnblogs.com/wang_yb/p/14636575.html
         """
-        for i in range(0, len(nodes)):
+        for i in tqdm(range(0, len(nodes))):
             node = nodes[i]
             if node["isParent"]:
                 self.toc(node["children"])
@@ -87,24 +95,18 @@ class NBSCData(object):
     
 
     
-    def download_data(self, nid:str=None, sj="1978-", period:str="monthly"):
-
-        if period == "monthly":
-            dbcode="hgyd"
-        elif period == "quarterly":
-            dbcode="hgjd"
-        elif period == "annual":
-            dbcode="hgnd"
+    def download_data(self, nid:str=None, sj="1978-"):
 
         params = {
         "m": "QueryData",
-        "dbcode": dbcode,
+        "dbcode": self.dbcode_query,
         "rowcode": "zb",
         "colcode": "sj",
         "wds": "[]",
         "dfwds": '[{"wdcode":"zb","valuecode":"'
         + nid
         + '"},{"wdcode":"sj","valuecode":"'
+        + sj
         + '"}]',
         "sj": sj
         }
@@ -117,19 +119,12 @@ class NBSCData(object):
                 value.append(data[i]["data"]["data"])
             
             output = pd.DataFrame({"date":date, "value":value})
+            output = output.drop_duplicates("date", keep="first")
             return output
 
 if __name__ == "__main__":
-    nbsc = NBSCData(language="en")
+    nbsc = NBSCData(language="en", period="annual")
     nodes = nbsc.tree_generation()
     toc = nbsc.toc(nodes=nodes)
     toc[toc["name"].str.contains("GDP")]
     data = nbsc.download_data(nid="A0203")
-
-            
-            
-            
-
-
-
-                
