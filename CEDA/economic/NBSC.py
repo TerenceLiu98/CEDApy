@@ -39,9 +39,9 @@ class NBSCData(object):
         if period == "monthly":
             self.dbcode_query = "hgyd"
         elif period == "quarterly":
-            self.dbcode = "hgjd"
+            self.dbcode_query = "hgjd"
         elif period == "annual":
-            self.dbcode = "hgnd"
+            self.dbcode_query = "hgnd"
 
     def generate_header(self):
         ua = UserAgent()
