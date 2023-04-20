@@ -3,8 +3,8 @@ import requests
 import pandas as pd
 
 url = {
-    "EPU-China": "https://www.policyuncertainty.com/media/SCMP_China_Policy_Uncertainty_Data.xlsx",
-    "EPU-HKSAR": "https://www.policyuncertainty.com/media/HK_EPU_Data_Annotated.xlsx",
+    "EPU-China": "https://www.policyuncertainty.com/scmp_monthly.html",
+    "EPU-HKSAR": "https://www.policyuncertainty.com/hk_monthly.html",
     "EPU": "https://www.policyuncertainty.com/"
 }
 
