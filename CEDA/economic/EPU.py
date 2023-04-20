@@ -3,9 +3,8 @@ import requests
 import pandas as pd
 
 url = {
-    "EPU-China": "https://economicpolicyuncertaintyinchina.weebly.com",
-    "EPU-HKSAR": "https://economicpolicyuncertaintyinchina.weebly.com/epu-in-hong-kong.html",
-    "EPU-MACAUSAR": "https://economicpolicyuncertaintyinchina.weebly.com/epu-in-macao.html",
+    "EPU-China": "https://www.policyuncertainty.com/media/SCMP_China_Policy_Uncertainty_Data.xlsx",
+    "EPU-HKSAR": "https://www.policyuncertainty.com/media/HK_EPU_Data_Annotated.xlsx",
     "EPU": "https://www.policyuncertainty.com/"
 }
 
@@ -52,7 +51,7 @@ class EPUData(object):
                 output_data.append(pd.read_excel(urls_data[i]))
             
             return {"data":output_data, "reference":urls_cite}
-
+        '''
         elif self.country == "MACAUSAR":
             r = requests.get(url["EPU-MACAUSAR"])
             webpage = html.fromstring(r.content)
@@ -66,7 +65,7 @@ class EPUData(object):
                 output_data.append(pd.read_excel(urls_data[i]))
             
             return {"data":output_data, "reference":urls_cite}
-        
+        '''
         else:
             r = requests.get(url["EPU"] + self.country.lower() + "_monthly.html")
             webpage = html.fromstring(r.content)
