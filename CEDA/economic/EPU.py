@@ -51,21 +51,7 @@ class EPUData(object):
                 output_data.append(pd.read_excel(urls_data[i]))
             
             return {"data":output_data, "reference":urls_cite}
-        '''
-        elif self.country == "MACAUSAR":
-            r = requests.get(url["EPU-MACAUSAR"])
-            webpage = html.fromstring(r.content)
-            urls = pd.Series(webpage.xpath("//a/@href"))
-            urls_data = urls[urls.str.contains("xlsx")]
-            urls_cite = urls[urls.str.contains("pdf")]
-            urls_data = [url["EPU-China"] + i for i in urls_data]
-            urls_cite = [url["EPU-China"] + i for i in urls_cite]
-            output_data = []
-            for i in range(0, len(urls_data)):
-                output_data.append(pd.read_excel(urls_data[i]))
-            
-            return {"data":output_data, "reference":urls_cite}
-        '''
+        
         else:
             r = requests.get(url["EPU"] + self.country.lower() + "_monthly.html")
             webpage = html.fromstring(r.content)
